@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Familienplaner</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="login-box">
+
+        <h1>Familienplaner</h1>
+
+        <p class="subtitle">
+            Bitte melde dich an
+        </p>
+
+        <form method="POST">
+
+            <label>Benutzername</label>
+
+            <input
+                type="text"
+                name="benutzername"
+                placeholder="Benutzername"
+                required
+            >
+
+            <label>Passwort</label>
+
+            <input
+                type="password"
+                name="passwort"
+                placeholder="Passwort"
+                required
+            >
+
+            <button type="submit">
+                Anmelden
+            </button>
+
+        </form>
+
+        {% if fehler %}
+            <p class="fehler">
+                {{ fehler }}
+            </p>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

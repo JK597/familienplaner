@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Familienplaner - Dashboard</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="app-body">
+
+    <div class="app-container">
+
+        <header class="topbar">
+            <div>
+                <h1>Familienplaner</h1>
+                <p>Willkommen, {{ benutzer }}</p>
+            </div>
+
+            <a href="/logout" class="logout-button">
+                Abmelden
+            </a>
+        </header>
+
+
+        <main class="dashboard">
+
+            <div class="welcome-card">
+                <h2>Hallo {{ benutzer }} 👋</h2>
+
+                <p>
+                    Willkommen in deinem Familienplaner.
+                </p>
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        📅
+                    </div>
+
+                    <h3>Kalender</h3>
+
+                    <p>
+                        Gemeinsame Termine und Ereignisse verwalten.
+                    </p>
+
+                    <button disabled>
+                        Bald verfügbar
+                    </button>
+                </div>
+
+
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        ✅
+                    </div>
+
+                    <h3>Aufgaben</h3>
+
+                    <p>
+                        Aufgaben für die Familie erstellen und verteilen.
+                    </p>
+
+                    <button disabled>
+                        Bald verfügbar
+                    </button>
+                </div>
+
+
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        🛒
+                    </div>
+
+                    <h3>Einkaufsliste</h3>
+
+                    <p>
+                        Gemeinsame Einkaufsliste für alle Familienmitglieder.
+                    </p>
+
+                    <button disabled>
+                        Bald verfügbar
+                    </button>
+                </div>
+
+
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        👨‍👩‍👧‍👦
+                    </div>
+
+                    <h3>Familie</h3>
+
+                    <p>
+                        Familienmitglieder und Benutzer verwalten.
+                    </p>
+
+                    {% if rolle == "admin" %}
+                        <a href="/admin" class="card-button">
+                            Admin-Bereich
+                        </a>
+                    {% else %}
+                        <button disabled>
+                            Nur für Admins
+                        </button>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

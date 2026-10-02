@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Familienplaner - Admin</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="app-body">
+
+    <div class="app-container">
+
+        <header class="topbar">
+            <div>
+                <h1>Admin-Bereich</h1>
+                <p>Benutzerverwaltung</p>
+            </div>
+
+            <a href="/dashboard" class="logout-button">
+                Zurück
+            </a>
+        </header>
+
+
+        <main class="dashboard">
+
+            <div class="welcome-card">
+                <h2>Neuen Benutzer erstellen</h2>
+
+                <form method="POST" class="admin-form">
+
+                    <label>Benutzername</label>
+
+                    <input
+                        type="text"
+                        name="benutzername"
+                        placeholder="Benutzername"
+                        required
+                    >
+
+                    <label>Passwort</label>
+
+                    <input
+                        type="password"
+                        name="passwort"
+                        placeholder="Passwort"
+                        required
+                    >
+
+                    <button type="submit">
+                        Benutzer erstellen
+                    </button>
+
+                </form>
+
+                {% if meldung %}
+                    <p class="meldung">
+                        {{ meldung }}
+                    </p>
+                {% endif %}
+            </div>
+
+
+            <div class="welcome-card">
+
+                <h2>Benutzer</h2>
+
+                <div class="user-list">
+
+                    {% for benutzer in benutzer_liste %}
+
+                        <div class="user-card">
+
+                            <div>
+                                <strong>
+                                    {{ benutzer["benutzername"] }}
+                                </strong>
+
+                                <p>
+                                    Rolle: {{ benutzer["rolle"] }}
+                                </p>
+                            </div>
+
+
+                            <div class="user-actions">
+
+                                <a
+                                    href="/benutzername-aendern/{{ benutzer['id'] }}"
+                                    class="small-button"
+                                >
+                                    Name ändern
+                                </a>
+
+
+                                <a
+                                    href="/passwort-aendern/{{ benutzer['id'] }}"
+                                    class="small-button"
+                                >
+                                    Passwort ändern
+                                </a>
+
+
+                                {% if benutzer["rolle"] != "admin" %}
+
+                                    <form
+                                        action="/benutzer-loeschen/{{ benutzer['id'] }}"
+                                        method="POST"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="delete-button"
+                                        >
+                                            Löschen
+                                        </button>
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

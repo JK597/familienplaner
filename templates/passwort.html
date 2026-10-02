@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Familienplaner - Passwort ändern</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="app-body">
+
+    <div class="app-container">
+
+        <header class="topbar">
+            <div>
+                <h1>Passwort ändern</h1>
+                <p>Familienplaner</p>
+            </div>
+
+            <a href="/admin" class="logout-button">
+                Zurück
+            </a>
+        </header>
+
+        <main class="dashboard">
+
+            <div class="welcome-card">
+
+                <h2>
+                    Passwort ändern
+                </h2>
+
+                <p>
+                    Benutzer:
+                    <strong>
+                        {{ benutzer["benutzername"] }}
+                    </strong>
+                </p>
+
+                <form method="POST" class="admin-form">
+
+                    <label>
+                        Neues Passwort
+                    </label>
+
+                    <input
+                        type="password"
+                        name="passwort"
+                        placeholder="Neues Passwort"
+                        required
+                    >
+
+                    <button type="submit">
+                        Passwort speichern
+                    </button>
+
+                </form>
+
+                {% if meldung %}
+                    <p class="meldung">
+                        {{ meldung }}
+                    </p>
+                {% endif %}
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
