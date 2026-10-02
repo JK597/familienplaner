@@ -40,8 +40,7 @@ def postgres_verwenden():
 
 def datenbank():
     if postgres_verwenden():
-        db = psycopg2.connect(DATABASE_URL)
-        return db
+        return psycopg2.connect(DATABASE_URL)
 
     db = sqlite3.connect("users.db")
     db.row_factory = sqlite3.Row
@@ -65,7 +64,6 @@ def query_einen(sql_postgres, sql_sqlite, werte=()):
         ).fetchone()
 
     db.close()
-
     return ergebnis
 
 
@@ -86,7 +84,6 @@ def query_alle(sql_postgres, sql_sqlite, werte=()):
         ).fetchall()
 
     db.close()
-
     return ergebnis
 
 
@@ -155,11 +152,13 @@ def datenbank_erstellen():
         SELECT *
         FROM benutzer
         WHERE rolle = %s
+        LIMIT 1
         """,
         """
         SELECT *
         FROM benutzer
         WHERE rolle = ?
+        LIMIT 1
         """,
         ("admin",)
     )
@@ -505,95 +504,22 @@ def benutzer_loeschen(benutzer_id):
 # LOGOUT
 # --------------------------------------------------
 
-# --------------------------------------------------
-# EINMALIGES ADMIN-PASSWORT ZURÜCKSETZEN
-# --------------------------------------------------
-
-@app.route("/admin-reset", methods=["GET", "POST"])
-def admin_reset():
-    meldung = ""
-
-    if request.method == "POST":
-        neues_passwort = request.form["passwort"]
-
-        if neues_passwort == "":
-            meldung = "Bitte ein Passwort eingeben."
-        else:
-            admin = query_einen(
-                """
-                SELECT *
-                FROM benutzer
-                WHERE rolle = %s
-                LIMIT 1
-                """,
-                """
-                SELECT *
-                FROM benutzer
-                WHERE rolle = ?
-                LIMIT 1
-                """,
-                ("admin",)
-            )
-
-            if admin:
-                execute_query(
-                    """
-                    UPDATE benutzer
-                    SET passwort = %s
-                    WHERE id = %s
-                    """,
-                    """
-                    UPDATE benutzer
-                    SET passwort = ?
-                    WHERE id = ?
-                    """,
-                    (
-                        generate_password_hash(neues_passwort),
-                        admin["id"]
-                    )
-                )
-
-                meldung = "Admin-Passwort wurde geändert."
-
-    return f"""
-    <html>
-    <body>
-
-        <h1>Admin-Passwort zurücksetzen</h1>
-
-        <form method="POST">
-
-            <label>Neues Passwort:</label><br>
-
-            <input
-                type="password"
-                name="passwort"
-                required
-            >
-
-            <br><br>
-
-            <button type="submit">
-                Passwort ändern
-            </button>
-
-        </form>
-
-        <p>{meldung}</p>
-
-    </body>
-    </html>
-    """
+@app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
 
 # --------------------------------------------------
-# SERVER STARTEN
+# DATENBANK BEIM START PRÜFEN
 # --------------------------------------------------
 
 datenbank_erstellen()
+
+
+# --------------------------------------------------
+# LOKALER START
+# --------------------------------------------------
 
 if __name__ == "__main__":
     app.run(debug=True)
