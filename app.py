@@ -1,40 +1,176 @@
-from flask import Flask, request, redirect, session, render_template
+import os
 import sqlite3
+
+from flask import Flask, request, redirect, session, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 
+try:
+    import psycopg2
+    import psycopg2.extras
+except ImportError:
+    psycopg2 = None
+
+
 app = Flask(__name__)
-app.secret_key = "mein_geheimer_schluessel_123"
+
+# --------------------------------------------------
+# GEHEIME EINSTELLUNGEN
+# --------------------------------------------------
+
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "nur-fuer-lokale-entwicklung"
+)
+
+ADMIN_PASSWORD = os.environ.get(
+    "ADMIN_PASSWORD",
+    "1234"
+)
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
-# ----------------------------
-# DATENBANK
-# ----------------------------
+# --------------------------------------------------
+# DATENBANK-HILFSFUNKTIONEN
+# --------------------------------------------------
+
+def postgres_verwenden():
+    return DATABASE_URL is not None and psycopg2 is not None
+
 
 def datenbank():
+    if postgres_verwenden():
+        db = psycopg2.connect(DATABASE_URL)
+        return db
+
     db = sqlite3.connect("users.db")
     db.row_factory = sqlite3.Row
     return db
 
 
+def query_einen(sql_postgres, sql_sqlite, werte=()):
+    db = datenbank()
+
+    if postgres_verwenden():
+        cursor = db.cursor(
+            cursor_factory=psycopg2.extras.RealDictCursor
+        )
+        cursor.execute(sql_postgres, werte)
+        ergebnis = cursor.fetchone()
+        cursor.close()
+    else:
+        ergebnis = db.execute(
+            sql_sqlite,
+            werte
+        ).fetchone()
+
+    db.close()
+
+    return ergebnis
+
+
+def query_alle(sql_postgres, sql_sqlite, werte=()):
+    db = datenbank()
+
+    if postgres_verwenden():
+        cursor = db.cursor(
+            cursor_factory=psycopg2.extras.RealDictCursor
+        )
+        cursor.execute(sql_postgres, werte)
+        ergebnis = cursor.fetchall()
+        cursor.close()
+    else:
+        ergebnis = db.execute(
+            sql_sqlite,
+            werte
+        ).fetchall()
+
+    db.close()
+
+    return ergebnis
+
+
+def execute_query(sql_postgres, sql_sqlite, werte=()):
+    db = datenbank()
+
+    try:
+        if postgres_verwenden():
+            cursor = db.cursor()
+            cursor.execute(sql_postgres, werte)
+            cursor.close()
+        else:
+            db.execute(
+                sql_sqlite,
+                werte
+            )
+
+        db.commit()
+
+    except Exception:
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
+
+
+# --------------------------------------------------
+# DATENBANK ERSTELLEN
+# --------------------------------------------------
+
 def datenbank_erstellen():
     db = datenbank()
 
-    db.execute("""
-        CREATE TABLE IF NOT EXISTS benutzer (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            benutzername TEXT UNIQUE NOT NULL,
-            passwort TEXT NOT NULL,
-            rolle TEXT NOT NULL
-        )
-    """)
+    if postgres_verwenden():
+        cursor = db.cursor()
 
-    admin = db.execute(
-        "SELECT * FROM benutzer WHERE rolle = ?",
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS benutzer (
+                id SERIAL PRIMARY KEY,
+                benutzername VARCHAR(100) UNIQUE NOT NULL,
+                passwort TEXT NOT NULL,
+                rolle VARCHAR(50) NOT NULL
+            )
+        """)
+
+        db.commit()
+        cursor.close()
+
+    else:
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS benutzer (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                benutzername TEXT UNIQUE NOT NULL,
+                passwort TEXT NOT NULL,
+                rolle TEXT NOT NULL
+            )
+        """)
+
+        db.commit()
+
+    db.close()
+
+    admin = query_einen(
+        """
+        SELECT *
+        FROM benutzer
+        WHERE rolle = %s
+        """,
+        """
+        SELECT *
+        FROM benutzer
+        WHERE rolle = ?
+        """,
         ("admin",)
-    ).fetchone()
+    )
 
     if admin is None:
-        db.execute(
+        execute_query(
+            """
+            INSERT INTO benutzer
+            (benutzername, passwort, rolle)
+            VALUES (%s, %s, %s)
+            """,
             """
             INSERT INTO benutzer
             (benutzername, passwort, rolle)
@@ -42,18 +178,15 @@ def datenbank_erstellen():
             """,
             (
                 "joel",
-                generate_password_hash("1234"),
+                generate_password_hash(ADMIN_PASSWORD),
                 "admin"
             )
         )
 
-    db.commit()
-    db.close()
 
-
-# ----------------------------
+# --------------------------------------------------
 # LOGIN
-# ----------------------------
+# --------------------------------------------------
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -63,14 +196,19 @@ def login():
         benutzername = request.form["benutzername"].strip()
         passwort = request.form["passwort"]
 
-        db = datenbank()
-
-        benutzer = db.execute(
-            "SELECT * FROM benutzer WHERE benutzername = ?",
+        benutzer = query_einen(
+            """
+            SELECT *
+            FROM benutzer
+            WHERE benutzername = %s
+            """,
+            """
+            SELECT *
+            FROM benutzer
+            WHERE benutzername = ?
+            """,
             (benutzername,)
-        ).fetchone()
-
-        db.close()
+        )
 
         if benutzer and check_password_hash(
             benutzer["passwort"],
@@ -90,13 +228,12 @@ def login():
     )
 
 
-# ----------------------------
+# --------------------------------------------------
 # DASHBOARD
-# ----------------------------
+# --------------------------------------------------
 
 @app.route("/dashboard")
 def dashboard():
-
     if "benutzer" not in session:
         return redirect("/")
 
@@ -107,20 +244,18 @@ def dashboard():
     )
 
 
-# ----------------------------
+# --------------------------------------------------
 # ADMIN
-# ----------------------------
+# --------------------------------------------------
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
-
     if session.get("rolle") != "admin":
         return redirect("/dashboard")
 
     meldung = ""
 
     if request.method == "POST":
-
         neuer_name = request.form["benutzername"].strip()
         neues_passwort = request.form["passwort"]
 
@@ -132,9 +267,12 @@ def admin():
 
         else:
             try:
-                db = datenbank()
-
-                db.execute(
+                execute_query(
+                    """
+                    INSERT INTO benutzer
+                    (benutzername, passwort, rolle)
+                    VALUES (%s, %s, %s)
+                    """,
                     """
                     INSERT INTO benutzer
                     (benutzername, passwort, rolle)
@@ -142,32 +280,28 @@ def admin():
                     """,
                     (
                         neuer_name,
-                        generate_password_hash(
-                            neues_passwort
-                        ),
+                        generate_password_hash(neues_passwort),
                         "benutzer"
                     )
                 )
 
-                db.commit()
-                db.close()
-
                 meldung = "Benutzer wurde erstellt."
 
-            except sqlite3.IntegrityError:
+            except Exception:
                 meldung = "Dieser Benutzername existiert bereits."
 
-    db = datenbank()
-
-    benutzer_liste = db.execute(
+    benutzer_liste = query_alle(
+        """
+        SELECT id, benutzername, rolle
+        FROM benutzer
+        ORDER BY id
+        """,
         """
         SELECT id, benutzername, rolle
         FROM benutzer
         ORDER BY id
         """
-    ).fetchall()
-
-    db.close()
+    )
 
     return render_template(
         "admin.html",
@@ -176,34 +310,38 @@ def admin():
     )
 
 
-# ----------------------------
+# --------------------------------------------------
 # BENUTZERNAME ÄNDERN
-# ----------------------------
+# --------------------------------------------------
 
 @app.route(
     "/benutzername-aendern/<int:benutzer_id>",
     methods=["GET", "POST"]
 )
 def benutzername_aendern(benutzer_id):
-
     if session.get("rolle") != "admin":
         return redirect("/dashboard")
 
-    db = datenbank()
-
-    benutzer = db.execute(
-        "SELECT * FROM benutzer WHERE id = ?",
+    benutzer = query_einen(
+        """
+        SELECT *
+        FROM benutzer
+        WHERE id = %s
+        """,
+        """
+        SELECT *
+        FROM benutzer
+        WHERE id = ?
+        """,
         (benutzer_id,)
-    ).fetchone()
+    )
 
     if benutzer is None:
-        db.close()
         return redirect("/admin")
 
     meldung = ""
 
     if request.method == "POST":
-
         neuer_name = request.form["benutzername"].strip()
 
         if neuer_name == "":
@@ -211,7 +349,12 @@ def benutzername_aendern(benutzer_id):
 
         else:
             try:
-                db.execute(
+                execute_query(
+                    """
+                    UPDATE benutzer
+                    SET benutzername = %s
+                    WHERE id = %s
+                    """,
                     """
                     UPDATE benutzer
                     SET benutzername = ?
@@ -223,22 +366,27 @@ def benutzername_aendern(benutzer_id):
                     )
                 )
 
-                db.commit()
-
                 meldung = "Benutzername wurde geändert."
 
                 if session.get("benutzer_id") == benutzer_id:
                     session["benutzer"] = neuer_name
 
-                benutzer = db.execute(
-                    "SELECT * FROM benutzer WHERE id = ?",
+                benutzer = query_einen(
+                    """
+                    SELECT *
+                    FROM benutzer
+                    WHERE id = %s
+                    """,
+                    """
+                    SELECT *
+                    FROM benutzer
+                    WHERE id = ?
+                    """,
                     (benutzer_id,)
-                ).fetchone()
+                )
 
-            except sqlite3.IntegrityError:
+            except Exception:
                 meldung = "Dieser Benutzername existiert bereits."
-
-    db.close()
 
     return render_template(
         "benutzername.html",
@@ -247,59 +395,62 @@ def benutzername_aendern(benutzer_id):
     )
 
 
-# ----------------------------
+# --------------------------------------------------
 # PASSWORT ÄNDERN
-# ----------------------------
+# --------------------------------------------------
 
 @app.route(
     "/passwort-aendern/<int:benutzer_id>",
     methods=["GET", "POST"]
 )
 def passwort_aendern(benutzer_id):
-
     if session.get("rolle") != "admin":
         return redirect("/dashboard")
 
-    db = datenbank()
-
-    benutzer = db.execute(
-        "SELECT * FROM benutzer WHERE id = ?",
+    benutzer = query_einen(
+        """
+        SELECT *
+        FROM benutzer
+        WHERE id = %s
+        """,
+        """
+        SELECT *
+        FROM benutzer
+        WHERE id = ?
+        """,
         (benutzer_id,)
-    ).fetchone()
+    )
 
     if benutzer is None:
-        db.close()
         return redirect("/admin")
 
     meldung = ""
 
     if request.method == "POST":
-
         neues_passwort = request.form["passwort"]
 
         if neues_passwort == "":
             meldung = "Bitte ein neues Passwort eingeben."
 
         else:
-            db.execute(
+            execute_query(
+                """
+                UPDATE benutzer
+                SET passwort = %s
+                WHERE id = %s
+                """,
                 """
                 UPDATE benutzer
                 SET passwort = ?
                 WHERE id = ?
                 """,
                 (
-                    generate_password_hash(
-                        neues_passwort
-                    ),
+                    generate_password_hash(neues_passwort),
                     benutzer_id
                 )
             )
 
-            db.commit()
-
             meldung = "Passwort wurde geändert."
-
-    db.close()
 
     return render_template(
         "passwort.html",
@@ -308,58 +459,63 @@ def passwort_aendern(benutzer_id):
     )
 
 
-# ----------------------------
+# --------------------------------------------------
 # BENUTZER LÖSCHEN
-# ----------------------------
+# --------------------------------------------------
 
 @app.route(
     "/benutzer-loeschen/<int:benutzer_id>",
     methods=["POST"]
 )
 def benutzer_loeschen(benutzer_id):
-
     if session.get("rolle") != "admin":
         return redirect("/dashboard")
 
-    db = datenbank()
-
-    benutzer = db.execute(
-        "SELECT * FROM benutzer WHERE id = ?",
+    benutzer = query_einen(
+        """
+        SELECT *
+        FROM benutzer
+        WHERE id = %s
+        """,
+        """
+        SELECT *
+        FROM benutzer
+        WHERE id = ?
+        """,
         (benutzer_id,)
-    ).fetchone()
+    )
 
     if benutzer and benutzer["rolle"] != "admin":
-
-        db.execute(
-            "DELETE FROM benutzer WHERE id = ?",
+        execute_query(
+            """
+            DELETE FROM benutzer
+            WHERE id = %s
+            """,
+            """
+            DELETE FROM benutzer
+            WHERE id = ?
+            """,
             (benutzer_id,)
         )
-
-        db.commit()
-
-    db.close()
 
     return redirect("/admin")
 
 
-# ----------------------------
+# --------------------------------------------------
 # LOGOUT
-# ----------------------------
+# --------------------------------------------------
 
 @app.route("/logout")
 def logout():
-
     session.clear()
-
     return redirect("/")
 
 
-# ----------------------------
+# --------------------------------------------------
 # SERVER STARTEN
-# ----------------------------
+# --------------------------------------------------
+
+datenbank_erstellen()
 
 if __name__ == "__main__":
-
-    datenbank_erstellen()
-
     app.run(debug=True)
