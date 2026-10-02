@@ -505,7 +505,85 @@ def benutzer_loeschen(benutzer_id):
 # LOGOUT
 # --------------------------------------------------
 
-@app.route("/logout")
+# --------------------------------------------------
+# EINMALIGES ADMIN-PASSWORT ZURÜCKSETZEN
+# --------------------------------------------------
+
+@app.route("/admin-reset", methods=["GET", "POST"])
+def admin_reset():
+    meldung = ""
+
+    if request.method == "POST":
+        neues_passwort = request.form["passwort"]
+
+        if neues_passwort == "":
+            meldung = "Bitte ein Passwort eingeben."
+        else:
+            admin = query_einen(
+                """
+                SELECT *
+                FROM benutzer
+                WHERE rolle = %s
+                LIMIT 1
+                """,
+                """
+                SELECT *
+                FROM benutzer
+                WHERE rolle = ?
+                LIMIT 1
+                """,
+                ("admin",)
+            )
+
+            if admin:
+                execute_query(
+                    """
+                    UPDATE benutzer
+                    SET passwort = %s
+                    WHERE id = %s
+                    """,
+                    """
+                    UPDATE benutzer
+                    SET passwort = ?
+                    WHERE id = ?
+                    """,
+                    (
+                        generate_password_hash(neues_passwort),
+                        admin["id"]
+                    )
+                )
+
+                meldung = "Admin-Passwort wurde geändert."
+
+    return f"""
+    <html>
+    <body>
+
+        <h1>Admin-Passwort zurücksetzen</h1>
+
+        <form method="POST">
+
+            <label>Neues Passwort:</label><br>
+
+            <input
+                type="password"
+                name="passwort"
+                required
+            >
+
+            <br><br>
+
+            <button type="submit">
+                Passwort ändern
+            </button>
+
+        </form>
+
+        <p>{meldung}</p>
+
+    </body>
+    </html>
+    """
 def logout():
     session.clear()
     return redirect("/")
