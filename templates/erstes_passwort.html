@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Eigenes Passwort wählen
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h1>
+            Neues Passwort
+        </h1>
+
+        <p class="subtitle">
+            Hallo {{ benutzer }}.
+            Dein bisheriges Passwort war nur einmal gültig.
+        </p>
+
+        <p class="subtitle">
+            Wähle jetzt dein eigenes Passwort.
+        </p>
+
+
+        <form method="POST">
+
+            <label>
+                Neues Passwort
+            </label>
+
+            <input
+                type="password"
+                name="passwort"
+                placeholder="Neues Passwort"
+                required
+            >
+
+
+            <label>
+                Passwort wiederholen
+            </label>
+
+            <input
+                type="password"
+                name="passwort_wiederholen"
+                placeholder="Passwort wiederholen"
+                required
+            >
+
+
+            <button type="submit">
+                Passwort speichern
+            </button>
+
+        </form>
+
+
+        {% if fehler %}
+
+            <p class="fehler">
+                {{ fehler }}
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>
