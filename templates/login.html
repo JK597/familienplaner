@@ -1,56 +1,177 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Familienplaner</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="/static/style.css">
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Login | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
 </head>
-<body>
 
-    <div class="login-box">
 
-        <h1>Familienplaner</h1>
+<body class="login-body">
 
-        <p class="subtitle">
-            Bitte melde dich an
-        </p>
 
-        <form method="POST">
+    <main class="login-page">
 
-            <label>Benutzername</label>
 
-            <input
-                type="text"
-                name="benutzername"
-                placeholder="Benutzername"
-                required
+        <section class="login-card">
+
+
+            <div class="login-brand">
+
+                <div class="login-icon">
+                    🏠
+                </div>
+
+                <h1>
+                    Familienplaner
+                </h1>
+
+                <p>
+                    Willkommen zurück.
+                </p>
+
+            </div>
+
+
+            {% if fehler %}
+
+                <div class="login-error">
+                    {{ fehler }}
+                </div>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                action="/"
+                class="login-form"
             >
 
-            <label>Passwort</label>
 
-            <input
-                type="password"
-                name="passwort"
-                placeholder="Passwort"
-                required
-            >
+                <div class="login-field">
 
-            <button type="submit">
-                Anmelden
-            </button>
+                    <label for="benutzername">
+                        Benutzername
+                    </label>
 
-        </form>
+                    <input
+                        type="text"
+                        id="benutzername"
+                        name="benutzername"
+                        autocomplete="username"
+                        required
+                    >
 
-        {% if fehler %}
-            <p class="fehler">
-                {{ fehler }}
-            </p>
-        {% endif %}
+                </div>
 
-    </div>
+
+                <div class="login-field">
+
+                    <label for="passwort">
+                        Passwort
+                    </label>
+
+                    <input
+                        type="password"
+                        id="passwort"
+                        name="passwort"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    Anmelden
+                </button>
+
+
+            </form>
+
+
+        </section>
+
+
+    </main>
+
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
 
 </body>
+
 </html>

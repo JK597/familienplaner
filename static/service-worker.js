@@ -1,4 +1,4 @@
-const CACHE_NAME = "familienplaner-static-v1";
+const CACHE_NAME = "familienplaner-static-v2";
 
 const STATIC_FILES = [
     "/static/style.css",
@@ -14,128 +14,135 @@ const STATIC_FILES = [
    INSTALLATION
 ========================================================= */
 
-self.addEventListener("install", function(event) {
+self.addEventListener(
+    "install",
+    function(event) {
 
-    event.waitUntil(
+        event.waitUntil(
 
-        caches.open(CACHE_NAME)
-            .then(function(cache) {
+            caches
+                .open(CACHE_NAME)
+                .then(
+                    function(cache) {
 
-                return cache.addAll(
-                    STATIC_FILES
-                );
+                        return cache.addAll(
+                            STATIC_FILES
+                        );
 
-            })
+                    }
+                )
 
-    );
+        );
 
-    self.skipWaiting();
+        self.skipWaiting();
 
-});
+    }
+);
 
 
 /* =========================================================
    AKTIVIERUNG
 ========================================================= */
 
-self.addEventListener("activate", function(event) {
+self.addEventListener(
+    "activate",
+    function(event) {
 
-    event.waitUntil(
+        event.waitUntil(
 
-        caches.keys()
-            .then(function(cacheNames) {
+            caches
+                .keys()
+                .then(
+                    function(cacheNames) {
 
-                return Promise.all(
+                        return Promise.all(
 
-                    cacheNames.map(
-                        function(cacheName) {
+                            cacheNames.map(
+                                function(cacheName) {
 
-                            if (
-                                cacheName !== CACHE_NAME
-                            ) {
+                                    if (
+                                        cacheName !==
+                                        CACHE_NAME
+                                    ) {
 
-                                return caches.delete(
-                                    cacheName
-                                );
+                                        return caches.delete(
+                                            cacheName
+                                        );
 
-                            }
+                                    }
 
-                        }
-                    )
+                                }
+                            )
 
-                );
+                        );
 
-            })
+                    }
+                )
 
-    );
+        );
 
-    self.clients.claim();
+        self.clients.claim();
 
-});
+    }
+);
 
 
 /* =========================================================
    ANFRAGEN
 ========================================================= */
 
-self.addEventListener("fetch", function(event) {
+self.addEventListener(
+    "fetch",
+    function(event) {
 
-    if (
-        event.request.method !== "GET"
-    ) {
-        return;
-    }
+        if (
+            event.request.method !== "GET"
+        ) {
+            return;
+        }
 
 
-    const requestURL =
-        new URL(
+        const requestURL = new URL(
             event.request.url
         );
 
 
-    /*
-        Nur statische Dateien cachen.
-        Seiten wie Finanzen, Einkaufsliste,
-        Dashboard usw. kommen immer frisch
-        vom Server.
-    */
+        /*
+            Nur Dateien aus /static/ behandeln.
+            Private Seiten wie Dashboard, Finanzen,
+            Einkaufsliste und Vorschläge werden
+            NICHT gecacht.
+        */
 
-    if (
-        requestURL.origin === self.location.origin
-        &&
-        requestURL.pathname.startsWith("/static/")
-    ) {
-
-        event.respondWith(
-
-            caches.match(
-                event.request
+        if (
+            requestURL.origin ===
+                self.location.origin
+            &&
+            requestURL.pathname.startsWith(
+                "/static/"
             )
+        ) {
 
-                .then(function(cachedResponse) {
+            event.respondWith(
 
-                    if (cachedResponse) {
+                fetch(
+                    event.request
+                )
+                    .then(
+                        function(networkResponse) {
 
-                        return cachedResponse;
-
-                    }
-
-
-                    return fetch(
-                        event.request
-                    )
-
-                        .then(
-                            function(networkResponse) {
+                            if (
+                                networkResponse
+                                &&
+                                networkResponse.ok
+                            ) {
 
                                 const responseClone =
                                     networkResponse.clone();
 
 
-                                caches.open(
-                                    CACHE_NAME
-                                )
-
+                                caches
+                                    .open(CACHE_NAME)
                                     .then(
                                         function(cache) {
 
@@ -147,29 +154,39 @@ self.addEventListener("fetch", function(event) {
                                         }
                                     );
 
-
-                                return networkResponse;
-
                             }
-                        );
 
-                })
 
+                            return networkResponse;
+
+                        }
+                    )
+                    .catch(
+                        function() {
+
+                            return caches.match(
+                                event.request
+                            );
+
+                        }
+                    )
+
+            );
+
+            return;
+        }
+
+
+        /*
+            Normale Seiten immer frisch
+            vom Server holen.
+        */
+
+        event.respondWith(
+            fetch(
+                event.request
+            )
         );
 
-        return;
     }
-
-
-    /*
-        Alle normalen Seiten immer
-        frisch vom Server laden.
-    */
-
-    event.respondWith(
-        fetch(
-            event.request
-        )
-    );
-
-});
+);

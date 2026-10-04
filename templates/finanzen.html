@@ -2,802 +2,1161 @@
 <html lang="de">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Familienplaner - Finanzen</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="/static/style.css">
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Finanzen | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+
+    <style>
+
+        .finance-page {
+            width: min(1200px, calc(100% - 30px));
+            margin: 0 auto;
+            padding: 28px 0 70px;
+        }
+
+
+        .finance-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+
+            border-bottom:
+                1px solid
+                rgba(240, 225, 188, 0.13);
+        }
+
+
+        .finance-brand {
+            display: grid;
+            gap: 4px;
+        }
+
+
+        .finance-brand strong {
+            font-size: 1.1rem;
+        }
+
+
+        .finance-brand span {
+            opacity: 0.68;
+            font-size: 0.9rem;
+        }
+
+
+        .finance-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .finance-nav a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px 16px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+            font-weight: 700;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.52);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.08);
+        }
+
+
+        .finance-hero {
+            padding: 30px;
+            margin-bottom: 28px;
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    115deg,
+                    rgba(55, 85, 64, 0.96),
+                    rgba(92, 105, 76, 0.93),
+                    rgba(178, 162, 120, 0.86)
+                );
+
+            box-shadow:
+                0 18px 50px
+                rgba(0, 0, 0, 0.14);
+        }
+
+
+        .finance-hero h1 {
+            margin: 0 0 10px;
+            color: #fff8e8;
+        }
+
+
+        .finance-hero p {
+            margin: 0;
+            color:
+                rgba(255, 247, 225, 0.82);
+        }
+
+
+        .finance-summary {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 26px;
+        }
+
+
+        .finance-summary-card {
+            padding: 22px;
+
+            border-radius: 21px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(240, 229, 198, 0.96),
+                    rgba(213, 199, 157, 0.93)
+                );
+
+            color: #183629;
+
+            box-shadow:
+                0 14px 35px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .finance-summary-label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            font-size: 0.88rem;
+            font-weight: 700;
+
+            opacity: 0.66;
+        }
+
+
+        .finance-summary-value {
+            font-size: 1.55rem;
+            font-weight: 900;
+        }
+
+
+        .finance-panel {
+            padding: 25px;
+            margin-bottom: 24px;
+
+            border-radius: 23px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(53, 82, 62, 0.95),
+                    rgba(95, 107, 77, 0.90)
+                );
+
+            border:
+                1px solid
+                rgba(226, 209, 165, 0.15);
+
+            box-shadow:
+                0 14px 38px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .finance-panel h2 {
+            margin: 0 0 18px;
+            color: #fff8e8;
+        }
+
+
+        .finance-panel-description {
+            margin: -8px 0 20px;
+
+            color:
+                rgba(248, 237, 209, 0.73);
+
+            line-height: 1.5;
+        }
+
+
+        .finance-progress {
+            width: 100%;
+            height: 13px;
+
+            overflow: hidden;
+
+            margin-top: 16px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(20, 45, 33, 0.34);
+        }
+
+
+        .finance-progress-bar {
+            height: 100%;
+            width: 0%;
+
+            border-radius: 999px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ead7ad,
+                    #c9aa70
+                );
+
+            transition:
+                width 0.4s ease;
+        }
+
+
+        .finance-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 22px;
+        }
+
+
+        .finance-form {
+            display: grid;
+            gap: 15px;
+        }
+
+
+        .finance-field {
+            display: grid;
+            gap: 7px;
+        }
+
+
+        .finance-field label {
+            color: #f6ead0;
+
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+
+
+        .finance-field input,
+        .finance-field select {
+            width: 100%;
+            box-sizing: border-box;
+
+            padding: 12px 14px;
+
+            border:
+                1px solid
+                rgba(237, 219, 177, 0.17);
+
+            border-radius: 13px;
+
+            color: #183629;
+
+            background:
+                rgba(247, 238, 213, 0.94);
+
+            font: inherit;
+            outline: none;
+        }
+
+
+        .finance-field input:focus,
+        .finance-field select:focus {
+            box-shadow:
+                0 0 0 3px
+                rgba(228, 207, 157, 0.15);
+        }
+
+
+        .finance-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color:
+                rgba(248, 238, 212, 0.86);
+        }
+
+
+        .finance-checkbox input {
+            width: 18px;
+            height: 18px;
+        }
+
+
+        .finance-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 45px;
+
+            padding: 10px 16px;
+
+            border: none;
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ead7ad,
+                    #ceb685
+                );
+
+            color: #183629;
+
+            font: inherit;
+            font-weight: 800;
+
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+
+        .finance-button:active {
+            transform: scale(0.98);
+        }
+
+
+        .finance-button-danger {
+            background:
+                rgba(160, 66, 56, 0.18);
+
+            border:
+                1px solid
+                rgba(210, 118, 104, 0.25);
+
+            color: #f4d3cd;
+        }
+
+
+        .expenses-list {
+            display: grid;
+            gap: 16px;
+        }
+
+
+        .expense-card {
+            padding: 20px;
+
+            border-radius: 19px;
+
+            background:
+                rgba(236, 222, 186, 0.10);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.13);
+        }
+
+
+        .expense-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+
+        .expense-title {
+            margin: 0 0 6px;
+
+            color: #fff8e8;
+
+            font-size: 1.1rem;
+        }
+
+
+        .expense-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+
+            font-size: 0.82rem;
+
+            color:
+                rgba(246, 233, 199, 0.63);
+        }
+
+
+        .expense-amount {
+            font-size: 1.18rem;
+            font-weight: 900;
+
+            color: #f0ddb1;
+
+            white-space: nowrap;
+        }
+
+
+        .fixkosten-badge {
+            display: inline-flex;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(234, 213, 163, 0.14);
+
+            color: #f0ddb1;
+
+            font-size: 0.76rem;
+            font-weight: 800;
+        }
+
+
+        .expense-actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+
+            margin-top: 16px;
+        }
+
+
+        details.expense-edit {
+            margin-top: 15px;
+        }
+
+
+        details.expense-edit summary {
+            cursor: pointer;
+
+            color: #f0ddb1;
+
+            font-weight: 800;
+        }
+
+
+        .expense-edit-form {
+            display: grid;
+            gap: 12px;
+
+            padding-top: 15px;
+        }
+
+
+        .empty-expenses {
+            padding: 28px;
+
+            text-align: center;
+
+            border-radius: 18px;
+
+            color:
+                rgba(248, 237, 210, 0.76);
+
+            background:
+                rgba(236, 222, 186, 0.08);
+        }
+
+
+        .finance-info {
+            margin-top: 24px;
+
+            padding: 18px;
+
+            border-radius: 17px;
+
+            color:
+                rgba(248, 237, 210, 0.75);
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            line-height: 1.55;
+        }
+
+
+        @media (max-width: 900px) {
+
+            .finance-summary {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+
+            .finance-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .finance-page {
+                width:
+                    min(
+                        100% - 18px,
+                        1200px
+                    );
+
+                padding-top: 16px;
+            }
+
+
+            .finance-summary {
+                grid-template-columns: 1fr 1fr;
+
+                gap: 11px;
+            }
+
+
+            .finance-summary-card {
+                padding: 16px;
+            }
+
+
+            .finance-summary-value {
+                font-size: 1.25rem;
+            }
+
+
+            .finance-panel {
+                padding: 19px 16px;
+            }
+
+
+            .finance-hero {
+                padding: 22px 18px;
+            }
+
+
+            .finance-nav {
+                width: 100%;
+            }
+
+
+            .finance-nav a {
+                flex: 1;
+            }
+
+
+            .expense-top {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
 </head>
 
-<body class="app-body">
 
-<div class="app-container">
-
-    <header class="topbar">
-
-        <div class="brand">
-
-            <div class="brand-icon">
-                💰
-            </div>
-
-            <div>
-                <h1>Meine Finanzen</h1>
-                <p>{{ benutzer }}</p>
-            </div>
-
-        </div>
-
-        <div class="topbar-actions">
-
-            <a
-                href="/dashboard"
-                class="secondary-button"
-            >
-                ← Dashboard
-            </a>
-
-            <a
-                href="/logout"
-                class="logout-button"
-            >
-                Abmelden
-            </a>
-
-        </div>
-
-    </header>
+<body>
 
 
-    <main class="dashboard">
+    <main class="finance-page">
 
 
-        <!-- ÜBERSICHT -->
+        <!-- =========================================
+             TOPBAR
+        ========================================== -->
 
-        <section class="finance-summary">
+        <header class="finance-topbar">
 
-            <article class="stat-card">
-
-                <div class="stat-icon">
-                    🎯
-                </div>
-
-                <div>
-                    <span>Standardbudget</span>
-
-                    <strong>
-                        {{ "%.2f"|format(standard_budget) }} €
-                    </strong>
-                </div>
-
-            </article>
-
-
-            <article class="stat-card">
-
-                <div class="stat-icon">
-                    🔁
-                </div>
-
-                <div>
-                    <span>Übertrag</span>
-
-                    <strong>
-                        {{ "%.2f"|format(uebertrag) }} €
-                    </strong>
-                </div>
-
-            </article>
-
-
-            <article class="stat-card">
-
-                <div class="stat-icon">
-                    💳
-                </div>
-
-                <div>
-                    <span>Aktuelles Budget</span>
-
-                    <strong>
-                        {{ "%.2f"|format(budget) }} €
-                    </strong>
-                </div>
-
-            </article>
-
-
-            <article class="stat-card">
-
-                <div class="stat-icon">
-                    📉
-                </div>
-
-                <div>
-                    <span>Ausgegeben</span>
-
-                    <strong>
-                        {{ "%.2f"|format(ausgegeben) }} €
-                    </strong>
-                </div>
-
-            </article>
-
-
-            <article class="stat-card">
-
-                <div class="stat-icon">
-                    💵
-                </div>
-
-                <div>
-                    <span>Noch verfügbar</span>
-
-                    <strong>
-                        {{ "%.2f"|format(verfuegbar) }} €
-                    </strong>
-                </div>
-
-            </article>
-
-
-            <article class="stat-card">
-
-                <div class="stat-icon">
-                    📅
-                </div>
-
-                <div>
-                    <span>Nächster Reset</span>
-
-                    <strong>
-                        {{ naechster_reset }}
-                    </strong>
-                </div>
-
-            </article>
-
-        </section>
-
-
-        <!-- FORTSCHRITT -->
-
-        {% if budget > 0 %}
-
-        <section class="budget-progress-card">
-
-            <div class="progress-header">
-
-                <div>
-                    <span class="eyebrow">
-                        MONAT
-                    </span>
-
-                    <h3>
-                        Budgetübersicht
-                    </h3>
-                </div>
+            <div class="finance-brand">
 
                 <strong>
-                    {{ "%.1f"|format(prozent_verbraucht) }} %
+                    Familienplaner
                 </strong>
 
-            </div>
-
-            <div class="progress-background">
-
-                <div
-                    class="progress-bar"
-                    data-progress="{{ prozent_verbraucht }}"
-                >
-                </div>
+                <span>
+                    {{ benutzer }}
+                </span>
 
             </div>
+
+
+            <nav class="finance-nav">
+
+                <a href="/dashboard">
+                    ← Dashboard
+                </a>
+
+                <a href="/logout">
+                    Abmelden
+                </a>
+
+            </nav>
+
+        </header>
+
+
+
+        <!-- =========================================
+             HERO
+        ========================================== -->
+
+        <section class="finance-hero">
+
+            <h1>
+                💶 Finanzen
+            </h1>
 
             <p>
-                {{ "%.2f"|format(ausgegeben) }} € von
-                {{ "%.2f"|format(budget) }} € verwendet
+                Behalte dein Budget, deine Ausgaben
+                und Fixkosten im Blick.
             </p>
 
         </section>
 
-        {% endif %}
 
 
-        <!-- EINSTELLUNGEN + NEUE AUSGABE -->
+        <!-- =========================================
+             ÜBERSICHT
+        ========================================== -->
 
-        <section class="finance-layout">
+        <section class="finance-summary">
 
 
-            <!-- FINANZ-EINSTELLUNGEN -->
+            <article class="finance-summary-card">
 
-            <div class="panel">
+                <span class="finance-summary-label">
+                    Budget
+                </span>
 
-                <div class="panel-heading">
-
-                    <div class="panel-icon">
-                        ⚙️
-                    </div>
-
-                    <div>
-                        <h2>Finanz-Einstellungen</h2>
-
-                        <p>
-                            Standardbudget und persönlichen
-                            Reset-Tag festlegen.
-                        </p>
-                    </div>
-
+                <div class="finance-summary-value">
+                    {{ "%.2f"|format(budget) }} €
                 </div>
 
+            </article>
+
+
+            <article class="finance-summary-card">
+
+                <span class="finance-summary-label">
+                    Ausgegeben
+                </span>
+
+                <div class="finance-summary-value">
+                    {{ "%.2f"|format(ausgegeben) }} €
+                </div>
+
+            </article>
+
+
+            <article class="finance-summary-card">
+
+                <span class="finance-summary-label">
+                    Verfügbar
+                </span>
+
+                <div class="finance-summary-value">
+                    {{ "%.2f"|format(verfuegbar) }} €
+                </div>
+
+            </article>
+
+
+            <article class="finance-summary-card">
+
+                <span class="finance-summary-label">
+                    Übertrag
+                </span>
+
+                <div class="finance-summary-value">
+                    {{ "%.2f"|format(uebertrag) }} €
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =========================================
+             FORTSCHRITT
+        ========================================== -->
+
+        <section class="finance-panel">
+
+            <h2>
+                Aktueller Zeitraum
+            </h2>
+
+            <p class="finance-panel-description">
+                Nächster Reset:
+                <strong>{{ naechster_reset }}</strong>
+            </p>
+
+
+            <div class="finance-progress">
+
+                <div
+                    class="finance-progress-bar"
+                    id="financeProgressBar"
+                    data-progress="{{ prozent_verbraucht }}"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             EINSTELLUNGEN + AUSGABE
+        ========================================== -->
+
+        <section class="finance-grid">
+
+
+            <!-- EINSTELLUNGEN -->
+
+            <article class="finance-panel">
+
+                <h2>
+                    Budget-Einstellungen
+                </h2>
 
                 <form
                     method="POST"
                     action="/finanz-einstellungen-speichern"
-                    class="form-grid remember-scroll-form"
+                    class="finance-form remember-scroll-form"
                 >
 
-                    <div class="form-group full-width">
+                    <div class="finance-field">
 
-                        <label>
-                            Standardbudget
+                        <label for="standard_budget">
+                            Monatliches Budget
                         </label>
 
-                        <div class="money-input">
-
-                            <input
-                                type="number"
-                                name="standard_budget"
-                                step="0.01"
-                                min="0"
-                                value="{{ standard_budget }}"
-                                required
-                            >
-
-                            <span>€</span>
-
-                        </div>
+                        <input
+                            type="number"
+                            id="standard_budget"
+                            name="standard_budget"
+                            min="0"
+                            step="0.01"
+                            value="{{ '%.2f'|format(standard_budget) }}"
+                            required
+                        >
 
                     </div>
 
 
-                    <div class="form-group full-width">
+                    <div class="finance-field">
 
-                        <label>
-                            Monatlicher Reset-Tag
+                        <label for="reset_tag">
+                            Reset-Tag
                         </label>
 
-                        <select
+                        <input
+                            type="number"
+                            id="reset_tag"
                             name="reset_tag"
+                            min="1"
+                            max="28"
+                            value="{{ reset_tag }}"
                             required
                         >
-
-                            {% for tag in range(1, 29) %}
-
-                                <option
-                                    value="{{ tag }}"
-                                    {% if tag == reset_tag %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    {{ tag }}. des Monats
-                                </option>
-
-                            {% endfor %}
-
-                        </select>
-
-                        <small class="form-hint">
-                            Der Reset läuft immer am gewählten
-                            Tag. Das Restbudget wird automatisch
-                            in den nächsten Monat übernommen.
-                        </small>
 
                     </div>
 
 
                     <button
                         type="submit"
-                        class="primary-button full-width"
+                        class="finance-button"
                     >
                         Einstellungen speichern
                     </button>
 
                 </form>
 
-            </div>
+            </article>
+
 
 
             <!-- NEUE AUSGABE -->
 
-            <div class="panel">
+            <article class="finance-panel">
 
-                <div class="panel-heading">
-
-                    <div class="panel-icon">
-                        ➕
-                    </div>
-
-                    <div>
-                        <h2>Neue Ausgabe</h2>
-
-                        <p>
-                            Normale Ausgabe oder monatliche
-                            Fixkosten eintragen.
-                        </p>
-                    </div>
-
-                </div>
-
+                <h2>
+                    Neue Ausgabe
+                </h2>
 
                 <form
                     method="POST"
                     action="/ausgabe-hinzufuegen"
-                    class="form-grid remember-scroll-form"
+                    class="finance-form remember-scroll-form"
                 >
 
-                    <div class="form-group full-width">
+                    <div class="finance-field">
 
-                        <label>
+                        <label for="beschreibung">
                             Beschreibung
                         </label>
 
                         <input
                             type="text"
+                            id="beschreibung"
                             name="beschreibung"
-                            placeholder="z. B. Miete oder Einkauf"
+                            placeholder="z. B. Einkauf"
                             required
                         >
 
                     </div>
 
 
-                    <div class="form-group">
+                    <div class="finance-field">
 
-                        <label>
+                        <label for="kategorie">
                             Kategorie
                         </label>
 
-                        <select
+                        <input
+                            type="text"
+                            id="kategorie"
                             name="kategorie"
+                            placeholder="z. B. Lebensmittel"
                             required
                         >
 
-                            <option value="Lebensmittel">
-                                🍎 Lebensmittel
-                            </option>
-
-                            <option value="Miete">
-                                🏠 Miete
-                            </option>
-
-                            <option value="Auto">
-                                🚗 Auto
-                            </option>
-
-                            <option value="Kinder">
-                                🧸 Kinder
-                            </option>
-
-                            <option value="Freizeit">
-                                🎮 Freizeit
-                            </option>
-
-                            <option value="Haushalt">
-                                🧹 Haushalt
-                            </option>
-
-                            <option value="Rechnungen">
-                                🧾 Rechnungen
-                            </option>
-
-                            <option value="Versicherung">
-                                🛡️ Versicherung
-                            </option>
-
-                            <option value="Abos">
-                                📺 Abos
-                            </option>
-
-                            <option value="Sonstiges">
-                                📦 Sonstiges
-                            </option>
-
-                        </select>
-
                     </div>
 
 
-                    <div class="form-group">
+                    <div class="finance-field">
 
-                        <label>
+                        <label for="betrag">
                             Betrag
                         </label>
 
-                        <div class="money-input">
-
-                            <input
-                                type="number"
-                                name="betrag"
-                                step="0.01"
-                                min="0.01"
-                                placeholder="0,00"
-                                required
-                            >
-
-                            <span>€</span>
-
-                        </div>
+                        <input
+                            type="number"
+                            id="betrag"
+                            name="betrag"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0,00"
+                            required
+                        >
 
                     </div>
 
 
-                    <div class="form-group full-width">
+                    <label class="finance-checkbox">
 
-                        <label class="checkbox-row">
+                        <input
+                            type="checkbox"
+                            name="ist_fix"
+                        >
 
-                            <input
-                                type="checkbox"
-                                name="ist_fix"
-                            >
+                        <span>
+                            Als Fixkosten übernehmen
+                        </span>
 
-                            <span>
-                                Diese Ausgabe ist monatlich fix
-                            </span>
-
-                        </label>
-
-                        <small class="form-hint">
-                            Fixkosten werden beim nächsten
-                            Monats-Reset automatisch wieder
-                            eingetragen. Normale Ausgaben werden
-                            nicht übernommen.
-                        </small>
-
-                    </div>
+                    </label>
 
 
                     <button
                         type="submit"
-                        class="primary-button full-width"
+                        class="finance-button"
                     >
                         Ausgabe hinzufügen
                     </button>
 
                 </form>
 
-            </div>
+            </article>
 
         </section>
 
 
-        <!-- AKTUELLE AUSGABEN -->
 
-        <section class="panel expenses-panel">
+        <!-- =========================================
+             AUSGABEN
+        ========================================== -->
 
-            <div class="panel-heading">
+        <section class="finance-panel">
 
-                <div class="panel-icon">
-                    📋
-                </div>
-
-                <div>
-                    <h2>Aktuelle Ausgaben</h2>
-
-                    <p>
-                        Alle Ausgaben deiner aktuellen
-                        Abrechnungsperiode.
-                    </p>
-                </div>
-
-            </div>
+            <h2>
+                Deine Ausgaben
+            </h2>
 
 
             {% if ausgaben %}
 
-            <div class="expense-list">
+                <div class="expenses-list">
 
-                {% for ausgabe in ausgaben %}
+                    {% for ausgabe in ausgaben %}
 
-                <div class="expense-card">
-
-                    <div class="expense-card-top">
-
-                        <div class="expense-main">
-
-                            <div class="expense-category-icon">
-
-                                {% if ausgabe["kategorie"] == "Lebensmittel" %}
-                                    🍎
-                                {% elif ausgabe["kategorie"] == "Miete" %}
-                                    🏠
-                                {% elif ausgabe["kategorie"] == "Auto" %}
-                                    🚗
-                                {% elif ausgabe["kategorie"] == "Kinder" %}
-                                    🧸
-                                {% elif ausgabe["kategorie"] == "Freizeit" %}
-                                    🎮
-                                {% elif ausgabe["kategorie"] == "Haushalt" %}
-                                    🧹
-                                {% elif ausgabe["kategorie"] == "Rechnungen" %}
-                                    🧾
-                                {% elif ausgabe["kategorie"] == "Versicherung" %}
-                                    🛡️
-                                {% elif ausgabe["kategorie"] == "Abos" %}
-                                    📺
-                                {% else %}
-                                    📦
-                                {% endif %}
-
-                            </div>
+                        <article class="expense-card">
 
 
-                            <div>
+                            <div class="expense-top">
 
-                                <div class="expense-title-row">
+                                <div>
 
-                                    <strong>
+                                    <h3 class="expense-title">
                                         {{ ausgabe["beschreibung"] }}
-                                    </strong>
+                                    </h3>
 
-                                    {% if ausgabe["ist_fix"] %}
 
-                                        <span class="fix-badge">
-                                            🔒 Fix
+                                    <div class="expense-meta">
+
+                                        <span>
+                                            {{ ausgabe["kategorie"] }}
                                         </span>
 
-                                    {% endif %}
+                                        <span>
+                                            {{ ausgabe["datum"] }}
+                                        </span>
+
+
+                                        {% if ausgabe["ist_fix"] %}
+
+                                            <span class="fixkosten-badge">
+                                                Fixkosten
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
 
                                 </div>
 
-                                <p>
-                                    {{ ausgabe["kategorie"] }}
-                                    ·
-                                    {{ ausgabe["datum"] }}
-                                </p>
 
-                            </div>
-
-                        </div>
-
-
-                        <strong class="expense-price">
-                            - {{ "%.2f"|format(ausgabe["betrag"]|float) }} €
-                        </strong>
-
-                    </div>
-
-
-                    <details class="edit-box">
-
-                        <summary>
-                            ✏️ Bearbeiten
-                        </summary>
-
-                        <form
-                            method="POST"
-                            action="/ausgabe-bearbeiten/{{ ausgabe['id'] }}"
-                            class="form-grid edit-form remember-scroll-form"
-                        >
-
-                            <div class="form-group full-width">
-
-                                <label>
-                                    Beschreibung
-                                </label>
-
-                                <input
-                                    type="text"
-                                    name="beschreibung"
-                                    value="{{ ausgabe['beschreibung'] }}"
-                                    required
-                                >
+                                <div class="expense-amount">
+                                    {{ "%.2f"|format(ausgabe["betrag"]|float) }} €
+                                </div>
 
                             </div>
 
 
-                            <div class="form-group">
 
-                                <label>
-                                    Kategorie
-                                </label>
+                            <!-- BEARBEITEN -->
 
-                                <select
-                                    name="kategorie"
-                                    required
+                            <details class="expense-edit">
+
+                                <summary>
+                                    Bearbeiten
+                                </summary>
+
+
+                                <form
+                                    method="POST"
+                                    action="/ausgabe-bearbeiten/{{ ausgabe['id'] }}"
+                                    class="expense-edit-form remember-scroll-form"
                                 >
 
-                                    {% set kategorien = [
-                                        "Lebensmittel",
-                                        "Miete",
-                                        "Auto",
-                                        "Kinder",
-                                        "Freizeit",
-                                        "Haushalt",
-                                        "Rechnungen",
-                                        "Versicherung",
-                                        "Abos",
-                                        "Sonstiges"
-                                    ] %}
+                                    <div class="finance-field">
 
-                                    {% for kategorie in kategorien %}
+                                        <label>
+                                            Beschreibung
+                                        </label>
 
-                                        <option
-                                            value="{{ kategorie }}"
-                                            {% if ausgabe["kategorie"] == kategorie %}
-                                                selected
+                                        <input
+                                            type="text"
+                                            name="beschreibung"
+                                            value="{{ ausgabe['beschreibung'] }}"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="finance-field">
+
+                                        <label>
+                                            Kategorie
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="kategorie"
+                                            value="{{ ausgabe['kategorie'] }}"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="finance-field">
+
+                                        <label>
+                                            Betrag
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            name="betrag"
+                                            min="0.01"
+                                            step="0.01"
+                                            value="{{ ausgabe['betrag'] }}"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <label class="finance-checkbox">
+
+                                        <input
+                                            type="checkbox"
+                                            name="ist_fix"
+
+                                            {% if ausgabe["ist_fix"] %}
+                                                checked
                                             {% endif %}
                                         >
-                                            {{ kategorie }}
-                                        </option>
 
-                                    {% endfor %}
+                                        <span>
+                                            Fixkosten
+                                        </span>
 
-                                </select>
-
-                            </div>
+                                    </label>
 
 
-                            <div class="form-group">
-
-                                <label>
-                                    Betrag
-                                </label>
-
-                                <div class="money-input">
-
-                                    <input
-                                        type="number"
-                                        name="betrag"
-                                        step="0.01"
-                                        min="0.01"
-                                        value="{{ ausgabe['betrag'] }}"
-                                        required
+                                    <button
+                                        type="submit"
+                                        class="finance-button"
                                     >
+                                        Änderungen speichern
+                                    </button>
 
-                                    <span>€</span>
+                                </form>
 
-                                </div>
-
-                            </div>
+                            </details>
 
 
-                            <div class="form-group full-width">
 
-                                <label class="checkbox-row">
+                            <!-- LÖSCHEN -->
 
-                                    <input
-                                        type="checkbox"
-                                        name="ist_fix"
-                                        {% if ausgabe["ist_fix"] %}
-                                            checked
-                                        {% endif %}
+                            <div class="expense-actions">
+
+                                <form
+                                    method="POST"
+                                    action="/ausgabe-loeschen/{{ ausgabe['id'] }}"
+                                    class="remember-scroll-form"
+                                    onsubmit="
+                                        return confirm(
+                                            'Diese Ausgabe wirklich löschen?'
+                                        );
+                                    "
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="
+                                            finance-button
+                                            finance-button-danger
+                                        "
                                     >
+                                        Löschen
+                                    </button>
 
-                                    <span>
-                                        Monatliche Fixkosten
-                                    </span>
-
-                                </label>
+                                </form>
 
                             </div>
 
+                        </article>
 
-                            <button
-                                type="submit"
-                                class="primary-button full-width"
-                            >
-                                Änderungen speichern
-                            </button>
-
-                        </form>
-
-                    </details>
-
-
-                    <form
-                        method="POST"
-                        action="/ausgabe-loeschen/{{ ausgabe['id'] }}"
-                        class="expense-delete-form remember-scroll-form"
-                        onsubmit="return confirm('Ausgabe wirklich löschen?');"
-                    >
-
-                        <button
-                            type="submit"
-                            class="delete-button"
-                        >
-                            Löschen
-                        </button>
-
-                    </form>
+                    {% endfor %}
 
                 </div>
 
-                {% endfor %}
-
-            </div>
 
             {% else %}
 
-            <div class="empty-state">
+                <div class="empty-expenses">
 
-                <div>
-                    💸
+                    Noch keine Ausgaben vorhanden.
+
                 </div>
-
-                <h3>
-                    Noch keine Ausgaben
-                </h3>
-
-                <p>
-                    Trage oben deine erste Ausgabe ein.
-                </p>
-
-            </div>
 
             {% endif %}
 
-        </section>
 
+            <div class="finance-info">
 
-        <!-- INFO -->
+                <strong>
+                    Fixkosten
+                </strong>
 
-        <section class="finance-info-grid">
+                <br>
 
-            <div class="info-card">
-
-                <div class="info-icon">
-                    🔁
-                </div>
-
-                <div>
-                    <h3>Automatischer Übertrag</h3>
-
-                    <p>
-                        Positives Restbudget wird beim Reset
-                        automatisch auf dein neues
-                        Standardbudget draufgerechnet.
-                    </p>
-                </div>
-
-            </div>
-
-
-            <div class="info-card">
-
-                <div class="info-icon">
-                    🔒
-                </div>
-
-                <div>
-                    <h3>Fixkosten bleiben</h3>
-
-                    <p>
-                        Nur Ausgaben, die du selbst als Fixkosten
-                        markierst, werden in die nächste Periode
-                        übernommen.
-                    </p>
-                </div>
-
-            </div>
-
-
-            <div class="info-card">
-
-                <div class="info-icon">
-                    🧹
-                </div>
-
-                <div>
-                    <h3>Normale Ausgaben resetten</h3>
-
-                    <p>
-                        Normale Ausgaben gehören nur zur aktuellen
-                        Periode und erscheinen nach dem Reset nicht
-                        mehr in der neuen Monatsansicht.
-                    </p>
-                </div>
+                Ausgaben, die du als Fixkosten markierst,
+                werden beim nächsten Budget-Zeitraum
+                automatisch übernommen.
 
             </div>
 
@@ -806,65 +1165,138 @@
 
     </main>
 
-</div>
 
 
-<script>
-    /*
-        Fortschrittsbalken
-    */
+    <!-- =========================================
+         SCRIPT
+    ========================================== -->
 
-    document.querySelectorAll(".progress-bar").forEach(function(bar) {
-        const value = Number(bar.dataset.progress || 0);
-        const safeValue = Math.min(Math.max(value, 0), 100);
-        bar.style.width = safeValue + "%";
-    });
+    <script>
 
-
-    /*
-        Scrollposition wiederherstellen
-    */
-
-    const savedScrollPosition = sessionStorage.getItem(
-        "finanzenScrollPosition"
-    );
-
-    if (savedScrollPosition !== null) {
-
-        window.scrollTo({
-            top: Number(savedScrollPosition),
-            behavior: "instant"
-        });
-
-        sessionStorage.removeItem(
-            "finanzenScrollPosition"
-        );
-    }
+        const progressBar =
+            document.getElementById(
+                "financeProgressBar"
+            );
 
 
-    /*
-        Vor dem Speichern die aktuelle
-        Scrollposition merken
-    */
+        if (progressBar) {
 
-    document.querySelectorAll(
-        ".remember-scroll-form"
-    ).forEach(function(form) {
+            let progress =
+                Number(
+                    progressBar.dataset.progress
+                );
 
-        form.addEventListener(
-            "submit",
-            function() {
 
-                sessionStorage.setItem(
-                    "finanzenScrollPosition",
-                    String(window.scrollY)
+            if (
+                Number.isNaN(progress)
+            ) {
+
+                progress = 0;
+
+            }
+
+
+            progress = Math.max(
+                0,
+                Math.min(
+                    progress,
+                    100
+                )
+            );
+
+
+            progressBar.style.width =
+                progress + "%";
+
+        }
+
+
+
+        /* =========================================
+           SCROLL POSITION BEHALTEN
+        ========================================== */
+
+        const financeForms =
+            document.querySelectorAll(
+                ".remember-scroll-form"
+            );
+
+
+        financeForms.forEach(
+            function(form) {
+
+                form.addEventListener(
+                    "submit",
+                    function() {
+
+                        sessionStorage.setItem(
+                            "financeScrollPosition",
+                            String(
+                                window.scrollY
+                            )
+                        );
+
+                    }
                 );
 
             }
         );
 
-    });
-</script>
+
+        const savedScroll =
+            sessionStorage.getItem(
+                "financeScrollPosition"
+            );
+
+
+        if (savedScroll !== null) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    window.scrollTo(
+                        0,
+                        Number(savedScroll)
+                    );
+
+                    sessionStorage.removeItem(
+                        "financeScrollPosition"
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =========================================
+           SERVICE WORKER
+        ========================================== */
+
+        if (
+            "serviceWorker"
+            in navigator
+        ) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker
+                        .register(
+                            "/service-worker.js"
+                        );
+
+                }
+            );
+
+        }
+
+    </script>
+
 
 </body>
+
 </html>

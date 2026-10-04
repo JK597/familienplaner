@@ -2,180 +2,731 @@
 <html lang="de">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Familienplaner - Einkaufsliste</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="/static/style.css">
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Einkaufsliste | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+
+    <style>
+
+        .shopping-page {
+            width: min(1100px, calc(100% - 30px));
+            margin: 0 auto;
+            padding: 28px 0 70px;
+        }
+
+
+        .shopping-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+
+            border-bottom:
+                1px solid
+                rgba(240, 225, 188, 0.13);
+        }
+
+
+        .shopping-brand {
+            display: grid;
+            gap: 4px;
+        }
+
+
+        .shopping-brand strong {
+            font-size: 1.1rem;
+        }
+
+
+        .shopping-brand span {
+            opacity: 0.68;
+            font-size: 0.9rem;
+        }
+
+
+        .shopping-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .shopping-nav a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px 16px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+            font-weight: 700;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.52);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.08);
+        }
+
+
+        .shopping-hero {
+            padding: 30px;
+            margin-bottom: 25px;
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    115deg,
+                    rgba(55, 85, 64, 0.96),
+                    rgba(92, 105, 76, 0.93),
+                    rgba(178, 162, 120, 0.86)
+                );
+
+            box-shadow:
+                0 18px 50px
+                rgba(0, 0, 0, 0.14);
+        }
+
+
+        .shopping-hero h1 {
+            margin: 0 0 10px;
+            color: #fff8e8;
+        }
+
+
+        .shopping-hero p {
+            margin: 0;
+
+            color:
+                rgba(255, 247, 225, 0.82);
+        }
+
+
+        .shopping-stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 15px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .shopping-stat {
+            padding: 19px;
+
+            border-radius: 19px;
+
+            color: #183629;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(240, 229, 198, 0.96),
+                    rgba(213, 199, 157, 0.93)
+                );
+
+            box-shadow:
+                0 12px 30px
+                rgba(0, 0, 0, 0.10);
+        }
+
+
+        .shopping-stat span {
+            display: block;
+
+            margin-bottom: 7px;
+
+            opacity: 0.65;
+
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+
+        .shopping-stat strong {
+            font-size: 1.45rem;
+        }
+
+
+        .shopping-panel {
+            padding: 24px;
+            margin-bottom: 24px;
+
+            border-radius: 23px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(53, 82, 62, 0.95),
+                    rgba(95, 107, 77, 0.90)
+                );
+
+            border:
+                1px solid
+                rgba(226, 209, 165, 0.15);
+
+            box-shadow:
+                0 14px 38px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .shopping-panel h2 {
+            margin: 0 0 18px;
+            color: #fff8e8;
+        }
+
+
+        .shopping-form {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 2fr)
+                minmax(120px, 0.8fr);
+
+            gap: 14px;
+        }
+
+
+        .shopping-field {
+            display: grid;
+            gap: 7px;
+        }
+
+
+        .shopping-field.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .shopping-field label {
+            color: #f6ead0;
+
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+
+
+        .shopping-field input,
+        .shopping-field textarea {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 12px 14px;
+
+            border-radius: 13px;
+
+            border:
+                1px solid
+                rgba(237, 219, 177, 0.17);
+
+            background:
+                rgba(247, 238, 213, 0.94);
+
+            color: #183629;
+
+            font: inherit;
+
+            outline: none;
+        }
+
+
+        .shopping-field textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+
+        .shopping-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 45px;
+
+            padding: 10px 16px;
+
+            border: none;
+            border-radius: 13px;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ead7ad,
+                    #ceb685
+                );
+
+            color: #183629;
+
+            font: inherit;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+
+        .shopping-button:active {
+            transform: scale(0.98);
+        }
+
+
+        .shopping-button-secondary {
+            color: #f2e3c2;
+
+            background:
+                rgba(236, 222, 186, 0.11);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.14);
+        }
+
+
+        .shopping-button-danger {
+            color: #f5d4ce;
+
+            background:
+                rgba(165, 66, 56, 0.16);
+
+            border:
+                1px solid
+                rgba(214, 114, 100, 0.23);
+        }
+
+
+        .shopping-add-button {
+            grid-column: 1 / -1;
+        }
+
+
+        .shopping-list {
+            display: grid;
+            gap: 15px;
+        }
+
+
+        .shopping-item {
+            padding: 19px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(236, 222, 186, 0.09);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.13);
+        }
+
+
+        .shopping-item.done {
+            opacity: 0.66;
+        }
+
+
+        .shopping-item.done .shopping-item-title {
+            text-decoration: line-through;
+        }
+
+
+        .shopping-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+
+            gap: 15px;
+        }
+
+
+        .shopping-item-title {
+            margin: 0 0 6px;
+
+            color: #fff8e8;
+
+            font-size: 1.1rem;
+        }
+
+
+        .shopping-amount-badge {
+            display: inline-flex;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            color: #f0ddb1;
+
+            background:
+                rgba(234, 213, 163, 0.13);
+
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+
+
+        .shopping-note {
+            margin: 11px 0 0;
+
+            color:
+                rgba(248, 237, 210, 0.77);
+
+            line-height: 1.5;
+        }
+
+
+        .shopping-date {
+            display: block;
+
+            margin-top: 10px;
+
+            color:
+                rgba(246, 233, 199, 0.52);
+
+            font-size: 0.8rem;
+        }
+
+
+        .shopping-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+
+            margin-top: 15px;
+        }
+
+
+        .shopping-actions form {
+            margin: 0;
+        }
+
+
+        .shopping-edit {
+            margin-top: 15px;
+        }
+
+
+        .shopping-edit summary {
+            cursor: pointer;
+
+            color: #f0ddb1;
+
+            font-weight: 800;
+        }
+
+
+        .shopping-edit-form {
+            display: grid;
+            gap: 12px;
+
+            padding-top: 15px;
+        }
+
+
+        .empty-shopping {
+            padding: 28px;
+
+            text-align: center;
+
+            border-radius: 18px;
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            color:
+                rgba(248, 237, 210, 0.74);
+        }
+
+
+        .completed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 14px;
+            flex-wrap: wrap;
+
+            margin-bottom: 18px;
+        }
+
+
+        .completed-header h2 {
+            margin: 0;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .shopping-page {
+                width:
+                    min(
+                        100% - 18px,
+                        1100px
+                    );
+
+                padding-top: 16px;
+            }
+
+
+            .shopping-form {
+                grid-template-columns: 1fr;
+            }
+
+
+            .shopping-field.full,
+            .shopping-add-button {
+                grid-column: auto;
+            }
+
+
+            .shopping-stats {
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+                gap: 8px;
+            }
+
+
+            .shopping-stat {
+                padding: 13px 10px;
+
+                text-align: center;
+            }
+
+
+            .shopping-stat strong {
+                font-size: 1.15rem;
+            }
+
+
+            .shopping-panel {
+                padding: 18px 15px;
+            }
+
+
+            .shopping-hero {
+                padding: 22px 18px;
+            }
+
+
+            .shopping-nav {
+                width: 100%;
+            }
+
+
+            .shopping-nav a {
+                flex: 1;
+            }
+
+
+            .shopping-item-top {
+                flex-direction: column;
+            }
+
+
+            .shopping-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+
+            .shopping-actions form,
+            .shopping-actions button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
 </head>
 
-<body class="app-body">
 
-<div class="app-container">
-
-    <header class="topbar">
-
-        <div class="brand">
-
-            <div class="brand-icon">
-                🛒
-            </div>
-
-            <div>
-                <h1>Meine Einkaufsliste</h1>
-                <p>{{ benutzer }}</p>
-            </div>
-
-        </div>
+<body>
 
 
-        <div class="topbar-actions">
-
-            <a
-                href="/dashboard"
-                class="secondary-button"
-            >
-                ← Dashboard
-            </a>
-
-            <a
-                href="/logout"
-                class="logout-button"
-            >
-                Abmelden
-            </a>
-
-        </div>
-
-    </header>
+    <main class="shopping-page">
 
 
-    <main class="dashboard">
+        <header class="shopping-topbar">
 
+            <div class="shopping-brand">
 
-        <!-- HERO -->
+                <strong>
+                    Familienplaner
+                </strong>
 
-        <section class="hero-card">
-
-            <div>
-
-                <span class="eyebrow">
-                    DEINE PRIVATE LISTE
+                <span>
+                    {{ benutzer }}
                 </span>
 
-                <h2>
-                    Einkauf planen 🛍️
-                </h2>
-
-                <p>
-                    Sammle hier alles, was du noch einkaufen musst.
-                    Deine Liste gehört nur dir und ist für andere
-                    Benutzer nicht sichtbar.
-                </p>
-
             </div>
 
-            <div class="hero-emoji">
-                🛒
-            </div>
+
+            <nav class="shopping-nav">
+
+                <a href="/dashboard">
+                    ← Dashboard
+                </a>
+
+                <a href="/logout">
+                    Abmelden
+                </a>
+
+            </nav>
+
+        </header>
+
+
+
+        <section class="shopping-hero">
+
+            <h1>
+                🛒 Einkaufsliste
+            </h1>
+
+            <p>
+                Deine persönliche Einkaufsliste.
+                Jeder Benutzer hat seine eigene Liste.
+            </p>
 
         </section>
 
 
-        <!-- STATISTIK -->
 
-        <section class="finance-summary">
+        <section class="shopping-stats">
 
-            <article class="stat-card">
+            <article class="shopping-stat">
 
-                <div class="stat-icon">
-                    📝
-                </div>
+                <span>
+                    Offen
+                </span>
 
-                <div>
-                    <span>Offen</span>
-
-                    <strong>
-                        {{ offene_anzahl }}
-                    </strong>
-                </div>
+                <strong>
+                    {{ offene_anzahl }}
+                </strong>
 
             </article>
 
 
-            <article class="stat-card">
+            <article class="shopping-stat">
 
-                <div class="stat-icon">
-                    ✅
-                </div>
+                <span>
+                    Erledigt
+                </span>
 
-                <div>
-                    <span>Erledigt</span>
-
-                    <strong>
-                        {{ erledigte_anzahl }}
-                    </strong>
-                </div>
+                <strong>
+                    {{ erledigte_anzahl }}
+                </strong>
 
             </article>
 
 
-            <article class="stat-card">
+            <article class="shopping-stat">
 
-                <div class="stat-icon">
-                    🧺
-                </div>
+                <span>
+                    Gesamt
+                </span>
 
-                <div>
-                    <span>Gesamt</span>
-
-                    <strong>
-                        {{ offene_anzahl + erledigte_anzahl }}
-                    </strong>
-                </div>
+                <strong>
+                    {{ offene_anzahl + erledigte_anzahl }}
+                </strong>
 
             </article>
 
         </section>
 
 
-        <!-- NEUEN ARTIKEL HINZUFÜGEN -->
 
-        <section class="panel">
+        <section class="shopping-panel">
 
-            <div class="panel-heading">
-
-                <div class="panel-icon">
-                    ➕
-                </div>
-
-                <div>
-                    <h2>Artikel hinzufügen</h2>
-
-                    <p>
-                        Was brauchst du beim nächsten Einkauf?
-                    </p>
-                </div>
-
-            </div>
+            <h2>
+                Artikel hinzufügen
+            </h2>
 
 
             <form
                 method="POST"
                 action="/einkauf-hinzufuegen"
-                class="form-grid remember-shopping-scroll"
+                class="shopping-form remember-shopping-scroll"
             >
 
-                <div class="form-group full-width">
 
-                    <label>
+                <div class="shopping-field">
+
+                    <label for="artikel">
                         Artikel
                     </label>
 
                     <input
-                        type="text"
+                        id="artikel"
                         name="artikel"
+                        type="text"
                         placeholder="z. B. Milch"
                         required
                     >
@@ -183,41 +734,45 @@
                 </div>
 
 
-                <div class="form-group">
+                <div class="shopping-field">
 
-                    <label>
+                    <label for="menge">
                         Menge
                     </label>
 
                     <input
-                        type="text"
+                        id="menge"
                         name="menge"
-                        placeholder="z. B. 2x oder 1 kg"
+                        type="text"
+                        placeholder="z. B. 2x"
                     >
 
                 </div>
 
 
-                <div class="form-group">
+                <div class="shopping-field full">
 
-                    <label>
+                    <label for="notiz">
                         Notiz
                     </label>
 
-                    <input
-                        type="text"
+                    <textarea
+                        id="notiz"
                         name="notiz"
-                        placeholder="z. B. fettarm"
-                    >
+                        placeholder="Optional..."
+                    ></textarea>
 
                 </div>
 
 
                 <button
                     type="submit"
-                    class="primary-button full-width"
+                    class="
+                        shopping-button
+                        shopping-add-button
+                    "
                 >
-                    Zur Einkaufsliste hinzufügen
+                    Artikel hinzufügen
                 </button>
 
             </form>
@@ -225,53 +780,33 @@
         </section>
 
 
-        <!-- OFFENE EINKÄUFE -->
 
-        <section class="panel expenses-panel">
+        <section class="shopping-panel">
 
-            <div class="panel-heading">
-
-                <div class="panel-icon">
-                    🧺
-                </div>
-
-                <div>
-                    <h2>Meine Einkaufsliste</h2>
-
-                    <p>
-                        Tippe auf „Erledigt“, sobald du einen
-                        Artikel im Einkaufswagen hast.
-                    </p>
-                </div>
-
-            </div>
+            <h2>
+                Offene Einkäufe
+            </h2>
 
 
-            {% set offene_vorhanden = false %}
+            {% if offene_anzahl > 0 %}
 
-            {% for eintrag in eintraege %}
+                <div class="shopping-list">
 
-                {% if not eintrag["erledigt"] %}
+                    {% for eintrag in eintraege %}
 
-                    {% set offene_vorhanden = true %}
+                        {% if not eintrag["erledigt"] %}
 
-                    <div class="expense-card shopping-item">
+                            <article class="shopping-item">
 
-                        <div class="expense-card-top">
 
-                            <div class="expense-main">
+                                <div class="shopping-item-top">
 
-                                <div class="expense-category-icon">
-                                    🛍️
-                                </div>
+                                    <div>
 
-                                <div>
-
-                                    <div class="expense-title-row">
-
-                                        <strong>
+                                        <h3 class="shopping-item-title">
                                             {{ eintrag["artikel"] }}
-                                        </strong>
+                                        </h3>
+
 
                                         {% if eintrag["menge"] %}
 
@@ -281,161 +816,155 @@
 
                                         {% endif %}
 
+
+                                        {% if eintrag["notiz"] %}
+
+                                            <p class="shopping-note">
+                                                {{ eintrag["notiz"] }}
+                                            </p>
+
+                                        {% endif %}
+
+
+                                        <span class="shopping-date">
+                                            {{ eintrag["erstellt_am"] }}
+                                        </span>
+
                                     </div>
-
-
-                                    <p>
-                                        Hinzugefügt:
-                                        {{ eintrag["erstellt_am"] }}
-                                    </p>
-
-
-                                    {% if eintrag["notiz"] %}
-
-                                        <p class="shopping-note">
-                                            {{ eintrag["notiz"] }}
-                                        </p>
-
-                                    {% endif %}
 
                                 </div>
 
-                            </div>
-
-                        </div>
 
 
-                        <div class="shopping-actions">
+                                <div class="shopping-actions">
 
-                            <form
-                                method="POST"
-                                action="/einkauf-status/{{ eintrag['id'] }}"
-                                class="remember-shopping-scroll"
-                            >
-
-                                <button
-                                    type="submit"
-                                    class="primary-button shopping-done-button"
-                                >
-                                    ✓ Erledigt
-                                </button>
-
-                            </form>
-
-
-                            <details class="edit-box">
-
-                                <summary>
-                                    ✏️ Bearbeiten
-                                </summary>
-
-
-                                <form
-                                    method="POST"
-                                    action="/einkauf-bearbeiten/{{ eintrag['id'] }}"
-                                    class="form-grid edit-form remember-shopping-scroll"
-                                >
-
-                                    <div class="form-group full-width">
-
-                                        <label>
-                                            Artikel
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="artikel"
-                                            value="{{ eintrag['artikel'] }}"
-                                            required
-                                        >
-
-                                    </div>
-
-
-                                    <div class="form-group">
-
-                                        <label>
-                                            Menge
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="menge"
-                                            value="{{ eintrag['menge'] }}"
-                                        >
-
-                                    </div>
-
-
-                                    <div class="form-group">
-
-                                        <label>
-                                            Notiz
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="notiz"
-                                            value="{{ eintrag['notiz'] }}"
-                                        >
-
-                                    </div>
-
-
-                                    <button
-                                        type="submit"
-                                        class="primary-button full-width"
+                                    <form
+                                        method="POST"
+                                        action="/einkauf-status/{{ eintrag['id'] }}"
+                                        class="remember-shopping-scroll"
                                     >
-                                        Änderungen speichern
-                                    </button>
 
-                                </form>
+                                        <button
+                                            type="submit"
+                                            class="shopping-button"
+                                        >
+                                            ✓ Erledigt
+                                        </button>
 
-                            </details>
-
-
-                            <form
-                                method="POST"
-                                action="/einkauf-loeschen/{{ eintrag['id'] }}"
-                                class="remember-shopping-scroll"
-                                onsubmit="return confirm('Artikel wirklich löschen?');"
-                            >
-
-                                <button
-                                    type="submit"
-                                    class="delete-button"
-                                >
-                                    Löschen
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </div>
-
-                {% endif %}
-
-            {% endfor %}
+                                    </form>
 
 
-            {% if offene_anzahl == 0 %}
+                                    <form
+                                        method="POST"
+                                        action="/einkauf-loeschen/{{ eintrag['id'] }}"
+                                        class="remember-shopping-scroll"
+                                        onsubmit="
+                                            return confirm(
+                                                'Artikel wirklich löschen?'
+                                            );
+                                        "
+                                    >
 
-                <div class="empty-state">
+                                        <button
+                                            type="submit"
+                                            class="
+                                                shopping-button
+                                                shopping-button-danger
+                                            "
+                                        >
+                                            Löschen
+                                        </button>
 
-                    <div>
-                        🛒
-                    </div>
+                                    </form>
 
-                    <h3>
-                        Alles erledigt
-                    </h3>
+                                </div>
 
-                    <p>
-                        Aktuell stehen keine offenen Artikel
-                        auf deiner Einkaufsliste.
-                    </p>
 
+
+                                <details class="shopping-edit">
+
+                                    <summary>
+                                        Bearbeiten
+                                    </summary>
+
+
+                                    <form
+                                        method="POST"
+                                        action="/einkauf-bearbeiten/{{ eintrag['id'] }}"
+                                        class="
+                                            shopping-edit-form
+                                            remember-shopping-scroll
+                                        "
+                                    >
+
+                                        <div class="shopping-field">
+
+                                            <label>
+                                                Artikel
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                name="artikel"
+                                                value="{{ eintrag['artikel'] }}"
+                                                required
+                                            >
+
+                                        </div>
+
+
+                                        <div class="shopping-field">
+
+                                            <label>
+                                                Menge
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                name="menge"
+                                                value="{{ eintrag['menge'] or '' }}"
+                                            >
+
+                                        </div>
+
+
+                                        <div class="shopping-field">
+
+                                            <label>
+                                                Notiz
+                                            </label>
+
+                                            <textarea
+                                                name="notiz"
+                                            >{{ eintrag["notiz"] or "" }}</textarea>
+
+                                        </div>
+
+
+                                        <button
+                                            type="submit"
+                                            class="shopping-button"
+                                        >
+                                            Änderungen speichern
+                                        </button>
+
+                                    </form>
+
+                                </details>
+
+                            </article>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+
+            {% else %}
+
+                <div class="empty-shopping">
+                    Deine Einkaufsliste ist aktuell leer.
                 </div>
 
             {% endif %}
@@ -443,62 +972,77 @@
         </section>
 
 
-        <!-- ERLEDIGTE EINKÄUFE -->
 
-        {% if erledigte_anzahl > 0 %}
+        <section class="shopping-panel">
 
-        <section class="panel expenses-panel">
+            <div class="completed-header">
 
-            <div class="panel-heading">
+                <h2>
+                    Erledigt
+                </h2>
 
-                <div class="panel-icon">
-                    ✅
-                </div>
 
-                <div>
-                    <h2>Erledigt</h2>
+                {% if erledigte_anzahl > 0 %}
 
-                    <p>
-                        Bereits eingekaufte Artikel.
-                    </p>
-                </div>
+                    <form
+                        method="POST"
+                        action="/einkauf-erledigte-loeschen"
+                        class="remember-shopping-scroll"
+                        onsubmit="
+                            return confirm(
+                                'Alle erledigten Artikel löschen?'
+                            );
+                        "
+                    >
+
+                        <button
+                            type="submit"
+                            class="
+                                shopping-button
+                                shopping-button-danger
+                            "
+                        >
+                            Alle erledigten löschen
+                        </button>
+
+                    </form>
+
+                {% endif %}
 
             </div>
 
 
-            <div class="shopping-completed-list">
+            {% if erledigte_anzahl > 0 %}
 
-                {% for eintrag in eintraege %}
+                <div class="shopping-list">
 
-                    {% if eintrag["erledigt"] %}
+                    {% for eintrag in eintraege %}
 
-                        <div class="expense-card shopping-item shopping-item-completed">
+                        {% if eintrag["erledigt"] %}
 
-                            <div class="expense-card-top">
+                            <article
+                                class="
+                                    shopping-item
+                                    done
+                                "
+                            >
 
-                                <div class="expense-main">
-
-                                    <div class="expense-category-icon">
-                                        ✓
-                                    </div>
+                                <div class="shopping-item-top">
 
                                     <div>
 
-                                        <div class="expense-title-row">
+                                        <h3 class="shopping-item-title">
+                                            {{ eintrag["artikel"] }}
+                                        </h3>
 
-                                            <strong class="shopping-completed-title">
-                                                {{ eintrag["artikel"] }}
-                                            </strong>
 
-                                            {% if eintrag["menge"] %}
+                                        {% if eintrag["menge"] %}
 
-                                                <span class="shopping-amount-badge">
-                                                    {{ eintrag["menge"] }}
-                                                </span>
+                                            <span class="shopping-amount-badge">
+                                                {{ eintrag["menge"] }}
+                                            </span>
 
-                                            {% endif %}
-
-                                        </div>
+                                        {% endif %}
 
 
                                         {% if eintrag["notiz"] %}
@@ -513,126 +1057,151 @@
 
                                 </div>
 
-                            </div>
 
+                                <div class="shopping-actions">
 
-                            <div class="shopping-actions">
-
-                                <form
-                                    method="POST"
-                                    action="/einkauf-status/{{ eintrag['id'] }}"
-                                    class="remember-shopping-scroll"
-                                >
-
-                                    <button
-                                        type="submit"
-                                        class="secondary-button"
+                                    <form
+                                        method="POST"
+                                        action="/einkauf-status/{{ eintrag['id'] }}"
+                                        class="remember-shopping-scroll"
                                     >
-                                        ↩ Wieder offen
-                                    </button>
 
-                                </form>
+                                        <button
+                                            type="submit"
+                                            class="
+                                                shopping-button
+                                                shopping-button-secondary
+                                            "
+                                        >
+                                            Wieder öffnen
+                                        </button>
+
+                                    </form>
 
 
-                                <form
-                                    method="POST"
-                                    action="/einkauf-loeschen/{{ eintrag['id'] }}"
-                                    class="remember-shopping-scroll"
-                                    onsubmit="return confirm('Artikel wirklich löschen?');"
-                                >
-
-                                    <button
-                                        type="submit"
-                                        class="delete-button"
+                                    <form
+                                        method="POST"
+                                        action="/einkauf-loeschen/{{ eintrag['id'] }}"
+                                        class="remember-shopping-scroll"
+                                        onsubmit="
+                                            return confirm(
+                                                'Artikel wirklich löschen?'
+                                            );
+                                        "
                                     >
-                                        Löschen
-                                    </button>
 
-                                </form>
+                                        <button
+                                            type="submit"
+                                            class="
+                                                shopping-button
+                                                shopping-button-danger
+                                            "
+                                        >
+                                            Löschen
+                                        </button>
 
-                            </div>
+                                    </form>
 
-                        </div>
+                                </div>
 
-                    {% endif %}
+                            </article>
 
-                {% endfor %}
+                        {% endif %}
 
-            </div>
+                    {% endfor %}
 
+                </div>
 
-            <form
-                method="POST"
-                action="/einkauf-erledigte-loeschen"
-                class="remember-shopping-scroll completed-delete-form"
-                onsubmit="return confirm('Alle erledigten Artikel löschen?');"
-            >
+            {% else %}
 
-                <button
-                    type="submit"
-                    class="delete-button"
-                >
-                    🗑 Alle erledigten löschen
-                </button>
+                <div class="empty-shopping">
+                    Noch keine erledigten Artikel.
+                </div>
 
-            </form>
+            {% endif %}
 
         </section>
-
-        {% endif %}
 
 
     </main>
 
-</div>
 
 
-<script>
-    /*
-        Scrollposition nach Aktionen wiederherstellen
-    */
+    <script>
 
-    const shoppingScroll =
-        sessionStorage.getItem(
-            "shoppingScrollPosition"
-        );
-
-    if (shoppingScroll !== null) {
-
-        window.scrollTo({
-            top: Number(shoppingScroll),
-            behavior: "instant"
-        });
-
-        sessionStorage.removeItem(
-            "shoppingScrollPosition"
-        );
-    }
+        const shoppingForms =
+            document.querySelectorAll(
+                ".remember-shopping-scroll"
+            );
 
 
-    /*
-        Vor Speichern / Abhaken / Löschen
-        Position merken
-    */
+        shoppingForms.forEach(
+            function(form) {
 
-    document.querySelectorAll(
-        ".remember-shopping-scroll"
-    ).forEach(function(form) {
+                form.addEventListener(
+                    "submit",
+                    function() {
 
-        form.addEventListener(
-            "submit",
-            function() {
+                        sessionStorage.setItem(
+                            "shoppingScrollPosition",
+                            String(
+                                window.scrollY
+                            )
+                        );
 
-                sessionStorage.setItem(
-                    "shoppingScrollPosition",
-                    String(window.scrollY)
+                    }
                 );
 
             }
         );
 
-    });
-</script>
+
+        const shoppingScroll =
+            sessionStorage.getItem(
+                "shoppingScrollPosition"
+            );
+
+
+        if (shoppingScroll !== null) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    window.scrollTo(
+                        0,
+                        Number(shoppingScroll)
+                    );
+
+                    sessionStorage.removeItem(
+                        "shoppingScrollPosition"
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
 
 </body>
+
 </html>
