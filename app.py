@@ -3,8 +3,19 @@ import sqlite3
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
-from flask import Flask, request, redirect, session, render_template
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import (
+    Flask,
+    request,
+    redirect,
+    session,
+    render_template,
+    send_from_directory
+)
+
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 
 try:
     import psycopg2
@@ -184,7 +195,6 @@ def query_einen(
         return ergebnis
 
     finally:
-
         db.close()
 
 
@@ -224,7 +234,6 @@ def query_alle(
         return ergebnis
 
     finally:
-
         db.close()
 
 
@@ -264,7 +273,6 @@ def execute_query(
         raise
 
     finally:
-
         db.close()
 
 
@@ -278,37 +286,19 @@ def datenbank_erstellen():
 
     try:
 
-        # ==================================================
-        # POSTGRESQL
-        # ==================================================
-
         if postgres_verwenden():
 
             cursor = db.cursor()
 
-
-            # ------------------------------------------
-            # BENUTZER
-            # ------------------------------------------
-
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS benutzer (
                     id SERIAL PRIMARY KEY,
-
-                    benutzername VARCHAR(100)
-                        UNIQUE NOT NULL,
-
+                    benutzername VARCHAR(100) UNIQUE NOT NULL,
                     passwort TEXT NOT NULL,
-
-                    rolle VARCHAR(50)
-                        NOT NULL,
-
-                    passwort_muss_geaendert
-                        BOOLEAN NOT NULL
-                        DEFAULT FALSE
+                    rolle VARCHAR(50) NOT NULL,
+                    passwort_muss_geaendert BOOLEAN NOT NULL DEFAULT FALSE
                 )
             """)
-
 
             cursor.execute("""
                 ALTER TABLE benutzer
@@ -318,14 +308,8 @@ def datenbank_erstellen():
                 DEFAULT FALSE
             """)
 
-
-            # ------------------------------------------
-            # FINANZ EINSTELLUNGEN
-            # ------------------------------------------
-
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS
-                finanz_einstellungen
+                CREATE TABLE IF NOT EXISTS finanz_einstellungen
                 (
                     id SERIAL PRIMARY KEY,
 
@@ -353,11 +337,6 @@ def datenbank_erstellen():
                         DEFAULT CURRENT_DATE
                 )
             """)
-
-
-            # ------------------------------------------
-            # AUSGABEN
-            # ------------------------------------------
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS ausgaben (
@@ -389,7 +368,6 @@ def datenbank_erstellen():
                 )
             """)
 
-
             cursor.execute("""
                 ALTER TABLE ausgaben
                 ADD COLUMN IF NOT EXISTS
@@ -398,32 +376,20 @@ def datenbank_erstellen():
                 DEFAULT FALSE
             """)
 
-
             cursor.execute("""
                 ALTER TABLE ausgaben
                 ADD COLUMN IF NOT EXISTS
                 periodenstart DATE
             """)
 
-
             cursor.execute("""
                 UPDATE ausgaben
-
-                SET periodenstart =
-                    CURRENT_DATE
-
-                WHERE periodenstart
-                    IS NULL
+                SET periodenstart = CURRENT_DATE
+                WHERE periodenstart IS NULL
             """)
 
-
-            # ------------------------------------------
-            # EINKAUFSLISTE
-            # ------------------------------------------
-
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS
-                einkaufsliste
+                CREATE TABLE IF NOT EXISTS einkaufsliste
                 (
                     id SERIAL PRIMARY KEY,
 
@@ -451,20 +417,13 @@ def datenbank_erstellen():
                 )
             """)
 
-
-            # ------------------------------------------
-            # ALTES BUDGET ÜBERNEHMEN
-            # ------------------------------------------
-
             cursor.execute("""
                 SELECT to_regclass(
                     'public.budgets'
                 )
             """)
 
-            budgets_existiert = (
-                cursor.fetchone()[0]
-            )
+            budgets_existiert = cursor.fetchone()[0]
 
             if budgets_existiert:
 
@@ -494,38 +453,19 @@ def datenbank_erstellen():
                     DO NOTHING
                 """)
 
-
             cursor.close()
-
-
-        # ==================================================
-        # SQLITE
-        # ==================================================
 
         else:
 
-            # ------------------------------------------
-            # BENUTZER
-            # ------------------------------------------
-
             db.execute("""
                 CREATE TABLE IF NOT EXISTS benutzer (
-                    id INTEGER PRIMARY KEY
-                        AUTOINCREMENT,
-
-                    benutzername TEXT
-                        UNIQUE NOT NULL,
-
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    benutzername TEXT UNIQUE NOT NULL,
                     passwort TEXT NOT NULL,
-
                     rolle TEXT NOT NULL,
-
-                    passwort_muss_geaendert
-                        INTEGER NOT NULL
-                        DEFAULT 0
+                    passwort_muss_geaendert INTEGER NOT NULL DEFAULT 0
                 )
             """)
-
 
             benutzer_spalten = db.execute(
                 "PRAGMA table_info(benutzer)"
@@ -536,7 +476,6 @@ def datenbank_erstellen():
                 for spalte in benutzer_spalten
             ]
 
-
             if (
                 "passwort_muss_geaendert"
                 not in benutzer_spalten_namen
@@ -544,27 +483,17 @@ def datenbank_erstellen():
 
                 db.execute("""
                     ALTER TABLE benutzer
-
                     ADD COLUMN
                     passwort_muss_geaendert
-                    INTEGER NOT NULL
-                    DEFAULT 0
+                    INTEGER NOT NULL DEFAULT 0
                 """)
 
-
-            # ------------------------------------------
-            # FINANZ EINSTELLUNGEN
-            # ------------------------------------------
-
             db.execute("""
-                CREATE TABLE IF NOT EXISTS
-                finanz_einstellungen
+                CREATE TABLE IF NOT EXISTS finanz_einstellungen
                 (
-                    id INTEGER PRIMARY KEY
-                        AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-                    benutzer_id INTEGER
-                        UNIQUE NOT NULL,
+                    benutzer_id INTEGER UNIQUE NOT NULL,
 
                     standard_budget REAL
                         NOT NULL DEFAULT 0,
@@ -584,34 +513,21 @@ def datenbank_erstellen():
                 )
             """)
 
-
-            # ------------------------------------------
-            # AUSGABEN
-            # ------------------------------------------
-
             db.execute("""
                 CREATE TABLE IF NOT EXISTS ausgaben (
-                    id INTEGER PRIMARY KEY
-                        AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-                    benutzer_id INTEGER
-                        NOT NULL,
+                    benutzer_id INTEGER NOT NULL,
 
-                    beschreibung TEXT
-                        NOT NULL,
+                    beschreibung TEXT NOT NULL,
 
-                    kategorie TEXT
-                        NOT NULL,
+                    kategorie TEXT NOT NULL,
 
-                    betrag REAL
-                        NOT NULL,
+                    betrag REAL NOT NULL,
 
-                    datum TEXT
-                        NOT NULL,
+                    datum TEXT NOT NULL,
 
-                    ist_fix INTEGER
-                        NOT NULL
-                        DEFAULT 0,
+                    ist_fix INTEGER NOT NULL DEFAULT 0,
 
                     periodenstart TEXT,
 
@@ -621,17 +537,14 @@ def datenbank_erstellen():
                 )
             """)
 
-
             ausgaben_spalten = db.execute(
                 "PRAGMA table_info(ausgaben)"
             ).fetchall()
 
             ausgaben_spalten_namen = [
                 spalte["name"]
-                for spalte
-                in ausgaben_spalten
+                for spalte in ausgaben_spalten
             ]
-
 
             if (
                 "ist_fix"
@@ -640,12 +553,10 @@ def datenbank_erstellen():
 
                 db.execute("""
                     ALTER TABLE ausgaben
-
                     ADD COLUMN
                     ist_fix INTEGER
                     NOT NULL DEFAULT 0
                 """)
-
 
             if (
                 "periodenstart"
@@ -654,56 +565,37 @@ def datenbank_erstellen():
 
                 db.execute("""
                     ALTER TABLE ausgaben
-
                     ADD COLUMN
                     periodenstart TEXT
                 """)
 
-
             db.execute(
                 """
                 UPDATE ausgaben
-
                 SET periodenstart = ?
-
-                WHERE periodenstart
-                    IS NULL
+                WHERE periodenstart IS NULL
                 """,
                 (
                     heute().isoformat(),
                 )
             )
 
-
-            # ------------------------------------------
-            # EINKAUFSLISTE
-            # ------------------------------------------
-
             db.execute("""
-                CREATE TABLE IF NOT EXISTS
-                einkaufsliste
+                CREATE TABLE IF NOT EXISTS einkaufsliste
                 (
-                    id INTEGER PRIMARY KEY
-                        AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-                    benutzer_id INTEGER
-                        NOT NULL,
+                    benutzer_id INTEGER NOT NULL,
 
-                    artikel TEXT
-                        NOT NULL,
+                    artikel TEXT NOT NULL,
 
-                    menge TEXT
-                        DEFAULT '',
+                    menge TEXT DEFAULT '',
 
-                    notiz TEXT
-                        DEFAULT '',
+                    notiz TEXT DEFAULT '',
 
-                    erledigt INTEGER
-                        NOT NULL
-                        DEFAULT 0,
+                    erledigt INTEGER NOT NULL DEFAULT 0,
 
-                    erstellt_am TEXT
-                        NOT NULL,
+                    erstellt_am TEXT NOT NULL,
 
                     FOREIGN KEY (benutzer_id)
                     REFERENCES benutzer(id)
@@ -711,23 +603,15 @@ def datenbank_erstellen():
                 )
             """)
 
-
-            # ------------------------------------------
-            # ALTES BUDGET ÜBERNEHMEN
-            # ------------------------------------------
-
             budgets_tabelle = db.execute(
                 """
                 SELECT name
-
                 FROM sqlite_master
-
                 WHERE
                     type = 'table'
                     AND name = 'budgets'
                 """
             ).fetchone()
-
 
             if budgets_tabelle:
 
@@ -736,20 +620,16 @@ def datenbank_erstellen():
                     SELECT
                         benutzer_id,
                         betrag
-
                     FROM budgets
                     """
                 ).fetchall()
-
 
                 for alter_wert in alte_budgets:
 
                     vorhanden = db.execute(
                         """
                         SELECT id
-
                         FROM finanz_einstellungen
-
                         WHERE benutzer_id = ?
                         """,
                         (
@@ -758,7 +638,6 @@ def datenbank_erstellen():
                             ],
                         )
                     ).fetchone()
-
 
                     if vorhanden is None:
 
@@ -786,45 +665,29 @@ def datenbank_erstellen():
                                 ],
 
                                 0,
-
                                 1,
-
                                 heute().isoformat()
                             )
                         )
 
-
         db.commit()
 
-
     finally:
-
         db.close()
-
-
-    # ==================================================
-    # ADMIN ERSTELLEN
-    # ==================================================
 
     admin = query_einen(
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE rolle = %s
-
         LIMIT 1
         """,
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE rolle = ?
-
         LIMIT 1
         """,
 
@@ -832,7 +695,6 @@ def datenbank_erstellen():
             "admin",
         )
     )
-
 
     if admin is None:
 
@@ -869,11 +731,9 @@ def datenbank_erstellen():
 
             (
                 "joel",
-
                 generate_password_hash(
                     ADMIN_PASSWORD
                 ),
-
                 "admin"
             )
         )
@@ -891,17 +751,13 @@ def finanz_einstellungen_sicherstellen(
 
         """
         SELECT *
-
         FROM finanz_einstellungen
-
         WHERE benutzer_id = %s
         """,
 
         """
         SELECT *
-
         FROM finanz_einstellungen
-
         WHERE benutzer_id = ?
         """,
 
@@ -910,16 +766,12 @@ def finanz_einstellungen_sicherstellen(
         )
     )
 
-
     if einstellungen:
-
         return einstellungen
-
 
     start = aktueller_periodenstart(
         1
     )
-
 
     execute_query(
 
@@ -967,7 +819,6 @@ def finanz_einstellungen_sicherstellen(
         )
     )
 
-
     return finanz_einstellungen_sicherstellen(
         benutzer_id
     )
@@ -987,13 +838,11 @@ def monatswechsel_pruefen(
         )
     )
 
-
     reset_tag = int(
         einstellungen[
             "reset_tag"
         ]
     )
-
 
     periodenstart = datum_lesen(
         einstellungen[
@@ -1001,13 +850,11 @@ def monatswechsel_pruefen(
         ]
     )
 
-
     standard_budget = float(
         einstellungen[
             "standard_budget"
         ]
     )
-
 
     uebertrag = float(
         einstellungen[
@@ -1015,9 +862,7 @@ def monatswechsel_pruefen(
         ]
     )
 
-
     aktuelles_datum = heute()
-
 
     while True:
 
@@ -1028,14 +873,8 @@ def monatswechsel_pruefen(
             )
         )
 
-
-        if (
-            naechster_start
-            > aktuelles_datum
-        ):
-
+        if naechster_start > aktuelles_datum:
             break
-
 
         summe = query_einen(
 
@@ -1076,29 +915,24 @@ def monatswechsel_pruefen(
             )
         )
 
-
         ausgegeben = float(
             summe["summe"] or 0
         )
-
 
         aktuelles_budget = (
             standard_budget
             + uebertrag
         )
 
-
         rest = (
             aktuelles_budget
             - ausgegeben
         )
 
-
         neuer_uebertrag = max(
             rest,
             0
         )
-
 
         fixkosten = query_alle(
 
@@ -1139,7 +973,6 @@ def monatswechsel_pruefen(
             )
         )
 
-
         execute_query(
 
             """
@@ -1172,7 +1005,6 @@ def monatswechsel_pruefen(
                 benutzer_id
             )
         )
-
 
         for fixkosten_eintrag in fixkosten:
 
@@ -1274,14 +1106,36 @@ def monatswechsel_pruefen(
                     )
                 )
 
-
         uebertrag = neuer_uebertrag
         periodenstart = naechster_start
-
 
     return finanz_einstellungen_sicherstellen(
         benutzer_id
     )
+
+
+# ==================================================
+# PWA SERVICE WORKER
+# ==================================================
+
+@app.route("/service-worker.js")
+def service_worker():
+
+    antwort = send_from_directory(
+        app.static_folder,
+        "service-worker.js",
+        mimetype="application/javascript"
+    )
+
+    antwort.headers[
+        "Service-Worker-Allowed"
+    ] = "/"
+
+    antwort.headers[
+        "Cache-Control"
+    ] = "no-cache"
+
+    return antwort
 
 
 # ==================================================
@@ -1299,7 +1153,6 @@ def login():
 
     fehler = ""
 
-
     if request.method == "POST":
 
         benutzername = request.form[
@@ -1310,22 +1163,17 @@ def login():
             "passwort"
         ]
 
-
         benutzer = query_einen(
 
             """
             SELECT *
-
             FROM benutzer
-
             WHERE benutzername = %s
             """,
 
             """
             SELECT *
-
             FROM benutzer
-
             WHERE benutzername = ?
             """,
 
@@ -1333,7 +1181,6 @@ def login():
                 benutzername,
             )
         )
-
 
         if (
             benutzer
@@ -1371,7 +1218,6 @@ def login():
                 ]
             )
 
-
             if session[
                 "passwort_muss_geaendert"
             ]:
@@ -1380,16 +1226,13 @@ def login():
                     "/erstes-passwort"
                 )
 
-
             return redirect(
                 "/dashboard"
             )
 
-
         fehler = (
             "Benutzername oder Passwort falsch."
         )
-
 
     return render_template(
         "login.html",
@@ -1410,13 +1253,8 @@ def login():
 )
 def erstes_passwort():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     if not session.get(
         "passwort_muss_geaendert"
@@ -1426,9 +1264,7 @@ def erstes_passwort():
             "/dashboard"
         )
 
-
     fehler = ""
-
 
     if request.method == "POST":
 
@@ -1440,13 +1276,11 @@ def erstes_passwort():
             "passwort_wiederholen"
         ]
 
-
         if len(passwort1) < 6:
 
             fehler = (
                 "Das Passwort muss mindestens 6 Zeichen haben."
             )
-
 
         elif passwort1 != passwort2:
 
@@ -1454,13 +1288,11 @@ def erstes_passwort():
                 "Die Passwörter stimmen nicht überein."
             )
 
-
         else:
 
             benutzer_id = session[
                 "benutzer_id"
             ]
-
 
             execute_query(
 
@@ -1493,16 +1325,13 @@ def erstes_passwort():
                 )
             )
 
-
             session[
                 "passwort_muss_geaendert"
             ] = False
 
-
             return redirect(
                 "/dashboard"
             )
-
 
     return render_template(
         "erstes_passwort.html",
@@ -1520,13 +1349,8 @@ def erstes_passwort():
 @app.route("/dashboard")
 def dashboard():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     if session.get(
         "passwort_muss_geaendert"
@@ -1535,7 +1359,6 @@ def dashboard():
         return redirect(
             "/erstes-passwort"
         )
-
 
     return render_template(
         "dashboard.html",
@@ -1557,18 +1380,12 @@ def dashboard():
 @app.route("/einkaufsliste")
 def einkaufsliste():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     eintraege = query_alle(
 
@@ -1617,10 +1434,8 @@ def einkaufsliste():
         )
     )
 
-
     offene_anzahl = 0
     erledigte_anzahl = 0
-
 
     for eintrag in eintraege:
 
@@ -1631,9 +1446,7 @@ def einkaufsliste():
             erledigte_anzahl += 1
 
         else:
-
             offene_anzahl += 1
-
 
     return render_template(
         "einkaufsliste.html",
@@ -1664,43 +1477,33 @@ def einkaufsliste():
 )
 def einkauf_hinzufuegen():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     artikel = request.form.get(
         "artikel",
         ""
     ).strip()
 
-
     menge = request.form.get(
         "menge",
         ""
     ).strip()
-
 
     notiz = request.form.get(
         "notiz",
         ""
     ).strip()
 
-
     if artikel == "":
 
         return redirect(
             "/einkaufsliste"
         )
-
 
     if postgres_verwenden():
 
@@ -1774,14 +1577,13 @@ def einkauf_hinzufuegen():
             )
         )
 
-
     return redirect(
         "/einkaufsliste"
     )
 
 
 # ==================================================
-# EINKAUF ABHAKEN
+# EINKAUF STATUS
 # ==================================================
 
 @app.route(
@@ -1794,24 +1596,17 @@ def einkauf_status(
     eintrag_id
 ):
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
 
-
     eintrag = query_einen(
 
         """
         SELECT *
-
         FROM einkaufsliste
 
         WHERE
@@ -1821,7 +1616,6 @@ def einkauf_status(
 
         """
         SELECT *
-
         FROM einkaufsliste
 
         WHERE
@@ -1835,13 +1629,11 @@ def einkauf_status(
         )
     )
 
-
     if eintrag is None:
 
         return redirect(
             "/einkaufsliste"
         )
-
 
     aktuell_erledigt = bool(
         eintrag[
@@ -1849,9 +1641,7 @@ def einkauf_status(
         ]
     )
 
-
     neuer_status = not aktuell_erledigt
-
 
     execute_query(
 
@@ -1889,7 +1679,6 @@ def einkauf_status(
         )
     )
 
-
     return redirect(
         "/einkaufsliste"
     )
@@ -1909,24 +1698,17 @@ def einkauf_bearbeiten(
     eintrag_id
 ):
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
 
-
     eintrag = query_einen(
 
         """
         SELECT *
-
         FROM einkaufsliste
 
         WHERE
@@ -1936,7 +1718,6 @@ def einkauf_bearbeiten(
 
         """
         SELECT *
-
         FROM einkaufsliste
 
         WHERE
@@ -1950,38 +1731,32 @@ def einkauf_bearbeiten(
         )
     )
 
-
     if eintrag is None:
 
         return redirect(
             "/einkaufsliste"
         )
 
-
     artikel = request.form.get(
         "artikel",
         ""
     ).strip()
-
 
     menge = request.form.get(
         "menge",
         ""
     ).strip()
 
-
     notiz = request.form.get(
         "notiz",
         ""
     ).strip()
-
 
     if artikel == "":
 
         return redirect(
             "/einkaufsliste"
         )
-
 
     execute_query(
 
@@ -2020,7 +1795,6 @@ def einkauf_bearbeiten(
         )
     )
 
-
     return redirect(
         "/einkaufsliste"
     )
@@ -2040,18 +1814,12 @@ def einkauf_loeschen(
     eintrag_id
 ):
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     execute_query(
 
@@ -2077,14 +1845,13 @@ def einkauf_loeschen(
         )
     )
 
-
     return redirect(
         "/einkaufsliste"
     )
 
 
 # ==================================================
-# ALLE ERLEDIGTEN EINKÄUFE LÖSCHEN
+# ALLE ERLEDIGTEN LÖSCHEN
 # ==================================================
 
 @app.route(
@@ -2095,18 +1862,12 @@ def einkauf_loeschen(
 )
 def einkauf_erledigte_loeschen():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     execute_query(
 
@@ -2131,7 +1892,6 @@ def einkauf_erledigte_loeschen():
         )
     )
 
-
     return redirect(
         "/einkaufsliste"
     )
@@ -2144,18 +1904,12 @@ def einkauf_erledigte_loeschen():
 @app.route("/finanzen")
 def finanzen():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     einstellungen = (
         monatswechsel_pruefen(
@@ -2163,13 +1917,11 @@ def finanzen():
         )
     )
 
-
     standard_budget = float(
         einstellungen[
             "standard_budget"
         ]
     )
-
 
     uebertrag = float(
         einstellungen[
@@ -2177,13 +1929,11 @@ def finanzen():
         ]
     )
 
-
     reset_tag = int(
         einstellungen[
             "reset_tag"
         ]
     )
-
 
     periodenstart = datum_lesen(
         einstellungen[
@@ -2191,12 +1941,10 @@ def finanzen():
         ]
     )
 
-
     budget = (
         standard_budget
         + uebertrag
     )
-
 
     summe = query_einen(
 
@@ -2237,16 +1985,13 @@ def finanzen():
         )
     )
 
-
     ausgegeben = float(
         summe["summe"] or 0
     )
 
-
     verfuegbar = (
         budget - ausgegeben
     )
-
 
     if budget > 0:
 
@@ -2265,9 +2010,7 @@ def finanzen():
         )
 
     else:
-
         prozent_verbraucht = 0
-
 
     ausgaben = query_alle(
 
@@ -2322,14 +2065,12 @@ def finanzen():
         )
     )
 
-
     naechster_reset = (
         naechster_periodenstart(
             periodenstart,
             reset_tag
         )
     )
-
 
     return render_template(
 
@@ -2371,7 +2112,7 @@ def finanzen():
 
 
 # ==================================================
-# FINANZ EINSTELLUNGEN SPEICHERN
+# FINANZ EINSTELLUNGEN
 # ==================================================
 
 @app.route(
@@ -2382,18 +2123,12 @@ def finanzen():
 )
 def finanz_einstellungen_speichern():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     try:
 
@@ -2418,12 +2153,10 @@ def finanz_einstellungen_speichern():
             "/finanzen"
         )
 
-
     standard_budget = max(
         standard_budget,
         0
     )
-
 
     reset_tag = max(
         1,
@@ -2433,11 +2166,9 @@ def finanz_einstellungen_speichern():
         )
     )
 
-
     finanz_einstellungen_sicherstellen(
         benutzer_id
     )
-
 
     execute_query(
 
@@ -2468,7 +2199,6 @@ def finanz_einstellungen_speichern():
         )
     )
 
-
     return redirect(
         "/finanzen"
     )
@@ -2486,18 +2216,12 @@ def finanz_einstellungen_speichern():
 )
 def budget_speichern():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     try:
 
@@ -2516,11 +2240,9 @@ def budget_speichern():
             "/finanzen"
         )
 
-
     finanz_einstellungen_sicherstellen(
         benutzer_id
     )
-
 
     execute_query(
 
@@ -2550,7 +2272,6 @@ def budget_speichern():
         )
     )
 
-
     return redirect(
         "/finanzen"
     )
@@ -2568,18 +2289,12 @@ def budget_speichern():
 )
 def ausgabe_hinzufuegen():
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     einstellungen = (
         monatswechsel_pruefen(
@@ -2587,23 +2302,19 @@ def ausgabe_hinzufuegen():
         )
     )
 
-
     periodenstart = datum_lesen(
         einstellungen[
             "periodenstart"
         ]
     )
 
-
     beschreibung = request.form[
         "beschreibung"
     ].strip()
 
-
     kategorie = request.form[
         "kategorie"
     ].strip()
-
 
     ist_fix = (
         request.form.get(
@@ -2611,7 +2322,6 @@ def ausgabe_hinzufuegen():
         )
         == "on"
     )
-
 
     try:
 
@@ -2627,7 +2337,6 @@ def ausgabe_hinzufuegen():
             "/finanzen"
         )
 
-
     if (
         beschreibung == ""
         or betrag <= 0
@@ -2636,7 +2345,6 @@ def ausgabe_hinzufuegen():
         return redirect(
             "/finanzen"
         )
-
 
     if postgres_verwenden():
 
@@ -2722,7 +2430,6 @@ def ausgabe_hinzufuegen():
             )
         )
 
-
     return redirect(
         "/finanzen"
     )
@@ -2742,24 +2449,17 @@ def ausgabe_bearbeiten(
     ausgabe_id
 ):
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
 
-
     ausgabe = query_einen(
 
         """
         SELECT *
-
         FROM ausgaben
 
         WHERE
@@ -2769,7 +2469,6 @@ def ausgabe_bearbeiten(
 
         """
         SELECT *
-
         FROM ausgaben
 
         WHERE
@@ -2783,23 +2482,19 @@ def ausgabe_bearbeiten(
         )
     )
 
-
     if ausgabe is None:
 
         return redirect(
             "/finanzen"
         )
 
-
     beschreibung = request.form[
         "beschreibung"
     ].strip()
 
-
     kategorie = request.form[
         "kategorie"
     ].strip()
-
 
     ist_fix = (
         request.form.get(
@@ -2807,7 +2502,6 @@ def ausgabe_bearbeiten(
         )
         == "on"
     )
-
 
     try:
 
@@ -2823,7 +2517,6 @@ def ausgabe_bearbeiten(
             "/finanzen"
         )
 
-
     if (
         beschreibung == ""
         or betrag <= 0
@@ -2832,7 +2525,6 @@ def ausgabe_bearbeiten(
         return redirect(
             "/finanzen"
         )
-
 
     execute_query(
 
@@ -2882,7 +2574,6 @@ def ausgabe_bearbeiten(
         )
     )
 
-
     return redirect(
         "/finanzen"
     )
@@ -2902,18 +2593,12 @@ def ausgabe_loeschen(
     ausgabe_id
 ):
 
-    if (
-        "benutzer_id"
-        not in session
-    ):
-
+    if "benutzer_id" not in session:
         return redirect("/")
-
 
     benutzer_id = session[
         "benutzer_id"
     ]
-
 
     execute_query(
 
@@ -2939,7 +2624,6 @@ def ausgabe_loeschen(
         )
     )
 
-
     return redirect(
         "/finanzen"
     )
@@ -2958,18 +2642,13 @@ def ausgabe_loeschen(
 )
 def admin():
 
-    if (
-        session.get("rolle")
-        != "admin"
-    ):
+    if session.get("rolle") != "admin":
 
         return redirect(
             "/dashboard"
         )
 
-
     meldung = ""
-
 
     if request.method == "POST":
 
@@ -2981,13 +2660,11 @@ def admin():
             "passwort"
         ]
 
-
         if neuer_name == "":
 
             meldung = (
                 "Bitte einen Benutzernamen eingeben."
             )
-
 
         elif len(
             einmalpasswort
@@ -2996,7 +2673,6 @@ def admin():
             meldung = (
                 "Das Einmalpasswort muss mindestens 4 Zeichen haben."
             )
-
 
         else:
 
@@ -3049,19 +2725,16 @@ def admin():
                     )
                 )
 
-
                 meldung = (
                     "Benutzer wurde erstellt. "
                     "Das Passwort ist ein Einmalpasswort."
                 )
-
 
             except Exception:
 
                 meldung = (
                     "Dieser Benutzername existiert bereits."
                 )
-
 
     benutzer_liste = query_alle(
 
@@ -3090,7 +2763,6 @@ def admin():
         """
     )
 
-
     return render_template(
         "admin.html",
 
@@ -3117,31 +2789,23 @@ def benutzername_aendern(
     benutzer_id
 ):
 
-    if (
-        session.get("rolle")
-        != "admin"
-    ):
+    if session.get("rolle") != "admin":
 
         return redirect(
             "/dashboard"
         )
 
-
     benutzer = query_einen(
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE id = %s
         """,
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE id = ?
         """,
 
@@ -3150,16 +2814,13 @@ def benutzername_aendern(
         )
     )
 
-
     if benutzer is None:
 
         return redirect(
             "/admin"
         )
 
-
     meldung = ""
-
 
     if request.method == "POST":
 
@@ -3167,13 +2828,11 @@ def benutzername_aendern(
             "benutzername"
         ].strip()
 
-
         if neuer_name == "":
 
             meldung = (
                 "Bitte einen Benutzernamen eingeben."
             )
-
 
         else:
 
@@ -3183,17 +2842,13 @@ def benutzername_aendern(
 
                     """
                     UPDATE benutzer
-
                     SET benutzername = %s
-
                     WHERE id = %s
                     """,
 
                     """
                     UPDATE benutzer
-
                     SET benutzername = ?
-
                     WHERE id = ?
                     """,
 
@@ -3203,11 +2858,9 @@ def benutzername_aendern(
                     )
                 )
 
-
                 meldung = (
                     "Benutzername wurde dauerhaft geändert."
                 )
-
 
                 if (
                     session.get(
@@ -3220,22 +2873,17 @@ def benutzername_aendern(
                         "benutzer"
                     ] = neuer_name
 
-
                 benutzer = query_einen(
 
                     """
                     SELECT *
-
                     FROM benutzer
-
                     WHERE id = %s
                     """,
 
                     """
                     SELECT *
-
                     FROM benutzer
-
                     WHERE id = ?
                     """,
 
@@ -3244,13 +2892,11 @@ def benutzername_aendern(
                     )
                 )
 
-
             except Exception:
 
                 meldung = (
                     "Dieser Benutzername existiert bereits."
                 )
-
 
     return render_template(
         "benutzername.html",
@@ -3274,31 +2920,23 @@ def passwort_aendern(
     benutzer_id
 ):
 
-    if (
-        session.get("rolle")
-        != "admin"
-    ):
+    if session.get("rolle") != "admin":
 
         return redirect(
             "/dashboard"
         )
 
-
     benutzer = query_einen(
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE id = %s
         """,
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE id = ?
         """,
 
@@ -3307,23 +2945,19 @@ def passwort_aendern(
         )
     )
 
-
     if benutzer is None:
 
         return redirect(
             "/admin"
         )
 
-
     meldung = ""
-
 
     if request.method == "POST":
 
         neues_passwort = request.form[
             "passwort"
         ]
-
 
         if len(
             neues_passwort
@@ -3332,7 +2966,6 @@ def passwort_aendern(
             meldung = (
                 "Das Passwort muss mindestens 4 Zeichen haben."
             )
-
 
         else:
 
@@ -3374,11 +3007,9 @@ def passwort_aendern(
                     )
                 )
 
-
                 meldung = (
                     "Neues Einmalpasswort wurde gesetzt."
                 )
-
 
             else:
 
@@ -3386,17 +3017,13 @@ def passwort_aendern(
 
                     """
                     UPDATE benutzer
-
                     SET passwort = %s
-
                     WHERE id = %s
                     """,
 
                     """
                     UPDATE benutzer
-
                     SET passwort = ?
-
                     WHERE id = ?
                     """,
 
@@ -3409,11 +3036,9 @@ def passwort_aendern(
                     )
                 )
 
-
                 meldung = (
                     "Admin-Passwort wurde geändert."
                 )
-
 
     return render_template(
         "passwort.html",
@@ -3436,31 +3061,23 @@ def benutzer_loeschen(
     benutzer_id
 ):
 
-    if (
-        session.get("rolle")
-        != "admin"
-    ):
+    if session.get("rolle") != "admin":
 
         return redirect(
             "/dashboard"
         )
 
-
     benutzer = query_einen(
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE id = %s
         """,
 
         """
         SELECT *
-
         FROM benutzer
-
         WHERE id = ?
         """,
 
@@ -3468,7 +3085,6 @@ def benutzer_loeschen(
             benutzer_id,
         )
     )
-
 
     if (
         benutzer
@@ -3481,13 +3097,11 @@ def benutzer_loeschen(
 
             """
             DELETE FROM benutzer
-
             WHERE id = %s
             """,
 
             """
             DELETE FROM benutzer
-
             WHERE id = ?
             """,
 
@@ -3495,7 +3109,6 @@ def benutzer_loeschen(
                 benutzer_id,
             )
         )
-
 
     return redirect(
         "/admin"

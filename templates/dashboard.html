@@ -3,16 +3,78 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
 
     <title>Familienplaner</title>
 
-    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- =====================================================
+         PWA
+    ====================================================== -->
+
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+
+    <!-- =====================================================
+         DESIGN
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
 </head>
+
 
 <body class="app-body">
 
 <div class="app-container">
+
+
+    <!-- =====================================================
+         TOPBAR
+    ====================================================== -->
 
     <header class="topbar">
 
@@ -23,14 +85,22 @@
             </div>
 
             <div>
-                <h1>Familienplaner</h1>
-                <p>Willkommen, {{ benutzer }}</p>
+
+                <h1>
+                    Familienplaner
+                </h1>
+
+                <p>
+                    Willkommen, {{ benutzer }}
+                </p>
+
             </div>
 
         </div>
 
 
         <div class="topbar-actions">
+
 
             {% if rolle == "admin" %}
 
@@ -56,10 +126,16 @@
     </header>
 
 
+    <!-- =====================================================
+         DASHBOARD
+    ====================================================== -->
+
     <main class="dashboard">
 
 
-        <!-- WILLKOMMEN -->
+        <!-- =================================================
+             WILLKOMMEN
+        ================================================== -->
 
         <section class="hero-card">
 
@@ -69,9 +145,11 @@
                     DEIN FAMILIENBEREICH
                 </span>
 
+
                 <h2>
                     Willkommen zuhause 👋
                 </h2>
+
 
                 <p>
                     Organisiere deinen Alltag an einem Ort.
@@ -89,7 +167,9 @@
         </section>
 
 
-        <!-- BEREICHE -->
+        <!-- =================================================
+             BEREICHE
+        ================================================== -->
 
         <section>
 
@@ -100,6 +180,7 @@
                     <span class="eyebrow">
                         ÜBERSICHT
                     </span>
+
 
                     <h2>
                         Deine Bereiche
@@ -113,13 +194,16 @@
             <div class="dashboard-grid">
 
 
-                <!-- KALENDER -->
+                <!-- =========================================
+                     KALENDER
+                ========================================== -->
 
                 <article class="feature-card">
 
                     <div class="feature-icon">
                         📅
                     </div>
+
 
                     <div class="feature-content">
 
@@ -134,6 +218,7 @@
 
                     </div>
 
+
                     <button
                         class="disabled-button"
                         disabled
@@ -144,13 +229,16 @@
                 </article>
 
 
-                <!-- AUFGABEN -->
+                <!-- =========================================
+                     AUFGABEN
+                ========================================== -->
 
                 <article class="feature-card">
 
                     <div class="feature-icon">
                         ✅
                     </div>
+
 
                     <div class="feature-content">
 
@@ -165,6 +253,7 @@
 
                     </div>
 
+
                     <button
                         class="disabled-button"
                         disabled
@@ -175,13 +264,16 @@
                 </article>
 
 
-                <!-- EINKAUFSLISTE -->
+                <!-- =========================================
+                     EINKAUFSLISTE
+                ========================================== -->
 
                 <article class="feature-card highlight-card">
 
                     <div class="feature-icon">
                         🛒
                     </div>
+
 
                     <div class="feature-content">
 
@@ -197,6 +289,7 @@
 
                         </div>
 
+
                         <p>
                             Deine persönliche Einkaufsliste
                             mit Mengen, Notizen und
@@ -204,6 +297,7 @@
                         </p>
 
                     </div>
+
 
                     <a
                         href="/einkaufsliste"
@@ -215,13 +309,16 @@
                 </article>
 
 
-                <!-- FINANZEN -->
+                <!-- =========================================
+                     FINANZEN
+                ========================================== -->
 
                 <article class="feature-card highlight-card">
 
                     <div class="feature-icon">
                         💰
                     </div>
+
 
                     <div class="feature-content">
 
@@ -237,6 +334,7 @@
 
                         </div>
 
+
                         <p>
                             Behalte Budget, Ausgaben,
                             Fixkosten und monatlichen
@@ -244,6 +342,7 @@
                         </p>
 
                     </div>
+
 
                     <a
                         href="/finanzen"
@@ -255,7 +354,9 @@
                 </article>
 
 
-                <!-- NUR ADMIN -->
+                <!-- =========================================
+                     NUR ADMIN
+                ========================================== -->
 
                 {% if rolle == "admin" %}
 
@@ -264,6 +365,7 @@
                     <div class="feature-icon">
                         👥
                     </div>
+
 
                     <div class="feature-content">
 
@@ -279,6 +381,7 @@
 
                         </div>
 
+
                         <p>
                             Benutzer erstellen,
                             Namen ändern,
@@ -287,6 +390,7 @@
                         </p>
 
                     </div>
+
 
                     <a
                         href="/admin"
@@ -304,10 +408,50 @@
 
         </section>
 
-
     </main>
 
 </div>
+
+
+<!-- =========================================================
+     SERVICE WORKER
+========================================================= -->
+
+<script>
+
+    if ("serviceWorker" in navigator) {
+
+        window.addEventListener(
+            "load",
+            function() {
+
+                navigator.serviceWorker
+                    .register("/service-worker.js")
+
+                    .then(function(registration) {
+
+                        console.log(
+                            "Familienplaner Service Worker aktiv."
+                        );
+
+                    })
+
+                    .catch(function(error) {
+
+                        console.log(
+                            "Service Worker konnte nicht gestartet werden:",
+                            error
+                        );
+
+                    });
+
+            }
+        );
+
+    }
+
+</script>
+
 
 </body>
 
