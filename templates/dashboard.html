@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Familienplaner - Dashboard</title>
+    <title>Familienplaner</title>
 
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -16,150 +16,223 @@
 
     <header class="topbar">
 
-        <div>
-            <h1>Familienplaner</h1>
-            <p>Willkommen, {{ benutzer }}</p>
+        <div class="brand">
+            <div class="brand-icon">
+                🏠
+            </div>
+
+            <div>
+                <h1>Familienplaner</h1>
+                <p>Willkommen zurück, {{ benutzer }}</p>
+            </div>
         </div>
 
-        <a href="/logout" class="logout-button">
-            Abmelden
-        </a>
+        <div class="topbar-actions">
+
+            {% if rolle == "admin" %}
+                <a href="/admin" class="secondary-button">
+                    ⚙️ Verwaltung
+                </a>
+            {% endif %}
+
+            <a href="/logout" class="logout-button">
+                Abmelden
+            </a>
+
+        </div>
 
     </header>
 
 
     <main class="dashboard">
 
-        <div class="welcome-card">
+        <section class="hero-card">
 
-            <h2>
-                Hallo {{ benutzer }} 👋
-            </h2>
+            <div>
+                <span class="eyebrow">
+                    DEIN FAMILIENBEREICH
+                </span>
 
-            <p>
-                Willkommen in deinem Familienplaner.
-            </p>
-
-        </div>
-
-
-        <div class="dashboard-grid">
-
-            <!-- KALENDER -->
-
-            <div class="dashboard-card">
-
-                <div class="card-icon">
-                    📅
-                </div>
-
-                <h3>Kalender</h3>
+                <h2>
+                    Hallo {{ benutzer }} 👋
+                </h2>
 
                 <p>
-                    Gemeinsame Termine und Ereignisse verwalten.
+                    Organisiere deinen Alltag, deine Finanzen,
+                    Aufgaben und gemeinsame Familienbereiche
+                    an einem Ort.
                 </p>
+            </div>
 
-                <button disabled>
-                    Bald verfügbar
-                </button>
+            <div class="hero-emoji">
+                👨‍👩‍👧‍👦
+            </div>
+
+        </section>
+
+
+        <section>
+
+            <div class="section-heading">
+
+                <div>
+                    <span class="eyebrow">
+                        ÜBERSICHT
+                    </span>
+
+                    <h2>
+                        Deine Bereiche
+                    </h2>
+                </div>
 
             </div>
 
 
-            <!-- AUFGABEN -->
-
-            <div class="dashboard-card">
-
-                <div class="card-icon">
-                    ✅
-                </div>
-
-                <h3>Aufgaben</h3>
-
-                <p>
-                    Aufgaben für die Familie erstellen und verteilen.
-                </p>
-
-                <button disabled>
-                    Bald verfügbar
-                </button>
-
-            </div>
+            <div class="dashboard-grid">
 
 
-            <!-- EINKAUFSLISTE -->
+                <article class="feature-card">
 
-            <div class="dashboard-card">
+                    <div class="feature-icon">
+                        📅
+                    </div>
 
-                <div class="card-icon">
-                    🛒
-                </div>
+                    <div class="feature-content">
 
-                <h3>Einkaufsliste</h3>
+                        <h3>Kalender</h3>
 
-                <p>
-                    Gemeinsame Einkaufsliste für alle Familienmitglieder.
-                </p>
+                        <p>
+                            Gemeinsame Termine, Geburtstage
+                            und Ereignisse verwalten.
+                        </p>
 
-                <button disabled>
-                    Bald verfügbar
-                </button>
+                    </div>
 
-            </div>
+                    <button class="disabled-button" disabled>
+                        Bald verfügbar
+                    </button>
 
-
-            <!-- FINANZEN -->
-
-            <div class="dashboard-card">
-
-                <div class="card-icon">
-                    💰
-                </div>
-
-                <h3>Finanzen</h3>
-
-                <p>
-                    Dein persönliches Budget und deine Ausgaben verwalten.
-                </p>
-
-                <a href="/finanzen" class="card-button">
-                    Finanzen öffnen
-                </a>
-
-            </div>
+                </article>
 
 
-            <!-- ADMIN -->
+                <article class="feature-card">
 
-            <div class="dashboard-card">
+                    <div class="feature-icon">
+                        ✅
+                    </div>
 
-                <div class="card-icon">
-                    👨‍👩‍👧‍👦
-                </div>
+                    <div class="feature-content">
 
-                <h3>Familie</h3>
+                        <h3>Aufgaben</h3>
 
-                <p>
-                    Familienmitglieder und Benutzer verwalten.
-                </p>
+                        <p>
+                            Aufgaben erstellen und innerhalb
+                            der Familie verteilen.
+                        </p>
+
+                    </div>
+
+                    <button class="disabled-button" disabled>
+                        Bald verfügbar
+                    </button>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        🛒
+                    </div>
+
+                    <div class="feature-content">
+
+                        <h3>Einkaufsliste</h3>
+
+                        <p>
+                            Eine gemeinsame Liste für Einkäufe
+                            und Besorgungen.
+                        </p>
+
+                    </div>
+
+                    <button class="disabled-button" disabled>
+                        Bald verfügbar
+                    </button>
+
+                </article>
+
+
+                <article class="feature-card highlight-card">
+
+                    <div class="feature-icon">
+                        💰
+                    </div>
+
+                    <div class="feature-content">
+
+                        <div class="card-title-row">
+
+                            <h3>Finanzen</h3>
+
+                            <span class="status-badge">
+                                Verfügbar
+                            </span>
+
+                        </div>
+
+                        <p>
+                            Dein persönliches Budget verwalten,
+                            Ausgaben eintragen und Restbudget
+                            automatisch berechnen.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="/finanzen"
+                        class="primary-button"
+                    >
+                        Finanzen öffnen
+                    </a>
+
+                </article>
+
 
                 {% if rolle == "admin" %}
 
-                    <a href="/admin" class="card-button">
-                        Admin-Bereich
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        👥
+                    </div>
+
+                    <div class="feature-content">
+
+                        <h3>Benutzerverwaltung</h3>
+
+                        <p>
+                            Benutzer erstellen, Namen ändern
+                            und Einmalpasswörter vergeben.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="/admin"
+                        class="primary-button"
+                    >
+                        Admin-Bereich öffnen
                     </a>
 
-                {% else %}
-
-                    <button disabled>
-                        Nur für Admins
-                    </button>
+                </article>
 
                 {% endif %}
 
+
             </div>
 
-        </div>
+        </section>
 
     </main>
 

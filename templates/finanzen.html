@@ -1,160 +1,476 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Familienplaner - Dashboard</title>
+    <title>Familienplaner - Finanzen</title>
 
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body class="app-body">
 
-    <div class="app-container">
+<div class="app-container">
 
-        <header class="topbar">
+    <header class="topbar">
 
-            <div>
-                <h1>Familienplaner</h1>
-                <p>Willkommen, {{ benutzer }}</p>
+        <div class="brand">
+
+            <div class="brand-icon">
+                💰
             </div>
 
-            <a href="/logout" class="logout-button">
+            <div>
+                <h1>Meine Finanzen</h1>
+                <p>{{ benutzer }}</p>
+            </div>
+
+        </div>
+
+        <div class="topbar-actions">
+
+            <a
+                href="/dashboard"
+                class="secondary-button"
+            >
+                ← Dashboard
+            </a>
+
+            <a
+                href="/logout"
+                class="logout-button"
+            >
                 Abmelden
             </a>
 
-        </header>
+        </div>
+
+    </header>
 
 
-        <main class="dashboard">
+    <main class="dashboard">
 
-            <div class="welcome-card">
 
-                <h2>
-                    Hallo {{ benutzer }} 👋
-                </h2>
+        <section class="finance-summary">
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    💳
+                </div>
+
+                <div>
+                    <span>Monatsbudget</span>
+
+                    <strong>
+                        {{ "%.2f"|format(budget) }} €
+                    </strong>
+                </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    📉
+                </div>
+
+                <div>
+                    <span>Ausgegeben</span>
+
+                    <strong>
+                        {{ "%.2f"|format(ausgegeben) }} €
+                    </strong>
+                </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    💵
+                </div>
+
+                <div>
+                    <span>Noch verfügbar</span>
+
+                    <strong>
+                        {{ "%.2f"|format(verfuegbar) }} €
+                    </strong>
+                </div>
+
+            </article>
+
+        </section>
+
+
+        {% if budget > 0 %}
+
+        <section class="budget-progress-card">
+
+            <div class="progress-header">
+
+                <div>
+                    <span class="eyebrow">
+                        BUDGET
+                    </span>
+
+                    <h3>
+                        Monatsübersicht
+                    </h3>
+                </div>
+
+                <strong>
+                    {{ "%.1f"|format(prozent_verbraucht) }} %
+                </strong>
+
+            </div>
+
+
+            <div class="progress-background">
+
+                <div
+                    class="progress-bar"
+                    data-progress="{{ prozent_verbraucht }}"
+                >
+                </div>
+
+            </div>
+
+            <p>
+                {{ "%.2f"|format(ausgegeben) }} € von
+                {{ "%.2f"|format(budget) }} € verwendet
+            </p>
+
+        </section>
+
+        {% endif %}
+
+
+        <section class="finance-layout">
+
+
+            <div class="panel">
+
+                <div class="panel-heading">
+
+                    <div class="panel-icon">
+                        🎯
+                    </div>
+
+                    <div>
+                        <h2>Budget</h2>
+                        <p>Lege dein persönliches Monatsbudget fest.</p>
+                    </div>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="/budget-speichern"
+                    class="form-grid"
+                >
+
+                    <div class="form-group full-width">
+
+                        <label>
+                            Monatsbudget
+                        </label>
+
+                        <div class="money-input">
+
+                            <input
+                                type="number"
+                                name="budget"
+                                step="0.01"
+                                min="0"
+                                value="{{ budget }}"
+                                required
+                            >
+
+                            <span>€</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button full-width"
+                    >
+                        Budget speichern
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-heading">
+
+                    <div class="panel-icon">
+                        ➕
+                    </div>
+
+                    <div>
+                        <h2>Neue Ausgabe</h2>
+                        <p>Trage eine persönliche Ausgabe ein.</p>
+                    </div>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="/ausgabe-hinzufuegen"
+                    class="form-grid"
+                >
+
+                    <div class="form-group full-width">
+
+                        <label>
+                            Beschreibung
+                        </label>
+
+                        <input
+                            type="text"
+                            name="beschreibung"
+                            placeholder="z. B. Wocheneinkauf"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Kategorie
+                        </label>
+
+                        <select
+                            name="kategorie"
+                            required
+                        >
+
+                            <option value="Lebensmittel">
+                                🍎 Lebensmittel
+                            </option>
+
+                            <option value="Miete">
+                                🏠 Miete
+                            </option>
+
+                            <option value="Auto">
+                                🚗 Auto
+                            </option>
+
+                            <option value="Kinder">
+                                🧸 Kinder
+                            </option>
+
+                            <option value="Freizeit">
+                                🎮 Freizeit
+                            </option>
+
+                            <option value="Haushalt">
+                                🧹 Haushalt
+                            </option>
+
+                            <option value="Rechnungen">
+                                🧾 Rechnungen
+                            </option>
+
+                            <option value="Sonstiges">
+                                📦 Sonstiges
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Betrag
+                        </label>
+
+                        <div class="money-input">
+
+                            <input
+                                type="number"
+                                name="betrag"
+                                step="0.01"
+                                min="0.01"
+                                placeholder="0,00"
+                                required
+                            >
+
+                            <span>€</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button full-width"
+                    >
+                        Ausgabe hinzufügen
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <section class="panel expenses-panel">
+
+            <div class="panel-heading">
+
+                <div class="panel-icon">
+                    📋
+                </div>
+
+                <div>
+                    <h2>Meine Ausgaben</h2>
+
+                    <p>
+                        Nur du kannst deine persönlichen
+                        Finanzdaten sehen.
+                    </p>
+                </div>
+
+            </div>
+
+
+            {% if ausgaben %}
+
+            <div class="expense-list">
+
+                {% for ausgabe in ausgaben %}
+
+                <div class="expense-row">
+
+                    <div class="expense-main">
+
+                        <div class="expense-category-icon">
+
+                            {% if ausgabe["kategorie"] == "Lebensmittel" %}
+                                🍎
+                            {% elif ausgabe["kategorie"] == "Miete" %}
+                                🏠
+                            {% elif ausgabe["kategorie"] == "Auto" %}
+                                🚗
+                            {% elif ausgabe["kategorie"] == "Kinder" %}
+                                🧸
+                            {% elif ausgabe["kategorie"] == "Freizeit" %}
+                                🎮
+                            {% elif ausgabe["kategorie"] == "Haushalt" %}
+                                🧹
+                            {% elif ausgabe["kategorie"] == "Rechnungen" %}
+                                🧾
+                            {% else %}
+                                📦
+                            {% endif %}
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                {{ ausgabe["beschreibung"] }}
+                            </strong>
+
+                            <p>
+                                {{ ausgabe["kategorie"] }}
+                                ·
+                                {{ ausgabe["datum"] }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="expense-actions">
+
+                        <strong class="expense-price">
+                            - {{ "%.2f"|format(ausgabe["betrag"]|float) }} €
+                        </strong>
+
+
+                        <form
+                            method="POST"
+                            action="/ausgabe-loeschen/{{ ausgabe['id'] }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="delete-button"
+                            >
+                                Löschen
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+
+                <div>
+                    💸
+                </div>
+
+                <h3>
+                    Noch keine Ausgaben
+                </h3>
 
                 <p>
-                    Willkommen in deinem Familienplaner.
+                    Deine eingetragenen Ausgaben erscheinen hier.
                 </p>
 
             </div>
 
+            {% endif %}
 
-            <div class="dashboard-grid">
-
-
-                <div class="dashboard-card">
-
-                    <div class="card-icon">
-                        📅
-                    </div>
-
-                    <h3>Kalender</h3>
-
-                    <p>
-                        Gemeinsame Termine und Ereignisse verwalten.
-                    </p>
-
-                    <button disabled>
-                        Bald verfügbar
-                    </button>
-
-                </div>
+        </section>
 
 
-                <div class="dashboard-card">
+    </main>
 
-                    <div class="card-icon">
-                        ✅
-                    </div>
-
-                    <h3>Aufgaben</h3>
-
-                    <p>
-                        Aufgaben für die Familie erstellen und verteilen.
-                    </p>
-
-                    <button disabled>
-                        Bald verfügbar
-                    </button>
-
-                </div>
+</div>
 
 
-                <div class="dashboard-card">
-
-                    <div class="card-icon">
-                        🛒
-                    </div>
-
-                    <h3>Einkaufsliste</h3>
-
-                    <p>
-                        Gemeinsame Einkaufsliste für alle Familienmitglieder.
-                    </p>
-
-                    <button disabled>
-                        Bald verfügbar
-                    </button>
-
-                </div>
-
-
-                <div class="dashboard-card">
-
-                    <div class="card-icon">
-                        💰
-                    </div>
-
-                    <h3>Finanzen</h3>
-
-                    <p>
-                        Eigenes Budget festlegen und persönliche Ausgaben verwalten.
-                    </p>
-
-                    <a href="/finanzen" class="card-button">
-                        Finanzen öffnen
-                    </a>
-
-                </div>
-
-
-                <div class="dashboard-card">
-
-                    <div class="card-icon">
-                        👨‍👩‍👧‍👦
-                    </div>
-
-                    <h3>Familie</h3>
-
-                    <p>
-                        Familienmitglieder und Benutzer verwalten.
-                    </p>
-
-                    {% if rolle == "admin" %}
-
-                        <a href="/admin" class="card-button">
-                            Admin-Bereich
-                        </a>
-
-                    {% else %}
-
-                        <button disabled>
-                            Nur für Admins
-                        </button>
-
-                    {% endif %}
-
-                </div>
-
-
-            </div>
-
-        </main>
-
-    </div>
+<script>
+    document.querySelectorAll(".progress-bar").forEach(function(bar) {
+        const value = Number(bar.dataset.progress || 0);
+        const safeValue = Math.min(Math.max(value, 0), 100);
+        bar.style.width = safeValue + "%";
+    });
+</script>
 
 </body>
+
 </html>
