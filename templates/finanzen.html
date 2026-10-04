@@ -53,7 +53,43 @@
     <main class="dashboard">
 
 
+        <!-- ÜBERSICHT -->
+
         <section class="finance-summary">
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    🎯
+                </div>
+
+                <div>
+                    <span>Standardbudget</span>
+
+                    <strong>
+                        {{ "%.2f"|format(standard_budget) }} €
+                    </strong>
+                </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    🔁
+                </div>
+
+                <div>
+                    <span>Übertrag</span>
+
+                    <strong>
+                        {{ "%.2f"|format(uebertrag) }} €
+                    </strong>
+                </div>
+
+            </article>
+
 
             <article class="stat-card">
 
@@ -62,7 +98,7 @@
                 </div>
 
                 <div>
-                    <span>Monatsbudget</span>
+                    <span>Aktuelles Budget</span>
 
                     <strong>
                         {{ "%.2f"|format(budget) }} €
@@ -105,8 +141,27 @@
 
             </article>
 
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    📅
+                </div>
+
+                <div>
+                    <span>Nächster Reset</span>
+
+                    <strong>
+                        {{ naechster_reset }}
+                    </strong>
+                </div>
+
+            </article>
+
         </section>
 
+
+        <!-- FORTSCHRITT -->
 
         {% if budget > 0 %}
 
@@ -116,11 +171,11 @@
 
                 <div>
                     <span class="eyebrow">
-                        BUDGET
+                        MONAT
                     </span>
 
                     <h3>
-                        Monatsübersicht
+                        Budgetübersicht
                     </h3>
                 </div>
 
@@ -129,7 +184,6 @@
                 </strong>
 
             </div>
-
 
             <div class="progress-background">
 
@@ -151,20 +205,28 @@
         {% endif %}
 
 
+        <!-- EINSTELLUNGEN + NEUE AUSGABE -->
+
         <section class="finance-layout">
 
+
+            <!-- FINANZ-EINSTELLUNGEN -->
 
             <div class="panel">
 
                 <div class="panel-heading">
 
                     <div class="panel-icon">
-                        🎯
+                        ⚙️
                     </div>
 
                     <div>
-                        <h2>Budget</h2>
-                        <p>Lege dein persönliches Monatsbudget fest.</p>
+                        <h2>Finanz-Einstellungen</h2>
+
+                        <p>
+                            Standardbudget und persönlichen
+                            Reset-Tag festlegen.
+                        </p>
                     </div>
 
                 </div>
@@ -172,24 +234,24 @@
 
                 <form
                     method="POST"
-                    action="/budget-speichern"
+                    action="/finanz-einstellungen-speichern"
                     class="form-grid"
                 >
 
                     <div class="form-group full-width">
 
                         <label>
-                            Monatsbudget
+                            Standardbudget
                         </label>
 
                         <div class="money-input">
 
                             <input
                                 type="number"
-                                name="budget"
+                                name="standard_budget"
                                 step="0.01"
                                 min="0"
-                                value="{{ budget }}"
+                                value="{{ standard_budget }}"
                                 required
                             >
 
@@ -200,17 +262,54 @@
                     </div>
 
 
+                    <div class="form-group full-width">
+
+                        <label>
+                            Monatlicher Reset-Tag
+                        </label>
+
+                        <select
+                            name="reset_tag"
+                            required
+                        >
+
+                            {% for tag in range(1, 29) %}
+
+                                <option
+                                    value="{{ tag }}"
+                                    {% if tag == reset_tag %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ tag }}. des Monats
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <small class="form-hint">
+                            Der Reset läuft immer am gewählten
+                            Tag. Das Restbudget wird automatisch
+                            in den nächsten Monat übernommen.
+                        </small>
+
+                    </div>
+
+
                     <button
                         type="submit"
                         class="primary-button full-width"
                     >
-                        Budget speichern
+                        Einstellungen speichern
                     </button>
 
                 </form>
 
             </div>
 
+
+            <!-- NEUE AUSGABE -->
 
             <div class="panel">
 
@@ -222,7 +321,11 @@
 
                     <div>
                         <h2>Neue Ausgabe</h2>
-                        <p>Trage eine persönliche Ausgabe ein.</p>
+
+                        <p>
+                            Normale Ausgabe oder monatliche
+                            Fixkosten eintragen.
+                        </p>
                     </div>
 
                 </div>
@@ -243,7 +346,7 @@
                         <input
                             type="text"
                             name="beschreibung"
-                            placeholder="z. B. Wocheneinkauf"
+                            placeholder="z. B. Miete oder Einkauf"
                             required
                         >
 
@@ -289,6 +392,14 @@
                                 🧾 Rechnungen
                             </option>
 
+                            <option value="Versicherung">
+                                🛡️ Versicherung
+                            </option>
+
+                            <option value="Abos">
+                                📺 Abos
+                            </option>
+
                             <option value="Sonstiges">
                                 📦 Sonstiges
                             </option>
@@ -322,6 +433,31 @@
                     </div>
 
 
+                    <div class="form-group full-width">
+
+                        <label class="checkbox-row">
+
+                            <input
+                                type="checkbox"
+                                name="ist_fix"
+                            >
+
+                            <span>
+                                Diese Ausgabe ist monatlich fix
+                            </span>
+
+                        </label>
+
+                        <small class="form-hint">
+                            Fixkosten werden beim nächsten
+                            Monats-Reset automatisch wieder
+                            eingetragen. Normale Ausgaben werden
+                            nicht übernommen.
+                        </small>
+
+                    </div>
+
+
                     <button
                         type="submit"
                         class="primary-button full-width"
@@ -336,6 +472,8 @@
         </section>
 
 
+        <!-- AKTUELLE AUSGABEN -->
+
         <section class="panel expenses-panel">
 
             <div class="panel-heading">
@@ -345,11 +483,11 @@
                 </div>
 
                 <div>
-                    <h2>Meine Ausgaben</h2>
+                    <h2>Aktuelle Ausgaben</h2>
 
                     <p>
-                        Nur du kannst deine persönlichen
-                        Finanzdaten sehen.
+                        Alle Ausgaben deiner aktuellen
+                        Abrechnungsperiode.
                     </p>
                 </div>
 
@@ -362,72 +500,221 @@
 
                 {% for ausgabe in ausgaben %}
 
-                <div class="expense-row">
+                <div class="expense-card">
 
-                    <div class="expense-main">
+                    <div class="expense-card-top">
 
-                        <div class="expense-category-icon">
+                        <div class="expense-main">
 
-                            {% if ausgabe["kategorie"] == "Lebensmittel" %}
-                                🍎
-                            {% elif ausgabe["kategorie"] == "Miete" %}
-                                🏠
-                            {% elif ausgabe["kategorie"] == "Auto" %}
-                                🚗
-                            {% elif ausgabe["kategorie"] == "Kinder" %}
-                                🧸
-                            {% elif ausgabe["kategorie"] == "Freizeit" %}
-                                🎮
-                            {% elif ausgabe["kategorie"] == "Haushalt" %}
-                                🧹
-                            {% elif ausgabe["kategorie"] == "Rechnungen" %}
-                                🧾
-                            {% else %}
-                                📦
-                            {% endif %}
+                            <div class="expense-category-icon">
+
+                                {% if ausgabe["kategorie"] == "Lebensmittel" %}
+                                    🍎
+                                {% elif ausgabe["kategorie"] == "Miete" %}
+                                    🏠
+                                {% elif ausgabe["kategorie"] == "Auto" %}
+                                    🚗
+                                {% elif ausgabe["kategorie"] == "Kinder" %}
+                                    🧸
+                                {% elif ausgabe["kategorie"] == "Freizeit" %}
+                                    🎮
+                                {% elif ausgabe["kategorie"] == "Haushalt" %}
+                                    🧹
+                                {% elif ausgabe["kategorie"] == "Rechnungen" %}
+                                    🧾
+                                {% elif ausgabe["kategorie"] == "Versicherung" %}
+                                    🛡️
+                                {% elif ausgabe["kategorie"] == "Abos" %}
+                                    📺
+                                {% else %}
+                                    📦
+                                {% endif %}
+
+                            </div>
+
+
+                            <div>
+
+                                <div class="expense-title-row">
+
+                                    <strong>
+                                        {{ ausgabe["beschreibung"] }}
+                                    </strong>
+
+                                    {% if ausgabe["ist_fix"] %}
+
+                                        <span class="fix-badge">
+                                            🔒 Fix
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                                <p>
+                                    {{ ausgabe["kategorie"] }}
+                                    ·
+                                    {{ ausgabe["datum"] }}
+                                </p>
+
+                            </div>
 
                         </div>
 
-
-                        <div>
-
-                            <strong>
-                                {{ ausgabe["beschreibung"] }}
-                            </strong>
-
-                            <p>
-                                {{ ausgabe["kategorie"] }}
-                                ·
-                                {{ ausgabe["datum"] }}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="expense-actions">
 
                         <strong class="expense-price">
                             - {{ "%.2f"|format(ausgabe["betrag"]|float) }} €
                         </strong>
 
+                    </div>
+
+
+                    <!-- BEARBEITEN -->
+
+                    <details class="edit-box">
+
+                        <summary>
+                            ✏️ Bearbeiten
+                        </summary>
 
                         <form
                             method="POST"
-                            action="/ausgabe-loeschen/{{ ausgabe['id'] }}"
+                            action="/ausgabe-bearbeiten/{{ ausgabe['id'] }}"
+                            class="form-grid edit-form"
                         >
+
+                            <div class="form-group full-width">
+
+                                <label>
+                                    Beschreibung
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="beschreibung"
+                                    value="{{ ausgabe['beschreibung'] }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Kategorie
+                                </label>
+
+                                <select
+                                    name="kategorie"
+                                    required
+                                >
+
+                                    {% set kategorien = [
+                                        "Lebensmittel",
+                                        "Miete",
+                                        "Auto",
+                                        "Kinder",
+                                        "Freizeit",
+                                        "Haushalt",
+                                        "Rechnungen",
+                                        "Versicherung",
+                                        "Abos",
+                                        "Sonstiges"
+                                    ] %}
+
+                                    {% for kategorie in kategorien %}
+
+                                        <option
+                                            value="{{ kategorie }}"
+                                            {% if ausgabe["kategorie"] == kategorie %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            {{ kategorie }}
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Betrag
+                                </label>
+
+                                <div class="money-input">
+
+                                    <input
+                                        type="number"
+                                        name="betrag"
+                                        step="0.01"
+                                        min="0.01"
+                                        value="{{ ausgabe['betrag'] }}"
+                                        required
+                                    >
+
+                                    <span>€</span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group full-width">
+
+                                <label class="checkbox-row">
+
+                                    <input
+                                        type="checkbox"
+                                        name="ist_fix"
+                                        {% if ausgabe["ist_fix"] %}
+                                            checked
+                                        {% endif %}
+                                    >
+
+                                    <span>
+                                        Monatliche Fixkosten
+                                    </span>
+
+                                </label>
+
+                            </div>
+
 
                             <button
                                 type="submit"
-                                class="delete-button"
+                                class="primary-button full-width"
                             >
-                                Löschen
+                                Änderungen speichern
                             </button>
 
                         </form>
 
-                    </div>
+                    </details>
+
+
+                    <!-- LÖSCHEN -->
+
+                    <form
+                        method="POST"
+                        action="/ausgabe-loeschen/{{ ausgabe['id'] }}"
+                        class="expense-delete-form"
+                        onsubmit="return confirm('Ausgabe wirklich löschen?');"
+                    >
+
+                        <button
+                            type="submit"
+                            class="delete-button"
+                        >
+                            Löschen
+                        </button>
+
+                    </form>
 
                 </div>
 
@@ -448,12 +735,75 @@
                 </h3>
 
                 <p>
-                    Deine eingetragenen Ausgaben erscheinen hier.
+                    Trage oben deine erste Ausgabe ein.
                 </p>
 
             </div>
 
             {% endif %}
+
+        </section>
+
+
+        <!-- INFO -->
+
+        <section class="finance-info-grid">
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    🔁
+                </div>
+
+                <div>
+                    <h3>Automatischer Übertrag</h3>
+
+                    <p>
+                        Positives Restbudget wird beim Reset
+                        automatisch auf dein neues
+                        Standardbudget draufgerechnet.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    🔒
+                </div>
+
+                <div>
+                    <h3>Fixkosten bleiben</h3>
+
+                    <p>
+                        Nur Ausgaben, die du selbst als Fixkosten
+                        markierst, werden in die nächste Periode
+                        übernommen.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    🧹
+                </div>
+
+                <div>
+                    <h3>Normale Ausgaben resetten</h3>
+
+                    <p>
+                        Normale Ausgaben gehören nur zur aktuellen
+                        Periode und erscheinen nach dem Reset nicht
+                        mehr in der neuen Monatsansicht.
+                    </p>
+                </div>
+
+            </div>
 
         </section>
 
@@ -472,5 +822,4 @@
 </script>
 
 </body>
-
 </html>

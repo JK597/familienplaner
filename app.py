@@ -1,6 +1,8 @@
 import os
 import sqlite3
-from datetime import datetime
+from datetime import date, datetime
+from calendar import monthrange
+from zoneinfo import ZoneInfo
 
 from flask import Flask, request, redirect, session, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -15,9 +17,9 @@ except ImportError:
 app = Flask(__name__)
 
 
-# --------------------------------------------------
+# ==================================================
 # EINSTELLUNGEN
-# --------------------------------------------------
+# ==================================================
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
@@ -34,9 +36,88 @@ DATABASE_URL = os.environ.get(
 )
 
 
-# --------------------------------------------------
+# ==================================================
+# DATUM / ZEIT
+# ==================================================
+
+def heute():
+    return datetime.now(
+        ZoneInfo("Europe/Berlin")
+    ).date()
+
+
+def datum_lesen(wert):
+
+    if isinstance(wert, date):
+        return wert
+
+    return date.fromisoformat(
+        str(wert)
+    )
+
+
+def aktueller_periodenstart(
+    reset_tag,
+    bezugsdatum=None
+):
+
+    if bezugsdatum is None:
+        bezugsdatum = heute()
+
+    reset_tag = max(
+        1,
+        min(28, int(reset_tag))
+    )
+
+    if bezugsdatum.day >= reset_tag:
+
+        return date(
+            bezugsdatum.year,
+            bezugsdatum.month,
+            reset_tag
+        )
+
+    jahr = bezugsdatum.year
+    monat = bezugsdatum.month - 1
+
+    if monat == 0:
+        monat = 12
+        jahr -= 1
+
+    return date(
+        jahr,
+        monat,
+        reset_tag
+    )
+
+
+def naechster_periodenstart(
+    periodenstart,
+    reset_tag
+):
+
+    reset_tag = max(
+        1,
+        min(28, int(reset_tag))
+    )
+
+    jahr = periodenstart.year
+    monat = periodenstart.month + 1
+
+    if monat == 13:
+        monat = 1
+        jahr += 1
+
+    return date(
+        jahr,
+        monat,
+        reset_tag
+    )
+
+
+# ==================================================
 # DATENBANK
-# --------------------------------------------------
+# ==================================================
 
 def postgres_verwenden():
     return bool(DATABASE_URL)
@@ -47,7 +128,6 @@ def datenbank():
     if postgres_verwenden():
 
         if psycopg2 is None:
-
             raise RuntimeError(
                 "DATABASE_URL ist gesetzt, "
                 "aber psycopg2 fehlt."
@@ -62,6 +142,10 @@ def datenbank():
     )
 
     db.row_factory = sqlite3.Row
+
+    db.execute(
+        "PRAGMA foreign_keys = ON"
+    )
 
     return db
 
@@ -186,9 +270,9 @@ def execute_query(
         db.close()
 
 
-# --------------------------------------------------
-# TABELLEN
-# --------------------------------------------------
+# ==================================================
+# TABELLEN ERSTELLEN / AKTUALISIEREN
+# ==================================================
 
 def datenbank_erstellen():
 
@@ -196,22 +280,37 @@ def datenbank_erstellen():
 
     try:
 
+        # ==========================================
+        # POSTGRESQL
+        # ==========================================
+
         if postgres_verwenden():
 
             cursor = db.cursor()
 
+
+            # --------------------------
+            # BENUTZER
+            # --------------------------
+
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS benutzer (
                     id SERIAL PRIMARY KEY,
+
                     benutzername VARCHAR(100)
                         UNIQUE NOT NULL,
+
                     passwort TEXT NOT NULL,
-                    rolle VARCHAR(50) NOT NULL,
+
+                    rolle VARCHAR(50)
+                        NOT NULL,
+
                     passwort_muss_geaendert
                         BOOLEAN NOT NULL
                         DEFAULT FALSE
                 )
             """)
+
 
             cursor.execute("""
                 ALTER TABLE benutzer
@@ -221,8 +320,15 @@ def datenbank_erstellen():
                 DEFAULT FALSE
             """)
 
+
+            # --------------------------
+            # FINANZ-EINSTELLUNGEN
+            # --------------------------
+
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS budgets (
+                CREATE TABLE IF NOT EXISTS
+                finanz_einstellungen
+                (
                     id SERIAL PRIMARY KEY,
 
                     benutzer_id INTEGER
@@ -230,10 +336,30 @@ def datenbank_erstellen():
                         REFERENCES benutzer(id)
                         ON DELETE CASCADE,
 
-                    betrag NUMERIC(12,2)
-                        NOT NULL DEFAULT 0
+                    standard_budget
+                        NUMERIC(12,2)
+                        NOT NULL
+                        DEFAULT 0,
+
+                    uebertrag
+                        NUMERIC(12,2)
+                        NOT NULL
+                        DEFAULT 0,
+
+                    reset_tag INTEGER
+                        NOT NULL
+                        DEFAULT 1,
+
+                    periodenstart DATE
+                        NOT NULL
+                        DEFAULT CURRENT_DATE
                 )
             """)
+
+
+            # --------------------------
+            # AUSGABEN
+            # --------------------------
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS ausgaben (
@@ -255,13 +381,100 @@ def datenbank_erstellen():
 
                     datum TIMESTAMP
                         NOT NULL
-                        DEFAULT CURRENT_TIMESTAMP
+                        DEFAULT CURRENT_TIMESTAMP,
+
+                    ist_fix BOOLEAN
+                        NOT NULL
+                        DEFAULT FALSE,
+
+                    periodenstart DATE
                 )
             """)
 
+
+            cursor.execute("""
+                ALTER TABLE ausgaben
+                ADD COLUMN IF NOT EXISTS
+                ist_fix BOOLEAN
+                NOT NULL
+                DEFAULT FALSE
+            """)
+
+
+            cursor.execute("""
+                ALTER TABLE ausgaben
+                ADD COLUMN IF NOT EXISTS
+                periodenstart DATE
+            """)
+
+
+            cursor.execute("""
+                UPDATE ausgaben
+
+                SET periodenstart =
+                    CURRENT_DATE
+
+                WHERE periodenstart
+                    IS NULL
+            """)
+
+
+            # --------------------------
+            # ALTEN BUDGET-WERT
+            # ÜBERNEHMEN
+            # --------------------------
+
+            cursor.execute("""
+                SELECT to_regclass(
+                    'public.budgets'
+                )
+            """)
+
+            budgets_existiert = (
+                cursor.fetchone()[0]
+            )
+
+            if budgets_existiert:
+
+                cursor.execute("""
+                    INSERT INTO
+                        finanz_einstellungen
+                    (
+                        benutzer_id,
+                        standard_budget,
+                        uebertrag,
+                        reset_tag,
+                        periodenstart
+                    )
+
+                    SELECT
+                        benutzer_id,
+                        betrag,
+                        0,
+                        1,
+                        CURRENT_DATE
+
+                    FROM budgets
+
+                    ON CONFLICT
+                        (benutzer_id)
+
+                    DO NOTHING
+                """)
+
+
             cursor.close()
 
+
+        # ==========================================
+        # SQLITE
+        # ==========================================
+
         else:
+
+            # --------------------------
+            # BENUTZER
+            # --------------------------
 
             db.execute("""
                 CREATE TABLE IF NOT EXISTS benutzer (
@@ -281,6 +494,7 @@ def datenbank_erstellen():
                 )
             """)
 
+
             spalten = db.execute(
                 "PRAGMA table_info(benutzer)"
             ).fetchall()
@@ -297,28 +511,50 @@ def datenbank_erstellen():
 
                 db.execute("""
                     ALTER TABLE benutzer
+
                     ADD COLUMN
                     passwort_muss_geaendert
                     INTEGER NOT NULL
                     DEFAULT 0
                 """)
 
+
+            # --------------------------
+            # FINANZEN
+            # --------------------------
+
             db.execute("""
-                CREATE TABLE IF NOT EXISTS budgets (
+                CREATE TABLE IF NOT EXISTS
+                finanz_einstellungen
+                (
                     id INTEGER PRIMARY KEY
                         AUTOINCREMENT,
 
                     benutzer_id INTEGER
                         UNIQUE NOT NULL,
 
-                    betrag REAL
+                    standard_budget REAL
                         NOT NULL DEFAULT 0,
+
+                    uebertrag REAL
+                        NOT NULL DEFAULT 0,
+
+                    reset_tag INTEGER
+                        NOT NULL DEFAULT 1,
+
+                    periodenstart TEXT
+                        NOT NULL,
 
                     FOREIGN KEY (benutzer_id)
                     REFERENCES benutzer(id)
                     ON DELETE CASCADE
                 )
             """)
+
+
+            # --------------------------
+            # AUSGABEN
+            # --------------------------
 
             db.execute("""
                 CREATE TABLE IF NOT EXISTS ausgaben (
@@ -340,36 +576,189 @@ def datenbank_erstellen():
                     datum TEXT
                         NOT NULL,
 
+                    ist_fix INTEGER
+                        NOT NULL
+                        DEFAULT 0,
+
+                    periodenstart TEXT,
+
                     FOREIGN KEY (benutzer_id)
                     REFERENCES benutzer(id)
                     ON DELETE CASCADE
                 )
             """)
 
+
+            ausgaben_spalten = db.execute(
+                "PRAGMA table_info(ausgaben)"
+            ).fetchall()
+
+            ausgaben_spalten_namen = [
+                spalte["name"]
+                for spalte
+                in ausgaben_spalten
+            ]
+
+
+            if (
+                "ist_fix"
+                not in ausgaben_spalten_namen
+            ):
+
+                db.execute("""
+                    ALTER TABLE ausgaben
+
+                    ADD COLUMN
+                    ist_fix INTEGER
+                    NOT NULL DEFAULT 0
+                """)
+
+
+            if (
+                "periodenstart"
+                not in ausgaben_spalten_namen
+            ):
+
+                db.execute("""
+                    ALTER TABLE ausgaben
+
+                    ADD COLUMN
+                    periodenstart TEXT
+                """)
+
+
+            db.execute(
+                """
+                UPDATE ausgaben
+
+                SET periodenstart = ?
+
+                WHERE periodenstart
+                    IS NULL
+                """,
+                (
+                    heute().isoformat(),
+                )
+            )
+
+
+            # Alten Budgetwert übernehmen
+
+            budgets_tabelle = db.execute(
+                """
+                SELECT name
+
+                FROM sqlite_master
+
+                WHERE
+                    type = 'table'
+                    AND name = 'budgets'
+                """
+            ).fetchone()
+
+
+            if budgets_tabelle:
+
+                alte_budgets = db.execute(
+                    """
+                    SELECT
+                        benutzer_id,
+                        betrag
+
+                    FROM budgets
+                    """
+                ).fetchall()
+
+
+                for alter_wert in alte_budgets:
+
+                    vorhanden = db.execute(
+                        """
+                        SELECT id
+
+                        FROM finanz_einstellungen
+
+                        WHERE benutzer_id = ?
+                        """,
+                        (
+                            alter_wert[
+                                "benutzer_id"
+                            ],
+                        )
+                    ).fetchone()
+
+
+                    if vorhanden is None:
+
+                        db.execute(
+                            """
+                            INSERT INTO
+                                finanz_einstellungen
+                            (
+                                benutzer_id,
+                                standard_budget,
+                                uebertrag,
+                                reset_tag,
+                                periodenstart
+                            )
+
+                            VALUES (?, ?, ?, ?, ?)
+                            """,
+                            (
+                                alter_wert[
+                                    "benutzer_id"
+                                ],
+
+                                alter_wert[
+                                    "betrag"
+                                ],
+
+                                0,
+
+                                1,
+
+                                heute().isoformat()
+                            )
+                        )
+
+
         db.commit()
+
 
     finally:
 
         db.close()
 
 
+    # ==============================================
+    # ADMIN ERSTELLEN
+    # ==============================================
+
     admin = query_einen(
 
         """
         SELECT *
+
         FROM benutzer
+
         WHERE rolle = %s
+
         LIMIT 1
         """,
 
         """
         SELECT *
+
         FROM benutzer
+
         WHERE rolle = ?
+
         LIMIT 1
         """,
 
-        ("admin",)
+        (
+            "admin",
+        )
     )
 
 
@@ -390,7 +779,7 @@ def datenbank_erstellen():
                 %s,
                 %s,
                 %s,
-                %s
+                FALSE
             )
             """,
 
@@ -403,7 +792,7 @@ def datenbank_erstellen():
                 passwort_muss_geaendert
             )
 
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, 0)
             """,
 
             (
@@ -413,16 +802,439 @@ def datenbank_erstellen():
                     ADMIN_PASSWORD
                 ),
 
-                "admin",
-
-                False
+                "admin"
             )
         )
 
 
-# --------------------------------------------------
+# ==================================================
+# FINANZ-EINSTELLUNGEN SICHERSTELLEN
+# ==================================================
+
+def finanz_einstellungen_sicherstellen(
+    benutzer_id
+):
+
+    einstellungen = query_einen(
+
+        """
+        SELECT *
+
+        FROM finanz_einstellungen
+
+        WHERE benutzer_id = %s
+        """,
+
+        """
+        SELECT *
+
+        FROM finanz_einstellungen
+
+        WHERE benutzer_id = ?
+        """,
+
+        (
+            benutzer_id,
+        )
+    )
+
+
+    if einstellungen:
+
+        return einstellungen
+
+
+    start = aktueller_periodenstart(
+        1
+    )
+
+
+    execute_query(
+
+        """
+        INSERT INTO finanz_einstellungen
+        (
+            benutzer_id,
+            standard_budget,
+            uebertrag,
+            reset_tag,
+            periodenstart
+        )
+
+        VALUES (
+            %s,
+            %s,
+            %s,
+            %s,
+            %s
+        )
+        """,
+
+        """
+        INSERT INTO finanz_einstellungen
+        (
+            benutzer_id,
+            standard_budget,
+            uebertrag,
+            reset_tag,
+            periodenstart
+        )
+
+        VALUES (?, ?, ?, ?, ?)
+        """,
+
+        (
+            benutzer_id,
+            0,
+            0,
+            1,
+            start
+            if postgres_verwenden()
+            else start.isoformat()
+        )
+    )
+
+
+    return finanz_einstellungen_sicherstellen(
+        benutzer_id
+    )
+
+
+# ==================================================
+# MONATS-RESET
+# ==================================================
+
+def monatswechsel_pruefen(
+    benutzer_id
+):
+
+    einstellungen = (
+        finanz_einstellungen_sicherstellen(
+            benutzer_id
+        )
+    )
+
+
+    reset_tag = int(
+        einstellungen[
+            "reset_tag"
+        ]
+    )
+
+
+    periodenstart = datum_lesen(
+        einstellungen[
+            "periodenstart"
+        ]
+    )
+
+
+    standard_budget = float(
+        einstellungen[
+            "standard_budget"
+        ]
+    )
+
+
+    uebertrag = float(
+        einstellungen[
+            "uebertrag"
+        ]
+    )
+
+
+    aktuelles_datum = heute()
+
+
+    while True:
+
+        naechster_start = (
+            naechster_periodenstart(
+                periodenstart,
+                reset_tag
+            )
+        )
+
+
+        if (
+            naechster_start
+            > aktuelles_datum
+        ):
+
+            break
+
+
+        # ------------------------------------------
+        # AUSGABEN DER ALTEN PERIODE
+        # ------------------------------------------
+
+        summe = query_einen(
+
+            """
+            SELECT
+                COALESCE(
+                    SUM(betrag),
+                    0
+                ) AS summe
+
+            FROM ausgaben
+
+            WHERE
+                benutzer_id = %s
+                AND periodenstart = %s
+            """,
+
+            """
+            SELECT
+                COALESCE(
+                    SUM(betrag),
+                    0
+                ) AS summe
+
+            FROM ausgaben
+
+            WHERE
+                benutzer_id = ?
+                AND periodenstart = ?
+            """,
+
+            (
+                benutzer_id,
+
+                periodenstart
+                if postgres_verwenden()
+                else periodenstart.isoformat()
+            )
+        )
+
+
+        ausgegeben = float(
+            summe["summe"] or 0
+        )
+
+
+        aktuelles_budget = (
+            standard_budget
+            + uebertrag
+        )
+
+
+        rest = (
+            aktuelles_budget
+            - ausgegeben
+        )
+
+
+        # Nur positives Restbudget
+        # wird gutgeschrieben
+
+        neuer_uebertrag = max(
+            rest,
+            0
+        )
+
+
+        # ------------------------------------------
+        # FIXKOSTEN DER ALTEN PERIODE
+        # ------------------------------------------
+
+        fixkosten = query_alle(
+
+            """
+            SELECT
+                beschreibung,
+                kategorie,
+                betrag
+
+            FROM ausgaben
+
+            WHERE
+                benutzer_id = %s
+                AND periodenstart = %s
+                AND ist_fix = TRUE
+            """,
+
+            """
+            SELECT
+                beschreibung,
+                kategorie,
+                betrag
+
+            FROM ausgaben
+
+            WHERE
+                benutzer_id = ?
+                AND periodenstart = ?
+                AND ist_fix = 1
+            """,
+
+            (
+                benutzer_id,
+
+                periodenstart
+                if postgres_verwenden()
+                else periodenstart.isoformat()
+            )
+        )
+
+
+        # ------------------------------------------
+        # NEUE PERIODE SETZEN
+        # ------------------------------------------
+
+        execute_query(
+
+            """
+            UPDATE finanz_einstellungen
+
+            SET
+                uebertrag = %s,
+                periodenstart = %s
+
+            WHERE benutzer_id = %s
+            """,
+
+            """
+            UPDATE finanz_einstellungen
+
+            SET
+                uebertrag = ?,
+                periodenstart = ?
+
+            WHERE benutzer_id = ?
+            """,
+
+            (
+                neuer_uebertrag,
+
+                naechster_start
+                if postgres_verwenden()
+                else naechster_start.isoformat(),
+
+                benutzer_id
+            )
+        )
+
+
+        # ------------------------------------------
+        # FIXKOSTEN AUTOMATISCH
+        # NEU EINTRAGEN
+        # ------------------------------------------
+
+        for fixkosten_eintrag in fixkosten:
+
+            if postgres_verwenden():
+
+                execute_query(
+
+                    """
+                    INSERT INTO ausgaben
+                    (
+                        benutzer_id,
+                        beschreibung,
+                        kategorie,
+                        betrag,
+                        ist_fix,
+                        periodenstart
+                    )
+
+                    VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        TRUE,
+                        %s
+                    )
+                    """,
+
+                    "",
+
+                    (
+                        benutzer_id,
+
+                        fixkosten_eintrag[
+                            "beschreibung"
+                        ],
+
+                        fixkosten_eintrag[
+                            "kategorie"
+                        ],
+
+                        fixkosten_eintrag[
+                            "betrag"
+                        ],
+
+                        naechster_start
+                    )
+                )
+
+            else:
+
+                execute_query(
+
+                    "",
+
+                    """
+                    INSERT INTO ausgaben
+                    (
+                        benutzer_id,
+                        beschreibung,
+                        kategorie,
+                        betrag,
+                        datum,
+                        ist_fix,
+                        periodenstart
+                    )
+
+                    VALUES (
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        1,
+                        ?
+                    )
+                    """,
+
+                    (
+                        benutzer_id,
+
+                        fixkosten_eintrag[
+                            "beschreibung"
+                        ],
+
+                        fixkosten_eintrag[
+                            "kategorie"
+                        ],
+
+                        fixkosten_eintrag[
+                            "betrag"
+                        ],
+
+                        datetime.now().strftime(
+                            "%d.%m.%Y %H:%M"
+                        ),
+
+                        naechster_start.isoformat()
+                    )
+                )
+
+
+        uebertrag = neuer_uebertrag
+
+        periodenstart = naechster_start
+
+
+    return finanz_einstellungen_sicherstellen(
+        benutzer_id
+    )
+
+
+# ==================================================
 # LOGIN
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/",
@@ -435,6 +1247,7 @@ def login():
 
     fehler = ""
 
+
     if request.method == "POST":
 
         benutzername = request.form[
@@ -445,17 +1258,22 @@ def login():
             "passwort"
         ]
 
+
         benutzer = query_einen(
 
             """
             SELECT *
+
             FROM benutzer
+
             WHERE benutzername = %s
             """,
 
             """
             SELECT *
+
             FROM benutzer
+
             WHERE benutzername = ?
             """,
 
@@ -468,14 +1286,18 @@ def login():
         if (
             benutzer
             and check_password_hash(
-                benutzer["passwort"],
+                benutzer[
+                    "passwort"
+                ],
                 passwort
             )
         ):
 
             session[
                 "benutzer_id"
-            ] = benutzer["id"]
+            ] = benutzer[
+                "id"
+            ]
 
             session[
                 "benutzer"
@@ -524,9 +1346,9 @@ def login():
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # ERSTES EIGENES PASSWORT
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/erstes-passwort",
@@ -598,6 +1420,7 @@ def erstes_passwort():
 
                 SET
                     passwort = %s,
+
                     passwort_muss_geaendert
                         = FALSE
 
@@ -609,6 +1432,7 @@ def erstes_passwort():
 
                 SET
                     passwort = ?,
+
                     passwort_muss_geaendert
                         = 0
 
@@ -644,9 +1468,9 @@ def erstes_passwort():
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # DASHBOARD
-# --------------------------------------------------
+# ==================================================
 
 @app.route("/dashboard")
 def dashboard():
@@ -670,18 +1494,20 @@ def dashboard():
 
     return render_template(
         "dashboard.html",
+
         benutzer=session[
             "benutzer"
         ],
+
         rolle=session[
             "rolle"
         ]
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # FINANZEN
-# --------------------------------------------------
+# ==================================================
 
 @app.route("/finanzen")
 def finanzen():
@@ -699,37 +1525,45 @@ def finanzen():
     ]
 
 
-    budget_datensatz = query_einen(
-
-        """
-        SELECT betrag
-        FROM budgets
-        WHERE benutzer_id = %s
-        """,
-
-        """
-        SELECT betrag
-        FROM budgets
-        WHERE benutzer_id = ?
-        """,
-
-        (
-            benutzer_id,
+    einstellungen = (
+        monatswechsel_pruefen(
+            benutzer_id
         )
     )
 
 
-    if budget_datensatz:
+    standard_budget = float(
+        einstellungen[
+            "standard_budget"
+        ]
+    )
 
-        budget = float(
-            budget_datensatz[
-                "betrag"
-            ]
-        )
 
-    else:
+    uebertrag = float(
+        einstellungen[
+            "uebertrag"
+        ]
+    )
 
-        budget = 0.0
+
+    reset_tag = int(
+        einstellungen[
+            "reset_tag"
+        ]
+    )
+
+
+    periodenstart = datum_lesen(
+        einstellungen[
+            "periodenstart"
+        ]
+    )
+
+
+    budget = (
+        standard_budget
+        + uebertrag
+    )
 
 
     summe = query_einen(
@@ -743,7 +1577,9 @@ def finanzen():
 
         FROM ausgaben
 
-        WHERE benutzer_id = %s
+        WHERE
+            benutzer_id = %s
+            AND periodenstart = %s
         """,
 
         """
@@ -755,11 +1591,17 @@ def finanzen():
 
         FROM ausgaben
 
-        WHERE benutzer_id = ?
+        WHERE
+            benutzer_id = ?
+            AND periodenstart = ?
         """,
 
         (
             benutzer_id,
+
+            periodenstart
+            if postgres_verwenden()
+            else periodenstart.isoformat()
         )
     )
 
@@ -783,7 +1625,10 @@ def finanzen():
         )
 
         prozent_verbraucht = min(
-            prozent_verbraucht,
+            max(
+                prozent_verbraucht,
+                0
+            ),
             100
         )
 
@@ -800,6 +1645,7 @@ def finanzen():
             beschreibung,
             kategorie,
             betrag,
+            ist_fix,
 
             TO_CHAR(
                 datum,
@@ -808,9 +1654,12 @@ def finanzen():
 
         FROM ausgaben
 
-        WHERE benutzer_id = %s
+        WHERE
+            benutzer_id = %s
+            AND periodenstart = %s
 
-        ORDER BY datum DESC
+        ORDER BY
+            datum DESC
         """,
 
         """
@@ -819,17 +1668,33 @@ def finanzen():
             beschreibung,
             kategorie,
             betrag,
+            ist_fix,
             datum
 
         FROM ausgaben
 
-        WHERE benutzer_id = ?
+        WHERE
+            benutzer_id = ?
+            AND periodenstart = ?
 
-        ORDER BY id DESC
+        ORDER BY
+            id DESC
         """,
 
         (
             benutzer_id,
+
+            periodenstart
+            if postgres_verwenden()
+            else periodenstart.isoformat()
+        )
+    )
+
+
+    naechster_reset = (
+        naechster_periodenstart(
+            periodenstart,
+            reset_tag
         )
     )
 
@@ -842,22 +1707,142 @@ def finanzen():
             "benutzer"
         ],
 
-        budget=budget,
+        standard_budget=
+            standard_budget,
 
-        ausgegeben=ausgegeben,
+        uebertrag=
+            uebertrag,
 
-        verfuegbar=verfuegbar,
+        budget=
+            budget,
+
+        ausgegeben=
+            ausgegeben,
+
+        verfuegbar=
+            verfuegbar,
 
         prozent_verbraucht=
             prozent_verbraucht,
 
-        ausgaben=ausgaben
+        reset_tag=
+            reset_tag,
+
+        naechster_reset=
+            naechster_reset.strftime(
+                "%d.%m.%Y"
+            ),
+
+        ausgaben=
+            ausgaben
     )
 
 
-# --------------------------------------------------
-# BUDGET SPEICHERN
-# --------------------------------------------------
+# ==================================================
+# FINANZ-EINSTELLUNGEN SPEICHERN
+# ==================================================
+
+@app.route(
+    "/finanz-einstellungen-speichern",
+    methods=[
+        "POST"
+    ]
+)
+def finanz_einstellungen_speichern():
+
+    if (
+        "benutzer_id"
+        not in session
+    ):
+
+        return redirect("/")
+
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+
+    try:
+
+        standard_budget = float(
+            request.form[
+                "standard_budget"
+            ]
+        )
+
+        reset_tag = int(
+            request.form[
+                "reset_tag"
+            ]
+        )
+
+    except (
+        ValueError,
+        KeyError
+    ):
+
+        return redirect(
+            "/finanzen"
+        )
+
+
+    standard_budget = max(
+        standard_budget,
+        0
+    )
+
+
+    reset_tag = max(
+        1,
+        min(
+            reset_tag,
+            28
+        )
+    )
+
+
+    finanz_einstellungen_sicherstellen(
+        benutzer_id
+    )
+
+
+    execute_query(
+
+        """
+        UPDATE finanz_einstellungen
+
+        SET
+            standard_budget = %s,
+            reset_tag = %s
+
+        WHERE benutzer_id = %s
+        """,
+
+        """
+        UPDATE finanz_einstellungen
+
+        SET
+            standard_budget = ?,
+            reset_tag = ?
+
+        WHERE benutzer_id = ?
+        """,
+
+        (
+            standard_budget,
+            reset_tag,
+            benutzer_id
+        )
+    )
+
+
+    return redirect(
+        "/finanzen"
+    )
+
+
+# Alter Link bleibt kompatibel
 
 @app.route(
     "/budget-speichern",
@@ -888,98 +1873,48 @@ def budget_speichern():
             ]
         )
 
-    except ValueError:
+    except (
+        ValueError,
+        KeyError
+    ):
 
         return redirect(
             "/finanzen"
         )
 
 
-    if betrag < 0:
-
-        betrag = 0
-
-
-    vorhandenes_budget = (
-        query_einen(
-
-            """
-            SELECT id
-            FROM budgets
-            WHERE benutzer_id = %s
-            """,
-
-            """
-            SELECT id
-            FROM budgets
-            WHERE benutzer_id = ?
-            """,
-
-            (
-                benutzer_id,
-            )
-        )
+    finanz_einstellungen_sicherstellen(
+        benutzer_id
     )
 
 
-    if vorhandenes_budget:
+    execute_query(
 
-        execute_query(
+        """
+        UPDATE finanz_einstellungen
 
-            """
-            UPDATE budgets
+        SET standard_budget = %s
 
-            SET betrag = %s
+        WHERE benutzer_id = %s
+        """,
 
-            WHERE benutzer_id = %s
-            """,
+        """
+        UPDATE finanz_einstellungen
 
-            """
-            UPDATE budgets
+        SET standard_budget = ?
 
-            SET betrag = ?
+        WHERE benutzer_id = ?
+        """,
 
-            WHERE benutzer_id = ?
-            """,
-
-            (
+        (
+            max(
                 betrag,
-                benutzer_id
-            )
+                0
+            ),
+
+            benutzer_id
         )
-
-    else:
-
-        execute_query(
-
-            """
-            INSERT INTO budgets
-            (
-                benutzer_id,
-                betrag
-            )
-
-            VALUES (
-                %s,
-                %s
-            )
-            """,
-
-            """
-            INSERT INTO budgets
-            (
-                benutzer_id,
-                betrag
-            )
-
-            VALUES (?, ?)
-            """,
-
-            (
-                benutzer_id,
-                betrag
-            )
-        )
+    )
 
 
     return redirect(
@@ -987,9 +1922,9 @@ def budget_speichern():
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # AUSGABE HINZUFÜGEN
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/ausgabe-hinzufuegen",
@@ -1012,6 +1947,20 @@ def ausgabe_hinzufuegen():
     ]
 
 
+    einstellungen = (
+        monatswechsel_pruefen(
+            benutzer_id
+        )
+    )
+
+
+    periodenstart = datum_lesen(
+        einstellungen[
+            "periodenstart"
+        ]
+    )
+
+
     beschreibung = request.form[
         "beschreibung"
     ].strip()
@@ -1020,6 +1969,14 @@ def ausgabe_hinzufuegen():
     kategorie = request.form[
         "kategorie"
     ].strip()
+
+
+    ist_fix = (
+        request.form.get(
+            "ist_fix"
+        )
+        == "on"
+    )
 
 
     try:
@@ -1057,10 +2014,14 @@ def ausgabe_hinzufuegen():
                 benutzer_id,
                 beschreibung,
                 kategorie,
-                betrag
+                betrag,
+                ist_fix,
+                periodenstart
             )
 
             VALUES (
+                %s,
+                %s,
                 %s,
                 %s,
                 %s,
@@ -1074,7 +2035,9 @@ def ausgabe_hinzufuegen():
                 benutzer_id,
                 beschreibung,
                 kategorie,
-                betrag
+                betrag,
+                ist_fix,
+                periodenstart
             )
         )
 
@@ -1091,10 +2054,20 @@ def ausgabe_hinzufuegen():
                 beschreibung,
                 kategorie,
                 betrag,
-                datum
+                datum,
+                ist_fix,
+                periodenstart
             )
 
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
             """,
 
             (
@@ -1105,7 +2078,13 @@ def ausgabe_hinzufuegen():
 
                 datetime.now().strftime(
                     "%d.%m.%Y %H:%M"
-                )
+                ),
+
+                1
+                if ist_fix
+                else 0,
+
+                periodenstart.isoformat()
             )
         )
 
@@ -1115,9 +2094,169 @@ def ausgabe_hinzufuegen():
     )
 
 
-# --------------------------------------------------
+# ==================================================
+# AUSGABE BEARBEITEN
+# ==================================================
+
+@app.route(
+    "/ausgabe-bearbeiten/<int:ausgabe_id>",
+    methods=[
+        "POST"
+    ]
+)
+def ausgabe_bearbeiten(
+    ausgabe_id
+):
+
+    if (
+        "benutzer_id"
+        not in session
+    ):
+
+        return redirect("/")
+
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+
+    ausgabe = query_einen(
+
+        """
+        SELECT *
+
+        FROM ausgaben
+
+        WHERE
+            id = %s
+            AND benutzer_id = %s
+        """,
+
+        """
+        SELECT *
+
+        FROM ausgaben
+
+        WHERE
+            id = ?
+            AND benutzer_id = ?
+        """,
+
+        (
+            ausgabe_id,
+            benutzer_id
+        )
+    )
+
+
+    if ausgabe is None:
+
+        return redirect(
+            "/finanzen"
+        )
+
+
+    beschreibung = request.form[
+        "beschreibung"
+    ].strip()
+
+
+    kategorie = request.form[
+        "kategorie"
+    ].strip()
+
+
+    ist_fix = (
+        request.form.get(
+            "ist_fix"
+        )
+        == "on"
+    )
+
+
+    try:
+
+        betrag = float(
+            request.form[
+                "betrag"
+            ]
+        )
+
+    except ValueError:
+
+        return redirect(
+            "/finanzen"
+        )
+
+
+    if (
+        beschreibung == ""
+        or betrag <= 0
+    ):
+
+        return redirect(
+            "/finanzen"
+        )
+
+
+    execute_query(
+
+        """
+        UPDATE ausgaben
+
+        SET
+            beschreibung = %s,
+            kategorie = %s,
+            betrag = %s,
+            ist_fix = %s
+
+        WHERE
+            id = %s
+            AND benutzer_id = %s
+        """,
+
+        """
+        UPDATE ausgaben
+
+        SET
+            beschreibung = ?,
+            kategorie = ?,
+            betrag = ?,
+            ist_fix = ?
+
+        WHERE
+            id = ?
+            AND benutzer_id = ?
+        """,
+
+        (
+            beschreibung,
+            kategorie,
+            betrag,
+
+            ist_fix
+            if postgres_verwenden()
+            else (
+                1
+                if ist_fix
+                else 0
+            ),
+
+            ausgabe_id,
+            benutzer_id
+        )
+    )
+
+
+    return redirect(
+        "/finanzen"
+    )
+
+
+# ==================================================
 # AUSGABE LÖSCHEN
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/ausgabe-loeschen/<int:ausgabe_id>",
@@ -1172,9 +2311,9 @@ def ausgabe_loeschen(
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # ADMIN
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/admin",
@@ -1324,15 +2463,18 @@ def admin():
 
     return render_template(
         "admin.html",
+
         benutzer_liste=
             benutzer_liste,
-        meldung=meldung
+
+        meldung=
+            meldung
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # BENUTZERNAME ÄNDERN
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/benutzername-aendern/<int:benutzer_id>",
@@ -1490,9 +2632,9 @@ def benutzername_aendern(
     )
 
 
-# --------------------------------------------------
-# PASSWORT / EINMALPASSWORT ÄNDERN
-# --------------------------------------------------
+# ==================================================
+# PASSWORT / EINMALPASSWORT
+# ==================================================
 
 @app.route(
     "/passwort-aendern/<int:benutzer_id>",
@@ -1580,6 +2722,7 @@ def passwort_aendern(
 
                     SET
                         passwort = %s,
+
                         passwort_muss_geaendert
                             = TRUE
 
@@ -1591,6 +2734,7 @@ def passwort_aendern(
 
                     SET
                         passwort = ?,
+
                         passwort_muss_geaendert
                             = 1
 
@@ -1656,9 +2800,9 @@ def passwort_aendern(
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # BENUTZER LÖSCHEN
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/benutzer-loeschen/<int:benutzer_id>",
@@ -1706,8 +2850,9 @@ def benutzer_loeschen(
 
     if (
         benutzer
-        and benutzer["rolle"]
-        != "admin"
+        and benutzer[
+            "rolle"
+        ] != "admin"
     ):
 
         execute_query(
@@ -1735,9 +2880,9 @@ def benutzer_loeschen(
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # LOGOUT
-# --------------------------------------------------
+# ==================================================
 
 @app.route("/logout")
 def logout():
@@ -1747,9 +2892,9 @@ def logout():
     return redirect("/")
 
 
-# --------------------------------------------------
+# ==================================================
 # START
-# --------------------------------------------------
+# ==================================================
 
 datenbank_erstellen()
 

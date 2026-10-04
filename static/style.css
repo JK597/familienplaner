@@ -8,11 +8,7 @@ html {
 
 body {
     margin: 0;
-    font-family:
-        Inter,
-        Arial,
-        Helvetica,
-        sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 
     background:
         radial-gradient(
@@ -26,16 +22,14 @@ body {
 }
 
 
-/* ---------------------------------------
-   LOGIN
---------------------------------------- */
+/* LOGIN */
 
 body:not(.app-body) {
     min-height: 100vh;
 
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
     padding: 24px;
 }
@@ -44,20 +38,21 @@ body:not(.app-body) {
     width: 100%;
     max-width: 430px;
 
-    background: rgba(15, 23, 42, 0.95);
+    padding: 40px;
+
+    background: rgba(15, 23, 42, 0.96);
 
     border: 1px solid #263449;
-
     border-radius: 24px;
-
-    padding: 40px;
 
     box-shadow:
         0 30px 80px rgba(0, 0, 0, 0.45);
 }
 
 .login-box h1 {
-    margin: 0 0 10px;
+    margin-top: 0;
+    margin-bottom: 10px;
+
     font-size: 34px;
 }
 
@@ -67,9 +62,7 @@ body:not(.app-body) {
 }
 
 
-/* ---------------------------------------
-   APP GRUNDLAYOUT
---------------------------------------- */
+/* APP */
 
 .app-body {
     min-height: 100vh;
@@ -105,8 +98,8 @@ body:not(.app-body) {
 }
 
 .brand-icon {
-    width: 52px;
-    height: 52px;
+    width: 54px;
+    height: 54px;
 
     display: flex;
     align-items: center;
@@ -116,14 +109,14 @@ body:not(.app-body) {
 
     background: rgba(37, 99, 235, 0.16);
 
-    font-size: 25px;
+    font-size: 26px;
 }
 
 .brand h1,
 .topbar h1 {
     margin: 0;
 
-    font-size: 27px;
+    font-size: 28px;
 }
 
 .brand p,
@@ -135,7 +128,6 @@ body:not(.app-body) {
 
 .topbar-actions {
     display: flex;
-
     align-items: center;
 
     gap: 10px;
@@ -146,9 +138,7 @@ body:not(.app-body) {
 }
 
 
-/* ---------------------------------------
-   HERO
---------------------------------------- */
+/* HERO */
 
 .hero-card {
     min-height: 220px;
@@ -160,13 +150,14 @@ body:not(.app-body) {
     gap: 30px;
 
     padding: 40px;
+    margin-bottom: 45px;
 
     border-radius: 26px;
 
     background:
         linear-gradient(
             135deg,
-            rgba(37, 99, 235, 0.25),
+            rgba(37, 99, 235, 0.28),
             rgba(99, 102, 241, 0.08)
         );
 
@@ -174,14 +165,12 @@ body:not(.app-body) {
 
     box-shadow:
         0 25px 70px rgba(0, 0, 0, 0.25);
-
-    margin-bottom: 45px;
 }
 
 .hero-card h2 {
-    font-size: clamp(30px, 4vw, 44px);
-
     margin: 8px 0 12px;
+
+    font-size: clamp(30px, 4vw, 44px);
 }
 
 .hero-card p {
@@ -198,8 +187,6 @@ body:not(.app-body) {
 
 .hero-emoji {
     font-size: 85px;
-
-    opacity: 0.9;
 }
 
 .eyebrow {
@@ -213,28 +200,7 @@ body:not(.app-body) {
 }
 
 
-/* ---------------------------------------
-   ÜBERSCHRIFTEN
---------------------------------------- */
-
-.section-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-
-    margin-bottom: 20px;
-}
-
-.section-heading h2 {
-    margin: 6px 0 0;
-
-    font-size: 25px;
-}
-
-
-/* ---------------------------------------
-   DASHBOARD GRID
---------------------------------------- */
+/* DASHBOARD GRID */
 
 .dashboard-grid {
     display: grid;
@@ -250,16 +216,16 @@ body:not(.app-body) {
 
 .feature-card,
 .dashboard-card {
+    min-height: 300px;
+
     display: flex;
     flex-direction: column;
-
-    min-height: 300px;
 
     padding: 26px;
 
     border-radius: 22px;
 
-    background: rgba(15, 23, 42, 0.88);
+    background: rgba(15, 23, 42, 0.9);
 
     border: 1px solid #253247;
 
@@ -268,21 +234,26 @@ body:not(.app-body) {
 
     transition:
         transform 0.2s ease,
-        border-color 0.2s ease;
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.feature-card:hover {
+.feature-card:hover,
+.dashboard-card:hover {
     transform: translateY(-4px);
 
     border-color: #3b82f6;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
 .highlight-card {
     background:
         linear-gradient(
             145deg,
-            rgba(30, 64, 175, 0.28),
-            rgba(15, 23, 42, 0.92)
+            rgba(30, 64, 175, 0.3),
+            rgba(15, 23, 42, 0.94)
         );
 
     border-color: rgba(59, 130, 246, 0.45);
@@ -294,16 +265,16 @@ body:not(.app-body) {
     height: 54px;
 
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
-    font-size: 25px;
+    margin-bottom: 20px;
 
     border-radius: 16px;
 
     background: rgba(59, 130, 246, 0.12);
 
-    margin-bottom: 20px;
+    font-size: 26px;
 }
 
 .feature-content {
@@ -349,9 +320,7 @@ body:not(.app-body) {
 }
 
 
-/* ---------------------------------------
-   BUTTONS
---------------------------------------- */
+/* BUTTONS */
 
 button,
 .primary-button,
@@ -371,10 +340,9 @@ button,
 
     padding: 12px 18px;
 
-    margin-top: 22px;
+    margin-top: 20px;
 
     border: none;
-
     border-radius: 12px;
 
     background:
@@ -446,10 +414,9 @@ button:disabled {
 
     padding: 12px;
 
-    margin-top: 22px;
+    margin-top: 20px;
 
     border: 1px solid #263449;
-
     border-radius: 12px;
 
     background: #162033;
@@ -480,15 +447,16 @@ button:disabled {
 }
 
 
-/* ---------------------------------------
-   FINANZEN ÜBERSICHT
---------------------------------------- */
+/* FINANZ ÜBERSICHT */
 
 .finance-summary {
     display: grid;
 
     grid-template-columns:
-        repeat(3, 1fr);
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
 
     gap: 20px;
 
@@ -523,6 +491,8 @@ button:disabled {
     align-items: center;
     justify-content: center;
 
+    flex-shrink: 0;
+
     border-radius: 15px;
 
     background: rgba(59, 130, 246, 0.13);
@@ -541,13 +511,11 @@ button:disabled {
 .stat-card strong {
     display: block;
 
-    font-size: clamp(23px, 3vw, 32px);
+    font-size: clamp(22px, 3vw, 30px);
 }
 
 
-/* ---------------------------------------
-   BUDGET BALKEN
---------------------------------------- */
+/* BUDGET PROGRESS */
 
 .budget-progress-card {
     padding: 25px;
@@ -565,7 +533,6 @@ button:disabled {
     display: flex;
 
     justify-content: space-between;
-
     align-items: center;
 
     margin-bottom: 17px;
@@ -586,6 +553,8 @@ button:disabled {
 }
 
 .progress-bar {
+    width: 0;
+
     height: 100%;
 
     max-width: 100%;
@@ -598,6 +567,8 @@ button:disabled {
             #2563eb,
             #60a5fa
         );
+
+    transition: width 0.35s ease;
 }
 
 .budget-progress-card p {
@@ -607,9 +578,7 @@ button:disabled {
 }
 
 
-/* ---------------------------------------
-   PANELS / FORMULARE
---------------------------------------- */
+/* PANELS */
 
 .finance-layout {
     display: grid;
@@ -654,6 +623,8 @@ button:disabled {
     align-items: center;
     justify-content: center;
 
+    flex-shrink: 0;
+
     border-radius: 14px;
 
     background: rgba(59, 130, 246, 0.13);
@@ -672,6 +643,9 @@ button:disabled {
 
     color: #94a3b8;
 }
+
+
+/* FORMULARE */
 
 .form-grid,
 .admin-form {
@@ -753,13 +727,51 @@ select:focus {
     font-weight: bold;
 }
 
+.form-hint {
+    display: block;
 
-/* ---------------------------------------
-   AUSGABEN
---------------------------------------- */
+    margin-top: 4px;
+
+    color: #7f8ea3;
+
+    line-height: 1.5;
+
+    font-size: 12px;
+}
+
+
+/* CHECKBOX */
+
+.checkbox-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    cursor: pointer;
+}
+
+.checkbox-row input {
+    width: 19px;
+    height: 19px;
+
+    min-height: 0;
+
+    accent-color: #3b82f6;
+
+    cursor: pointer;
+}
+
+.checkbox-row span {
+    color: #e2e8f0;
+}
+
+
+/* AUSGABEN */
 
 .expenses-panel {
-    margin-bottom: 30px;
+    margin-bottom: 22px;
 }
 
 .expense-list {
@@ -767,24 +779,26 @@ select:focus {
 
     flex-direction: column;
 
-    gap: 10px;
+    gap: 12px;
 }
 
-.expense-row {
+.expense-card {
+    padding: 18px;
+
+    border-radius: 15px;
+
+    border: 1px solid #253247;
+
+    background: #0b1220;
+}
+
+.expense-card-top {
     display: flex;
 
     justify-content: space-between;
     align-items: center;
 
     gap: 20px;
-
-    padding: 17px;
-
-    border-radius: 14px;
-
-    border: 1px solid #253247;
-
-    background: #0b1220;
 }
 
 .expense-main {
@@ -812,33 +826,167 @@ select:focus {
     font-size: 19px;
 }
 
+.expense-title-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    flex-wrap: wrap;
+}
+
 .expense-main strong {
     display: block;
-
-    margin-bottom: 5px;
 }
 
 .expense-main p {
-    margin: 0;
+    margin: 5px 0 0;
 
     color: #7889a3;
 
     font-size: 13px;
 }
 
-.expense-actions {
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-}
-
 .expense-price {
     white-space: nowrap;
 
     color: #fca5a5;
+
+    font-size: 17px;
 }
+
+.fix-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    background: rgba(168, 85, 247, 0.15);
+
+    color: #d8b4fe;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.expense-delete-form {
+    margin-top: 12px;
+}
+
+
+/* BEARBEITEN */
+
+.edit-box {
+    margin-top: 15px;
+
+    padding-top: 13px;
+
+    border-top: 1px solid #253247;
+}
+
+.edit-box summary {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    cursor: pointer;
+
+    color: #93c5fd;
+
+    font-weight: 700;
+
+    user-select: none;
+}
+
+.edit-box summary:hover {
+    color: #bfdbfe;
+}
+
+.edit-form {
+    margin-top: 17px;
+
+    padding: 18px;
+
+    border-radius: 13px;
+
+    background: #111a2b;
+
+    border: 1px solid #263449;
+}
+
+
+/* INFO-KARTEN */
+
+.finance-info-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 18px;
+}
+
+.info-card {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    padding: 20px;
+
+    border-radius: 17px;
+
+    background: rgba(15, 23, 42, 0.72);
+
+    border: 1px solid #253247;
+}
+
+.info-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background: rgba(59, 130, 246, 0.12);
+
+    font-size: 19px;
+}
+
+.info-card h3 {
+    margin: 0 0 7px;
+
+    font-size: 16px;
+}
+
+.info-card p {
+    margin: 0;
+
+    color: #94a3b8;
+
+    line-height: 1.55;
+
+    font-size: 13px;
+}
+
+
+/* EMPTY */
 
 .empty-state {
     padding: 40px;
@@ -863,9 +1011,7 @@ select:focus {
 }
 
 
-/* ---------------------------------------
-   ADMIN / ALTE BENUTZERKARTEN
---------------------------------------- */
+/* ADMIN */
 
 .user-list {
     display: grid;
@@ -919,9 +1065,7 @@ select:focus {
 }
 
 
-/* ---------------------------------------
-   MELDUNGEN
---------------------------------------- */
+/* MELDUNGEN */
 
 .fehler {
     margin-top: 15px;
@@ -948,17 +1092,15 @@ select:focus {
 }
 
 
-/* ---------------------------------------
-   TABLET
---------------------------------------- */
+/* TABLET */
 
-@media (max-width: 900px) {
+@media (max-width: 950px) {
 
-    .finance-summary {
+    .finance-layout {
         grid-template-columns: 1fr;
     }
 
-    .finance-layout {
+    .finance-info-grid {
         grid-template-columns: 1fr;
     }
 
@@ -973,9 +1115,7 @@ select:focus {
 }
 
 
-/* ---------------------------------------
-   HANDY
---------------------------------------- */
+/* HANDY */
 
 @media (max-width: 650px) {
 
@@ -1001,9 +1141,9 @@ select:focus {
     }
 
     .topbar-actions a {
-        text-align: center;
-
         justify-content: center;
+
+        text-align: center;
     }
 
     .hero-card {
@@ -1024,8 +1164,13 @@ select:focus {
         grid-template-columns: 1fr;
     }
 
-    .feature-card {
+    .feature-card,
+    .dashboard-card {
         min-height: auto;
+    }
+
+    .finance-summary {
+        grid-template-columns: 1fr;
     }
 
     .form-grid,
@@ -1037,16 +1182,14 @@ select:focus {
         grid-column: auto;
     }
 
-    .expense-row {
+    .expense-card-top {
         align-items: flex-start;
 
         flex-direction: column;
     }
 
-    .expense-actions {
-        width: 100%;
-
-        justify-content: space-between;
+    .expense-price {
+        padding-left: 57px;
     }
 
     .user-card {
