@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Familienplaner - Einkaufsliste</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="app-body">
+
+<div class="app-container">
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🛒
+            </div>
+
+            <div>
+                <h1>Meine Einkaufsliste</h1>
+                <p>{{ benutzer }}</p>
+            </div>
+
+        </div>
+
+
+        <div class="topbar-actions">
+
+            <a
+                href="/dashboard"
+                class="secondary-button"
+            >
+                ← Dashboard
+            </a>
+
+            <a
+                href="/logout"
+                class="logout-button"
+            >
+                Abmelden
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main class="dashboard">
+
+
+        <!-- HERO -->
+
+        <section class="hero-card">
+
+            <div>
+
+                <span class="eyebrow">
+                    DEINE PRIVATE LISTE
+                </span>
+
+                <h2>
+                    Einkauf planen 🛍️
+                </h2>
+
+                <p>
+                    Sammle hier alles, was du noch einkaufen musst.
+                    Deine Liste gehört nur dir und ist für andere
+                    Benutzer nicht sichtbar.
+                </p>
+
+            </div>
+
+            <div class="hero-emoji">
+                🛒
+            </div>
+
+        </section>
+
+
+        <!-- STATISTIK -->
+
+        <section class="finance-summary">
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    📝
+                </div>
+
+                <div>
+                    <span>Offen</span>
+
+                    <strong>
+                        {{ offene_anzahl }}
+                    </strong>
+                </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    ✅
+                </div>
+
+                <div>
+                    <span>Erledigt</span>
+
+                    <strong>
+                        {{ erledigte_anzahl }}
+                    </strong>
+                </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    🧺
+                </div>
+
+                <div>
+                    <span>Gesamt</span>
+
+                    <strong>
+                        {{ offene_anzahl + erledigte_anzahl }}
+                    </strong>
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- NEUEN ARTIKEL HINZUFÜGEN -->
+
+        <section class="panel">
+
+            <div class="panel-heading">
+
+                <div class="panel-icon">
+                    ➕
+                </div>
+
+                <div>
+                    <h2>Artikel hinzufügen</h2>
+
+                    <p>
+                        Was brauchst du beim nächsten Einkauf?
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="/einkauf-hinzufuegen"
+                class="form-grid remember-shopping-scroll"
+            >
+
+                <div class="form-group full-width">
+
+                    <label>
+                        Artikel
+                    </label>
+
+                    <input
+                        type="text"
+                        name="artikel"
+                        placeholder="z. B. Milch"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Menge
+                    </label>
+
+                    <input
+                        type="text"
+                        name="menge"
+                        placeholder="z. B. 2x oder 1 kg"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Notiz
+                    </label>
+
+                    <input
+                        type="text"
+                        name="notiz"
+                        placeholder="z. B. fettarm"
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-button full-width"
+                >
+                    Zur Einkaufsliste hinzufügen
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- OFFENE EINKÄUFE -->
+
+        <section class="panel expenses-panel">
+
+            <div class="panel-heading">
+
+                <div class="panel-icon">
+                    🧺
+                </div>
+
+                <div>
+                    <h2>Meine Einkaufsliste</h2>
+
+                    <p>
+                        Tippe auf „Erledigt“, sobald du einen
+                        Artikel im Einkaufswagen hast.
+                    </p>
+                </div>
+
+            </div>
+
+
+            {% set offene_vorhanden = false %}
+
+            {% for eintrag in eintraege %}
+
+                {% if not eintrag["erledigt"] %}
+
+                    {% set offene_vorhanden = true %}
+
+                    <div class="expense-card shopping-item">
+
+                        <div class="expense-card-top">
+
+                            <div class="expense-main">
+
+                                <div class="expense-category-icon">
+                                    🛍️
+                                </div>
+
+                                <div>
+
+                                    <div class="expense-title-row">
+
+                                        <strong>
+                                            {{ eintrag["artikel"] }}
+                                        </strong>
+
+                                        {% if eintrag["menge"] %}
+
+                                            <span class="shopping-amount-badge">
+                                                {{ eintrag["menge"] }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <p>
+                                        Hinzugefügt:
+                                        {{ eintrag["erstellt_am"] }}
+                                    </p>
+
+
+                                    {% if eintrag["notiz"] %}
+
+                                        <p class="shopping-note">
+                                            {{ eintrag["notiz"] }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="shopping-actions">
+
+                            <form
+                                method="POST"
+                                action="/einkauf-status/{{ eintrag['id'] }}"
+                                class="remember-shopping-scroll"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="primary-button shopping-done-button"
+                                >
+                                    ✓ Erledigt
+                                </button>
+
+                            </form>
+
+
+                            <details class="edit-box">
+
+                                <summary>
+                                    ✏️ Bearbeiten
+                                </summary>
+
+
+                                <form
+                                    method="POST"
+                                    action="/einkauf-bearbeiten/{{ eintrag['id'] }}"
+                                    class="form-grid edit-form remember-shopping-scroll"
+                                >
+
+                                    <div class="form-group full-width">
+
+                                        <label>
+                                            Artikel
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="artikel"
+                                            value="{{ eintrag['artikel'] }}"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Menge
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="menge"
+                                            value="{{ eintrag['menge'] }}"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Notiz
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="notiz"
+                                            value="{{ eintrag['notiz'] }}"
+                                        >
+
+                                    </div>
+
+
+                                    <button
+                                        type="submit"
+                                        class="primary-button full-width"
+                                    >
+                                        Änderungen speichern
+                                    </button>
+
+                                </form>
+
+                            </details>
+
+
+                            <form
+                                method="POST"
+                                action="/einkauf-loeschen/{{ eintrag['id'] }}"
+                                class="remember-shopping-scroll"
+                                onsubmit="return confirm('Artikel wirklich löschen?');"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-button"
+                                >
+                                    Löschen
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            {% if offene_anzahl == 0 %}
+
+                <div class="empty-state">
+
+                    <div>
+                        🛒
+                    </div>
+
+                    <h3>
+                        Alles erledigt
+                    </h3>
+
+                    <p>
+                        Aktuell stehen keine offenen Artikel
+                        auf deiner Einkaufsliste.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ERLEDIGTE EINKÄUFE -->
+
+        {% if erledigte_anzahl > 0 %}
+
+        <section class="panel expenses-panel">
+
+            <div class="panel-heading">
+
+                <div class="panel-icon">
+                    ✅
+                </div>
+
+                <div>
+                    <h2>Erledigt</h2>
+
+                    <p>
+                        Bereits eingekaufte Artikel.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="shopping-completed-list">
+
+                {% for eintrag in eintraege %}
+
+                    {% if eintrag["erledigt"] %}
+
+                        <div class="expense-card shopping-item shopping-item-completed">
+
+                            <div class="expense-card-top">
+
+                                <div class="expense-main">
+
+                                    <div class="expense-category-icon">
+                                        ✓
+                                    </div>
+
+                                    <div>
+
+                                        <div class="expense-title-row">
+
+                                            <strong class="shopping-completed-title">
+                                                {{ eintrag["artikel"] }}
+                                            </strong>
+
+                                            {% if eintrag["menge"] %}
+
+                                                <span class="shopping-amount-badge">
+                                                    {{ eintrag["menge"] }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        {% if eintrag["notiz"] %}
+
+                                            <p class="shopping-note">
+                                                {{ eintrag["notiz"] }}
+                                            </p>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="shopping-actions">
+
+                                <form
+                                    method="POST"
+                                    action="/einkauf-status/{{ eintrag['id'] }}"
+                                    class="remember-shopping-scroll"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="secondary-button"
+                                    >
+                                        ↩ Wieder offen
+                                    </button>
+
+                                </form>
+
+
+                                <form
+                                    method="POST"
+                                    action="/einkauf-loeschen/{{ eintrag['id'] }}"
+                                    class="remember-shopping-scroll"
+                                    onsubmit="return confirm('Artikel wirklich löschen?');"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="delete-button"
+                                    >
+                                        Löschen
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="/einkauf-erledigte-loeschen"
+                class="remember-shopping-scroll completed-delete-form"
+                onsubmit="return confirm('Alle erledigten Artikel löschen?');"
+            >
+
+                <button
+                    type="submit"
+                    class="delete-button"
+                >
+                    🗑 Alle erledigten löschen
+                </button>
+
+            </form>
+
+        </section>
+
+        {% endif %}
+
+
+    </main>
+
+</div>
+
+
+<script>
+    /*
+        Scrollposition nach Aktionen wiederherstellen
+    */
+
+    const shoppingScroll =
+        sessionStorage.getItem(
+            "shoppingScrollPosition"
+        );
+
+    if (shoppingScroll !== null) {
+
+        window.scrollTo({
+            top: Number(shoppingScroll),
+            behavior: "instant"
+        });
+
+        sessionStorage.removeItem(
+            "shoppingScrollPosition"
+        );
+    }
+
+
+    /*
+        Vor Speichern / Abhaken / Löschen
+        Position merken
+    */
+
+    document.querySelectorAll(
+        ".remember-shopping-scroll"
+    ).forEach(function(form) {
+
+        form.addEventListener(
+            "submit",
+            function() {
+
+                sessionStorage.setItem(
+                    "shoppingScrollPosition",
+                    String(window.scrollY)
+                );
+
+            }
+        );
+
+    });
+</script>
+
+</body>
+</html>
