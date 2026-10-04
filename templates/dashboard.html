@@ -2,6 +2,7 @@
 <html lang="de">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -54,43 +55,585 @@
         rel="stylesheet"
         href="/static/style.css"
     >
+
+
+    <style>
+
+        /* =========================================
+           DASHBOARD SPEZIAL
+        ========================================== */
+
+        .dashboard-wrapper {
+            width: min(1390px, calc(100% - 48px));
+            margin: 0 auto;
+            padding-top: 26px;
+            padding-bottom: 80px;
+        }
+
+
+        /* =========================================
+           OBERE LEISTE
+        ========================================== */
+
+        .dashboard-topbar {
+            min-height: 68px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding-bottom: 26px;
+            margin-bottom: 34px;
+
+            border-bottom:
+                1px solid
+                rgba(239, 226, 190, 0.14);
+        }
+
+
+        .dashboard-brand {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+
+        .dashboard-brand-name {
+            color: #f5ead0;
+        }
+
+
+        .dashboard-brand-user {
+            color: rgba(245, 234, 208, 0.68);
+        }
+
+
+        .dashboard-top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .dashboard-top-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 0 18px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+            font-weight: 700;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.54);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.09);
+
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease;
+        }
+
+
+        .dashboard-top-button:hover {
+            background:
+                rgba(130, 100, 76, 0.68);
+        }
+
+
+        .dashboard-top-button:active {
+            transform: scale(0.97);
+        }
+
+
+
+        /* =========================================
+           WILLKOMMEN
+        ========================================== */
+
+        .dashboard-welcome {
+            position: relative;
+
+            min-height: 220px;
+
+            display: flex;
+            align-items: center;
+
+            overflow: hidden;
+
+            padding:
+                34px
+                190px
+                34px
+                36px;
+
+            margin-bottom: 34px;
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    110deg,
+                    rgba(62, 91, 69, 0.96) 0%,
+                    rgba(91, 108, 78, 0.93) 50%,
+                    rgba(178, 164, 124, 0.86) 100%
+                );
+
+            border:
+                1px solid
+                rgba(224, 206, 160, 0.22);
+
+            box-shadow:
+                0 20px 55px
+                rgba(0, 0, 0, 0.14);
+        }
+
+
+        .dashboard-welcome::after {
+            content: "";
+
+            position: absolute;
+
+            width: 320px;
+            height: 320px;
+
+            right: -90px;
+            bottom: -180px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(238, 222, 177, 0.08);
+        }
+
+
+        .welcome-text {
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .welcome-small {
+            display: block;
+
+            margin-bottom: 14px;
+
+            color:
+                rgba(250, 240, 213, 0.88);
+
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+
+        .dashboard-welcome h1 {
+            margin:
+                0
+                0
+                18px;
+
+            color: #fff8e8;
+
+            font-size:
+                clamp(
+                    2rem,
+                    3vw,
+                    3rem
+                );
+
+            line-height: 1.1;
+        }
+
+
+        .dashboard-welcome p {
+            max-width: 650px;
+
+            margin: 0;
+
+            color:
+                rgba(255, 248, 230, 0.87);
+
+            font-size: 1rem;
+            line-height: 1.65;
+        }
+
+
+        .welcome-hand {
+            position: absolute;
+
+            right: 54px;
+            top: 50%;
+
+            transform:
+                translateY(-50%)
+                rotate(-5deg);
+
+            z-index: 2;
+
+            font-size:
+                clamp(
+                    5rem,
+                    8vw,
+                    8rem
+                );
+
+            line-height: 1;
+
+            filter:
+                drop-shadow(
+                    0 15px 18px
+                    rgba(0, 0, 0, 0.16)
+                );
+        }
+
+
+
+        /* =========================================
+           KARTEN
+        ========================================== */
+
+        .dashboard-card-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 28px;
+        }
+
+
+        .dashboard-home-card {
+            min-width: 0;
+            min-height: 310px;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 26px;
+
+            border-radius: 24px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(61, 91, 69, 0.95),
+                    rgba(119, 124, 91, 0.87)
+                );
+
+            border:
+                1px solid
+                rgba(224, 207, 160, 0.18);
+
+            box-shadow:
+                0 15px 38px
+                rgba(0, 0, 0, 0.13);
+
+            overflow: hidden;
+
+            transition:
+                transform 0.18s ease,
+                box-shadow 0.18s ease;
+        }
+
+
+        .dashboard-home-card:hover {
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 20px 48px
+                rgba(0, 0, 0, 0.17);
+        }
+
+
+        .home-card-icon {
+            width: 54px;
+            height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            margin-bottom: 30px;
+
+            border-radius: 16px;
+
+            font-size: 1.55rem;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(231, 219, 178, 0.38),
+                    rgba(205, 192, 151, 0.66)
+                );
+
+            border:
+                1px solid
+                rgba(244, 232, 196, 0.28);
+        }
+
+
+        .dashboard-home-card h2 {
+            margin:
+                0
+                0
+                18px;
+
+            color: #fff8e8;
+
+            font-size: 1.55rem;
+            line-height: 1.2;
+        }
+
+
+        .dashboard-home-card p {
+            margin:
+                0
+                0
+                26px;
+
+            color:
+                rgba(248, 239, 216, 0.80);
+
+            line-height: 1.65;
+        }
+
+
+        .home-card-bottom {
+            margin-top: auto;
+        }
+
+
+        .home-card-button {
+            width: 100%;
+            min-height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-sizing: border-box;
+
+            padding: 11px 16px;
+
+            border: none;
+            border-radius: 13px;
+
+            text-decoration: none;
+
+            font-size: 0.98rem;
+            font-weight: 800;
+
+            color: #183629;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ead7ad,
+                    #ceb685
+                );
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                filter 0.15s ease;
+        }
+
+
+        .home-card-button:hover {
+            filter: brightness(1.04);
+        }
+
+
+        .home-card-button:active {
+            transform: scale(0.98);
+        }
+
+
+        .home-card-button.disabled {
+            color:
+                rgba(236, 224, 195, 0.70);
+
+            background:
+                rgba(49, 64, 51, 0.36);
+
+            border:
+                1px solid
+                rgba(235, 224, 198, 0.10);
+
+            cursor: default;
+        }
+
+
+        .home-card-button.disabled:active {
+            transform: none;
+        }
+
+
+
+        /* =========================================
+           MOBILE / TABLET
+        ========================================== */
+
+        @media (max-width: 1150px) {
+
+            .dashboard-card-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .dashboard-wrapper {
+                width:
+                    min(
+                        100% - 20px,
+                        1390px
+                    );
+
+                padding-top: 12px;
+                padding-bottom: 45px;
+            }
+
+
+            .dashboard-topbar {
+                margin-bottom: 20px;
+
+                padding:
+                    8px
+                    4px
+                    18px;
+            }
+
+
+            .dashboard-top-actions {
+                gap: 7px;
+            }
+
+
+            .dashboard-top-button {
+                min-height: 39px;
+
+                padding:
+                    0
+                    12px;
+
+                font-size: 0.85rem;
+            }
+
+
+            .dashboard-welcome {
+                min-height: 205px;
+
+                padding:
+                    28px
+                    78px
+                    28px
+                    24px;
+
+                margin-bottom: 22px;
+
+                border-radius: 22px;
+            }
+
+
+            .welcome-hand {
+                right: 17px;
+                top: 28px;
+
+                transform:
+                    rotate(-6deg);
+
+                font-size: 3.7rem;
+            }
+
+
+            .dashboard-welcome h1 {
+                font-size: 1.9rem;
+            }
+
+
+            .dashboard-welcome p {
+                font-size: 0.92rem;
+            }
+
+
+            .dashboard-card-grid {
+                grid-template-columns: 1fr;
+
+                gap: 20px;
+            }
+
+
+            .dashboard-home-card {
+                min-height: 280px;
+
+                padding: 23px;
+
+                border-radius: 21px;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 
-<body class="app-body">
+<body>
 
 
-    <div class="app-container">
+    <main class="dashboard-wrapper">
 
 
         <!-- =========================================
-             TOPBAR
+             OBEN
         ========================================== -->
 
-        <header class="topbar">
+        <header class="dashboard-topbar">
 
-            <div class="topbar-brand">
+            <div class="dashboard-brand">
 
-                <span class="topbar-logo">
+                <span class="dashboard-brand-name">
                     Familienplaner
                 </span>
 
-                <span class="topbar-user">
+                <span class="dashboard-brand-user">
                     {{ benutzer }}
                 </span>
 
             </div>
 
 
-            <div class="topbar-actions">
+            <div class="dashboard-top-actions">
 
                 {% if rolle == "admin" %}
 
                     <a
                         href="/admin"
-                        class="admin-button"
+                        class="dashboard-top-button"
                     >
-                        Benutzerverwaltung
+                        Benutzer
                     </a>
 
                 {% endif %}
@@ -98,7 +641,7 @@
 
                 <a
                     href="/logout"
-                    class="logout-button"
+                    class="dashboard-top-button"
                 >
                     Abmelden
                 </a>
@@ -110,286 +653,292 @@
 
 
         <!-- =========================================
-             DASHBOARD
+             WILLKOMMEN
         ========================================== -->
 
-        <main class="dashboard">
+        <section class="dashboard-welcome">
+
+            <div class="welcome-text">
+
+                <span class="welcome-small">
+                    Familienplaner
+                </span>
+
+                <h1>
+                    Willkommen, {{ benutzer }} 👋
+                </h1>
+
+                <p>
+                    Schön, dass du da bist.
+                    Hier hast du alles Wichtige für
+                    deinen Familienalltag an einem Ort.
+                </p>
+
+            </div>
 
 
-            <!-- =====================================
-                 WILLKOMMEN
-            ====================================== -->
+            <div
+                class="welcome-hand"
+                aria-hidden="true"
+            >
+                👋
+            </div>
 
-            <section class="welcome-card">
+        </section>
 
-                <div class="welcome-content">
 
-                    <span class="welcome-label">
-                        Familienplaner
-                    </span>
 
-                    <h1>
-                        Willkommen, {{ benutzer }}
-                    </h1>
+        <!-- =========================================
+             KARTEN
+        ========================================== -->
 
-                    <p>
-                        Alles Wichtige für deinen Alltag
-                        an einem Ort.
-                    </p>
+        <section class="dashboard-card-grid">
+
+
+            <!-- KALENDER -->
+
+            <article class="dashboard-home-card">
+
+                <div class="home-card-icon">
+                    📅
+                </div>
+
+                <h2>
+                    Kalender
+                </h2>
+
+                <p>
+                    Termine und wichtige Ereignisse
+                    übersichtlich verwalten.
+                </p>
+
+                <div class="home-card-bottom">
+
+                    <button
+                        type="button"
+                        class="
+                            home-card-button
+                            disabled
+                        "
+                        disabled
+                    >
+                        Bald verfügbar
+                    </button>
 
                 </div>
 
-            </section>
+            </article>
 
 
 
-            <!-- =====================================
-                 KARTEN
-            ====================================== -->
+            <!-- AUFGABEN -->
 
-            <section class="dashboard-grid">
+            <article class="dashboard-home-card">
 
+                <div class="home-card-icon">
+                    ✅
+                </div>
 
-                <!-- KALENDER -->
+                <h2>
+                    Aufgaben
+                </h2>
 
-                <article class="dashboard-card">
+                <p>
+                    Aufgaben für den Alltag
+                    organisieren und im Blick behalten.
+                </p>
 
-                    <div class="card-icon">
-                        📅
-                    </div>
-
-                    <div class="card-content">
-
-                        <h2>
-                            Kalender
-                        </h2>
-
-                        <p>
-                            Termine und wichtige Ereignisse
-                            übersichtlich verwalten.
-                        </p>
-
-                    </div>
+                <div class="home-card-bottom">
 
                     <button
                         type="button"
-                        class="card-button disabled"
+                        class="
+                            home-card-button
+                            disabled
+                        "
                         disabled
                     >
                         Bald verfügbar
                     </button>
 
-                </article>
+                </div>
+
+            </article>
 
 
 
-                <!-- AUFGABEN -->
+            <!-- EINKAUFSLISTE -->
 
-                <article class="dashboard-card">
+            <article class="dashboard-home-card">
 
-                    <div class="card-icon">
-                        ✅
-                    </div>
+                <div class="home-card-icon">
+                    🛒
+                </div>
 
-                    <div class="card-content">
+                <h2>
+                    Einkaufsliste
+                </h2>
 
-                        <h2>
-                            Aufgaben
-                        </h2>
+                <p>
+                    Deine persönliche Einkaufsliste
+                    einfach und übersichtlich verwalten.
+                </p>
 
-                        <p>
-                            Aufgaben für den Alltag
-                            organisieren und im Blick behalten.
-                        </p>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        class="card-button disabled"
-                        disabled
-                    >
-                        Bald verfügbar
-                    </button>
-
-                </article>
-
-
-
-                <!-- EINKAUFSLISTE -->
-
-                <article class="dashboard-card">
-
-                    <div class="card-icon">
-                        🛒
-                    </div>
-
-                    <div class="card-content">
-
-                        <h2>
-                            Einkaufsliste
-                        </h2>
-
-                        <p>
-                            Deine persönliche Einkaufsliste
-                            verwalten.
-                        </p>
-
-                    </div>
+                <div class="home-card-bottom">
 
                     <a
                         href="/einkaufsliste"
-                        class="card-button"
+                        class="home-card-button"
                     >
                         Einkaufsliste öffnen
                     </a>
 
-                </article>
+                </div>
+
+            </article>
 
 
 
-                <!-- FINANZEN -->
+            <!-- FINANZEN -->
 
-                <article class="dashboard-card">
+            <article class="dashboard-home-card">
 
-                    <div class="card-icon">
-                        💶
-                    </div>
+                <div class="home-card-icon">
+                    💶
+                </div>
 
-                    <div class="card-content">
+                <h2>
+                    Finanzen
+                </h2>
 
-                        <h2>
-                            Finanzen
-                        </h2>
+                <p>
+                    Budget, Ausgaben und Fixkosten
+                    jederzeit im Blick behalten.
+                </p>
 
-                        <p>
-                            Budget, Ausgaben und Fixkosten
-                            verwalten.
-                        </p>
-
-                    </div>
+                <div class="home-card-bottom">
 
                     <a
                         href="/finanzen"
-                        class="card-button"
+                        class="home-card-button"
                     >
                         Finanzen öffnen
                     </a>
 
-                </article>
+                </div>
+
+            </article>
 
 
 
-                <!-- VERBESSERUNGSVORSCHLAG -->
+            <!-- VERBESSERUNGSVORSCHLAG -->
 
-                <article class="dashboard-card">
+            <article class="dashboard-home-card">
 
-                    <div class="card-icon">
-                        💡
-                    </div>
+                <div class="home-card-icon">
+                    💡
+                </div>
 
-                    <div class="card-content">
+                <h2>
+                    Verbesserungsvorschlag
+                </h2>
 
-                        <h2>
-                            Verbesserungsvorschlag
-                        </h2>
+                <p>
+                    Hast du eine Idee für den
+                    Familienplaner? Schick sie direkt
+                    an den Admin.
+                </p>
 
-                        <p>
-                            Eine Idee für den Familienplaner?
-                            Schick deinen Vorschlag direkt
-                            an den Admin.
-                        </p>
-
-                    </div>
+                <div class="home-card-bottom">
 
                     <a
                         href="/vorschlag"
-                        class="card-button"
+                        class="home-card-button"
                     >
                         Vorschlag senden
                     </a>
 
-                </article>
+                </div>
+
+            </article>
 
 
 
-                <!-- ADMIN: VORSCHLÄGE -->
+            <!-- ADMIN VORSCHLÄGE -->
 
-                {% if rolle == "admin" %}
+            {% if rolle == "admin" %}
 
-                    <article class="dashboard-card">
+                <article class="dashboard-home-card">
 
-                        <div class="card-icon">
-                            📬
-                        </div>
+                    <div class="home-card-icon">
+                        📬
+                    </div>
 
-                        <div class="card-content">
+                    <h2>
+                        Vorschläge
+                    </h2>
 
-                            <h2>
-                                Vorschläge
-                            </h2>
+                    <p>
+                        Eingegangene Vorschläge der
+                        Benutzer ansehen und bearbeiten.
+                    </p>
 
-                            <p>
-                                Eingegangene Vorschläge
-                                ansehen, bearbeiten und
-                                verwalten.
-                            </p>
-
-                        </div>
+                    <div class="home-card-bottom">
 
                         <a
                             href="/admin/vorschlaege"
-                            class="card-button"
+                            class="home-card-button"
                         >
                             Vorschläge verwalten
                         </a>
 
-                    </article>
+                    </div>
 
-                {% endif %}
+                </article>
+
+            {% endif %}
 
 
 
-                <!-- ADMIN: BENUTZERVERWALTUNG -->
+            <!-- ADMIN BENUTZERVERWALTUNG -->
 
-                {% if rolle == "admin" %}
+            {% if rolle == "admin" %}
 
-                    <article class="dashboard-card">
+                <article class="dashboard-home-card">
 
-                        <div class="card-icon">
-                            👤
-                        </div>
+                    <div class="home-card-icon">
+                        👤
+                    </div>
 
-                        <div class="card-content">
+                    <h2>
+                        Benutzerverwaltung
+                    </h2>
 
-                            <h2>
-                                Benutzerverwaltung
-                            </h2>
+                    <p>
+                        Benutzer erstellen,
+                        bearbeiten und verwalten.
+                    </p>
 
-                            <p>
-                                Benutzer erstellen,
-                                bearbeiten und verwalten.
-                            </p>
-
-                        </div>
+                    <div class="home-card-bottom">
 
                         <a
                             href="/admin"
-                            class="card-button"
+                            class="home-card-button"
                         >
                             Benutzer verwalten
                         </a>
 
-                    </article>
+                    </div>
 
-                {% endif %}
+                </article>
+
+            {% endif %}
 
 
-            </section>
+        </section>
 
-        </main>
 
-    </div>
+    </main>
 
 
 
@@ -408,25 +957,6 @@
                     navigator.serviceWorker
                         .register(
                             "/service-worker.js"
-                        )
-                        .then(
-                            function() {
-
-                                console.log(
-                                    "Familienplaner Service Worker aktiv."
-                                );
-
-                            }
-                        )
-                        .catch(
-                            function(error) {
-
-                                console.log(
-                                    "Service Worker Fehler:",
-                                    error
-                                );
-
-                            }
                         );
 
                 }
