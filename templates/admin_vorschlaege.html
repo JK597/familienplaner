@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <title>
+        Verbesserungsvorschläge | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+    <style>
+
+        .admin-suggestions-page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 40px 0 80px;
+        }
+
+        .admin-suggestions-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .admin-suggestions-title h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .admin-suggestions-title p {
+            margin: 5px 0 0;
+            opacity: 0.75;
+        }
+
+        .admin-suggestions-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-suggestions-link,
+        .admin-suggestions-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .admin-suggestions-link:active,
+        .admin-suggestions-button:active {
+            transform: scale(0.97);
+        }
+
+        .admin-suggestions-link {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: inherit;
+        }
+
+        .admin-suggestions-hero {
+            border-radius: 28px;
+            padding: 30px;
+            margin-bottom: 28px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(24, 54, 41, 0.96),
+                    rgba(64, 95, 66, 0.94),
+                    rgba(202, 185, 135, 0.88)
+                );
+            box-shadow:
+                0 24px 60px rgba(0, 0, 0, 0.18);
+        }
+
+        .admin-suggestions-hero h2 {
+            margin: 0 0 10px;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+        }
+
+        .admin-suggestions-hero p {
+            margin: 0;
+            max-width: 760px;
+            line-height: 1.6;
+            opacity: 0.85;
+        }
+
+        .suggestions-list {
+            display: grid;
+            gap: 22px;
+        }
+
+        .suggestion-admin-card {
+            border-radius: 26px;
+            padding: 26px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(245, 234, 205, 0.96),
+                    rgba(220, 208, 168, 0.94)
+                );
+            color: #173226;
+            box-shadow:
+                0 18px 45px rgba(0, 0, 0, 0.16);
+        }
+
+        .suggestion-admin-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .suggestion-admin-user {
+            display: grid;
+            gap: 5px;
+        }
+
+        .suggestion-admin-user strong {
+            font-size: 1.1rem;
+        }
+
+        .suggestion-admin-user span {
+            font-size: 0.9rem;
+            opacity: 0.68;
+        }
+
+        .suggestion-status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            background: rgba(24, 54, 41, 0.10);
+            border: 1px solid rgba(24, 54, 41, 0.14);
+        }
+
+        .suggestion-admin-form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .suggestion-admin-field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .suggestion-admin-field label {
+            font-weight: 800;
+        }
+
+        .suggestion-admin-field input,
+        .suggestion-admin-field textarea,
+        .suggestion-admin-field select {
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 14px;
+            border: 1px solid rgba(24, 54, 41, 0.20);
+            background: rgba(255, 255, 255, 0.74);
+            color: #173226;
+            padding: 13px 15px;
+            font: inherit;
+            outline: none;
+        }
+
+        .suggestion-admin-field textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .suggestion-admin-field textarea.admin-note {
+            min-height: 100px;
+        }
+
+        .suggestion-admin-field input:focus,
+        .suggestion-admin-field textarea:focus,
+        .suggestion-admin-field select:focus {
+            border-color: #315f49;
+            box-shadow:
+                0 0 0 4px rgba(49, 95, 73, 0.12);
+        }
+
+        .suggestion-admin-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .save-suggestion-button {
+            background: #183629;
+            color: #f5ead0;
+        }
+
+        .delete-suggestion-button {
+            background: rgba(128, 35, 35, 0.12);
+            border: 1px solid rgba(128, 35, 35, 0.24);
+            color: #762424;
+        }
+
+        .suggestion-date-info {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(24, 54, 41, 0.12);
+            font-size: 0.86rem;
+            opacity: 0.67;
+        }
+
+        .empty-suggestions {
+            border-radius: 24px;
+            padding: 40px 24px;
+            text-align: center;
+            background: rgba(245, 234, 205, 0.94);
+            color: #173226;
+            box-shadow:
+                0 18px 45px rgba(0, 0, 0, 0.14);
+        }
+
+        .empty-suggestions h3 {
+            margin-top: 0;
+        }
+
+        @media (max-width: 700px) {
+
+            .admin-suggestions-page {
+                width: min(100% - 20px, 1200px);
+                padding-top: 20px;
+            }
+
+            .admin-suggestions-hero,
+            .suggestion-admin-card {
+                border-radius: 21px;
+                padding: 20px 17px;
+            }
+
+            .admin-suggestions-nav {
+                width: 100%;
+            }
+
+            .admin-suggestions-link {
+                flex: 1;
+            }
+
+            .suggestion-admin-actions {
+                flex-direction: column;
+            }
+
+            .admin-suggestions-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <main class="admin-suggestions-page">
+
+
+        <div class="admin-suggestions-topbar">
+
+            <div class="admin-suggestions-title">
+
+                <h1>
+                    Familienplaner
+                </h1>
+
+                <p>
+                    Adminbereich
+                </p>
+
+            </div>
+
+
+            <nav class="admin-suggestions-nav">
+
+                <a
+                    href="/dashboard"
+                    class="admin-suggestions-link"
+                >
+                    Dashboard
+                </a>
+
+                <a
+                    href="/admin"
+                    class="admin-suggestions-link"
+                >
+                    Benutzerverwaltung
+                </a>
+
+                <a
+                    href="/logout"
+                    class="admin-suggestions-link"
+                >
+                    Abmelden
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <section class="admin-suggestions-hero">
+
+            <h2>
+                Verbesserungsvorschläge
+            </h2>
+
+            <p>
+                Hier siehst du alle Vorschläge, die von den Benutzern
+                eingereicht wurden. Du kannst den Text bearbeiten,
+                den Bearbeitungsstatus festlegen und eine interne
+                Admin-Notiz hinterlegen.
+            </p>
+
+        </section>
+
+
+        {% if vorschlaege %}
+
+            <section class="suggestions-list">
+
+                {% for vorschlag in vorschlaege %}
+
+                    <article class="suggestion-admin-card">
+
+
+                        <div class="suggestion-admin-header">
+
+                            <div class="suggestion-admin-user">
+
+                                <strong>
+                                    Von {{ vorschlag["benutzername"] }}
+                                </strong>
+
+                                <span>
+                                    Vorschlag #{{ vorschlag["id"] }}
+                                </span>
+
+                            </div>
+
+
+                            <span class="suggestion-status-badge">
+                                {{ vorschlag["status"] }}
+                            </span>
+
+                        </div>
+
+
+                        <form
+                            method="POST"
+                            action="/admin/vorschlag-bearbeiten/{{ vorschlag['id'] }}"
+                            class="suggestion-admin-form"
+                        >
+
+
+                            <div class="suggestion-admin-field">
+
+                                <label>
+                                    Titel
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="titel"
+                                    maxlength="255"
+                                    value="{{ vorschlag['titel'] }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="suggestion-admin-field">
+
+                                <label>
+                                    Beschreibung
+                                </label>
+
+                                <textarea
+                                    name="beschreibung"
+                                    required
+                                >{{ vorschlag["beschreibung"] }}</textarea>
+
+                            </div>
+
+
+                            <div class="suggestion-admin-field">
+
+                                <label>
+                                    Status
+                                </label>
+
+                                <select
+                                    name="status"
+                                >
+
+                                    <option
+                                        value="Neu"
+                                        {% if vorschlag["status"] == "Neu" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Neu
+                                    </option>
+
+                                    <option
+                                        value="In Prüfung"
+                                        {% if vorschlag["status"] == "In Prüfung" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        In Prüfung
+                                    </option>
+
+                                    <option
+                                        value="Geplant"
+                                        {% if vorschlag["status"] == "Geplant" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Geplant
+                                    </option>
+
+                                    <option
+                                        value="Erledigt"
+                                        {% if vorschlag["status"] == "Erledigt" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Erledigt
+                                    </option>
+
+                                    <option
+                                        value="Abgelehnt"
+                                        {% if vorschlag["status"] == "Abgelehnt" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Abgelehnt
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="suggestion-admin-field">
+
+                                <label>
+                                    Admin-Notiz
+                                </label>
+
+                                <textarea
+                                    name="admin_notiz"
+                                    class="admin-note"
+                                    placeholder="Interne Notiz zum Vorschlag..."
+                                >{{ vorschlag["admin_notiz"] or "" }}</textarea>
+
+                            </div>
+
+
+                            <div class="suggestion-admin-actions">
+
+                                <button
+                                    type="submit"
+                                    class="
+                                        admin-suggestions-button
+                                        save-suggestion-button
+                                    "
+                                >
+                                    Änderungen speichern
+                                </button>
+
+                            </div>
+
+                        </form>
+
+
+                        <form
+                            method="POST"
+                            action="/admin/vorschlag-loeschen/{{ vorschlag['id'] }}"
+                            onsubmit="
+                                return confirm(
+                                    'Diesen Verbesserungsvorschlag wirklich löschen?'
+                                );
+                            "
+                        >
+
+                            <button
+                                type="submit"
+                                class="
+                                    admin-suggestions-button
+                                    delete-suggestion-button
+                                "
+                            >
+                                Vorschlag löschen
+                            </button>
+
+                        </form>
+
+
+                        <div class="suggestion-date-info">
+
+                            <span>
+                                Erstellt:
+                                {{ vorschlag["erstellt_am"] }}
+                            </span>
+
+                            <span>
+                                Bearbeitet:
+                                {{ vorschlag["bearbeitet_am"] }}
+                            </span>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </section>
+
+        {% else %}
+
+            <section class="empty-suggestions">
+
+                <h3>
+                    Noch keine Vorschläge
+                </h3>
+
+                <p>
+                    Sobald ein Benutzer einen Verbesserungsvorschlag
+                    sendet, erscheint er hier.
+                </p>
+
+            </section>
+
+        {% endif %}
+
+
+    </main>
+
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

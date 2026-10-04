@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <title>
+        Verbesserungsvorschlag | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+    <style>
+
+        .suggestion-page {
+            width: min(900px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 40px 0 80px;
+        }
+
+        .suggestion-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .suggestion-brand h1 {
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        .suggestion-brand p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .suggestion-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-button,
+        .suggestion-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            cursor: pointer;
+            text-decoration: none;
+            font: inherit;
+            font-weight: 700;
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .suggestion-button:active,
+        .suggestion-link:active {
+            transform: scale(0.97);
+        }
+
+        .suggestion-link {
+            background: rgba(255, 255, 255, 0.12);
+            color: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .suggestion-card {
+            border-radius: 28px;
+            padding: 32px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(245, 234, 205, 0.96),
+                    rgba(214, 202, 161, 0.92)
+                );
+            color: #173226;
+            box-shadow:
+                0 24px 60px rgba(0, 0, 0, 0.20);
+        }
+
+        .suggestion-card h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: clamp(1.7rem, 4vw, 2.5rem);
+        }
+
+        .suggestion-intro {
+            margin-top: 0;
+            margin-bottom: 28px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .suggestion-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .suggestion-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .suggestion-field label {
+            font-weight: 800;
+        }
+
+        .suggestion-field input,
+        .suggestion-field textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(24, 54, 41, 0.20);
+            border-radius: 16px;
+            padding: 14px 16px;
+            font: inherit;
+            color: #173226;
+            background: rgba(255, 255, 255, 0.75);
+            outline: none;
+        }
+
+        .suggestion-field input:focus,
+        .suggestion-field textarea:focus {
+            border-color: #305f48;
+            box-shadow:
+                0 0 0 4px rgba(48, 95, 72, 0.12);
+        }
+
+        .suggestion-field textarea {
+            min-height: 180px;
+            resize: vertical;
+        }
+
+        .suggestion-submit {
+            background: #183629;
+            color: #f5ead0;
+            width: 100%;
+            min-height: 52px;
+            font-size: 1rem;
+        }
+
+        .suggestion-message {
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .suggestion-message.success {
+            background: rgba(44, 110, 73, 0.14);
+            border: 1px solid rgba(44, 110, 73, 0.30);
+            color: #17452c;
+        }
+
+        .suggestion-message.error {
+            background: rgba(151, 49, 49, 0.12);
+            border: 1px solid rgba(151, 49, 49, 0.28);
+            color: #742626;
+        }
+
+        .suggestion-info {
+            margin-top: 26px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(24, 54, 41, 0.08);
+            line-height: 1.55;
+        }
+
+        .suggestion-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 650px) {
+
+            .suggestion-page {
+                width: min(100% - 20px, 900px);
+                padding-top: 20px;
+            }
+
+            .suggestion-card {
+                padding: 22px 18px;
+                border-radius: 22px;
+            }
+
+            .suggestion-topbar {
+                align-items: stretch;
+            }
+
+            .suggestion-nav {
+                width: 100%;
+            }
+
+            .suggestion-link {
+                flex: 1;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <main class="suggestion-page">
+
+        <div class="suggestion-topbar">
+
+            <div class="suggestion-brand">
+
+                <h1>
+                    Familienplaner
+                </h1>
+
+                <p>
+                    Eingeloggt als {{ benutzer }}
+                </p>
+
+            </div>
+
+
+            <div class="suggestion-nav">
+
+                <a
+                    href="/dashboard"
+                    class="suggestion-link"
+                >
+                    ← Dashboard
+                </a>
+
+                <a
+                    href="/logout"
+                    class="suggestion-link"
+                >
+                    Abmelden
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <section class="suggestion-card">
+
+            <h2>
+                Verbesserungsvorschlag
+            </h2>
+
+            <p class="suggestion-intro">
+                Hast du eine Idee, wie der Familienplaner besser werden kann?
+                Schreib deinen Vorschlag hier hinein. Er wird direkt an den
+                Administrator gesendet.
+            </p>
+
+
+            {% if meldung %}
+
+                <div
+                    class="suggestion-message success"
+                >
+                    {{ meldung }}
+                </div>
+
+            {% endif %}
+
+
+            {% if fehler %}
+
+                <div
+                    class="suggestion-message error"
+                >
+                    {{ fehler }}
+                </div>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                action="/vorschlag"
+                class="suggestion-form"
+            >
+
+                <div class="suggestion-field">
+
+                    <label for="titel">
+                        Titel
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titel"
+                        name="titel"
+                        maxlength="255"
+                        placeholder="z. B. Kalender verbessern"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="suggestion-field">
+
+                    <label for="beschreibung">
+                        Dein Vorschlag
+                    </label>
+
+                    <textarea
+                        id="beschreibung"
+                        name="beschreibung"
+                        placeholder="Beschreibe möglichst genau, was du gerne geändert oder hinzugefügt haben möchtest..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="suggestion-button suggestion-submit"
+                >
+                    Vorschlag an Admin senden
+                </button>
+
+            </form>
+
+
+            <div class="suggestion-info">
+
+                <strong>
+                    Wer sieht deinen Vorschlag?
+                </strong>
+
+                Nur der Administrator kann die eingesendeten
+                Verbesserungsvorschläge verwalten und bearbeiten.
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
