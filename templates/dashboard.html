@@ -2,7 +2,6 @@
 <html lang="de">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -31,7 +30,7 @@
     >
 
     <title>
-        Dashboard | Familienplaner
+        Familienplaner
     </title>
 
     <link
@@ -55,299 +54,348 @@
         rel="stylesheet"
         href="/static/style.css"
     >
-
 </head>
 
-<body>
 
-    <main class="dashboard-page">
+<body class="app-body">
 
 
-        <section class="dashboard-hero">
+    <div class="app-container">
 
-            <div class="dashboard-hero-content">
 
-                <div>
+        <!-- =========================================
+             TOPBAR
+        ========================================== -->
 
-                    <p class="eyebrow">
+        <header class="topbar">
+
+            <div class="topbar-brand">
+
+                <span class="topbar-logo">
+                    Familienplaner
+                </span>
+
+                <span class="topbar-user">
+                    {{ benutzer }}
+                </span>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                {% if rolle == "admin" %}
+
+                    <a
+                        href="/admin"
+                        class="admin-button"
+                    >
+                        Benutzerverwaltung
+                    </a>
+
+                {% endif %}
+
+
+                <a
+                    href="/logout"
+                    class="logout-button"
+                >
+                    Abmelden
+                </a>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =========================================
+             DASHBOARD
+        ========================================== -->
+
+        <main class="dashboard">
+
+
+            <!-- =====================================
+                 WILLKOMMEN
+            ====================================== -->
+
+            <section class="welcome-card">
+
+                <div class="welcome-content">
+
+                    <span class="welcome-label">
                         Familienplaner
-                    </p>
+                    </span>
 
                     <h1>
                         Willkommen, {{ benutzer }}
                     </h1>
 
                     <p>
-                        Organisiere Familie, Finanzen,
-                        Einkäufe und mehr an einem Ort.
+                        Alles Wichtige für deinen Alltag
+                        an einem Ort.
                     </p>
 
                 </div>
 
+            </section>
 
-                <div class="dashboard-actions">
 
-                    {% if rolle == "admin" %}
+
+            <!-- =====================================
+                 KARTEN
+            ====================================== -->
+
+            <section class="dashboard-grid">
+
+
+                <!-- KALENDER -->
+
+                <article class="dashboard-card">
+
+                    <div class="card-icon">
+                        📅
+                    </div>
+
+                    <div class="card-content">
+
+                        <h2>
+                            Kalender
+                        </h2>
+
+                        <p>
+                            Termine und wichtige Ereignisse
+                            übersichtlich verwalten.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="card-button disabled"
+                        disabled
+                    >
+                        Bald verfügbar
+                    </button>
+
+                </article>
+
+
+
+                <!-- AUFGABEN -->
+
+                <article class="dashboard-card">
+
+                    <div class="card-icon">
+                        ✅
+                    </div>
+
+                    <div class="card-content">
+
+                        <h2>
+                            Aufgaben
+                        </h2>
+
+                        <p>
+                            Aufgaben für den Alltag
+                            organisieren und im Blick behalten.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="card-button disabled"
+                        disabled
+                    >
+                        Bald verfügbar
+                    </button>
+
+                </article>
+
+
+
+                <!-- EINKAUFSLISTE -->
+
+                <article class="dashboard-card">
+
+                    <div class="card-icon">
+                        🛒
+                    </div>
+
+                    <div class="card-content">
+
+                        <h2>
+                            Einkaufsliste
+                        </h2>
+
+                        <p>
+                            Deine persönliche Einkaufsliste
+                            verwalten.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="/einkaufsliste"
+                        class="card-button"
+                    >
+                        Einkaufsliste öffnen
+                    </a>
+
+                </article>
+
+
+
+                <!-- FINANZEN -->
+
+                <article class="dashboard-card">
+
+                    <div class="card-icon">
+                        💶
+                    </div>
+
+                    <div class="card-content">
+
+                        <h2>
+                            Finanzen
+                        </h2>
+
+                        <p>
+                            Budget, Ausgaben und Fixkosten
+                            verwalten.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="/finanzen"
+                        class="card-button"
+                    >
+                        Finanzen öffnen
+                    </a>
+
+                </article>
+
+
+
+                <!-- VERBESSERUNGSVORSCHLAG -->
+
+                <article class="dashboard-card">
+
+                    <div class="card-icon">
+                        💡
+                    </div>
+
+                    <div class="card-content">
+
+                        <h2>
+                            Verbesserungsvorschlag
+                        </h2>
+
+                        <p>
+                            Eine Idee für den Familienplaner?
+                            Schick deinen Vorschlag direkt
+                            an den Admin.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="/vorschlag"
+                        class="card-button"
+                    >
+                        Vorschlag senden
+                    </a>
+
+                </article>
+
+
+
+                <!-- ADMIN: VORSCHLÄGE -->
+
+                {% if rolle == "admin" %}
+
+                    <article class="dashboard-card">
+
+                        <div class="card-icon">
+                            📬
+                        </div>
+
+                        <div class="card-content">
+
+                            <h2>
+                                Vorschläge
+                            </h2>
+
+                            <p>
+                                Eingegangene Vorschläge
+                                ansehen, bearbeiten und
+                                verwalten.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="/admin/vorschlaege"
+                            class="card-button"
+                        >
+                            Vorschläge verwalten
+                        </a>
+
+                    </article>
+
+                {% endif %}
+
+
+
+                <!-- ADMIN: BENUTZERVERWALTUNG -->
+
+                {% if rolle == "admin" %}
+
+                    <article class="dashboard-card">
+
+                        <div class="card-icon">
+                            👤
+                        </div>
+
+                        <div class="card-content">
+
+                            <h2>
+                                Benutzerverwaltung
+                            </h2>
+
+                            <p>
+                                Benutzer erstellen,
+                                bearbeiten und verwalten.
+                            </p>
+
+                        </div>
 
                         <a
                             href="/admin"
-                            class="btn btn-secondary"
+                            class="card-button"
                         >
-                            Benutzerverwaltung
+                            Benutzer verwalten
                         </a>
 
-                    {% endif %}
+                    </article>
 
+                {% endif %}
 
-                    <a
-                        href="/logout"
-                        class="btn btn-secondary"
-                    >
-                        Abmelden
-                    </a>
 
-                </div>
+            </section>
 
-            </div>
+        </main>
 
-        </section>
+    </div>
 
 
-        <section class="dashboard-grid">
 
-
-            <!-- KALENDER -->
-
-            <article class="dashboard-card">
-
-                <div class="dashboard-card-icon">
-                    📅
-                </div>
-
-                <div>
-
-                    <h2>
-                        Kalender
-                    </h2>
-
-                    <p>
-                        Termine und wichtige Ereignisse
-                        verwalten.
-                    </p>
-
-                </div>
-
-                <button
-                    type="button"
-                    class="btn btn-disabled"
-                    disabled
-                >
-                    Bald verfügbar
-                </button>
-
-            </article>
-
-
-            <!-- AUFGABEN -->
-
-            <article class="dashboard-card">
-
-                <div class="dashboard-card-icon">
-                    ✅
-                </div>
-
-                <div>
-
-                    <h2>
-                        Aufgaben
-                    </h2>
-
-                    <p>
-                        Aufgaben für den Alltag
-                        übersichtlich organisieren.
-                    </p>
-
-                </div>
-
-                <button
-                    type="button"
-                    class="btn btn-disabled"
-                    disabled
-                >
-                    Bald verfügbar
-                </button>
-
-            </article>
-
-
-            <!-- EINKAUFSLISTE -->
-
-            <article class="dashboard-card">
-
-                <div class="dashboard-card-icon">
-                    🛒
-                </div>
-
-                <div>
-
-                    <h2>
-                        Einkaufsliste
-                    </h2>
-
-                    <p>
-                        Deine persönliche Einkaufsliste
-                        verwalten.
-                    </p>
-
-                </div>
-
-                <a
-                    href="/einkaufsliste"
-                    class="btn"
-                >
-                    Einkaufsliste öffnen
-                </a>
-
-            </article>
-
-
-            <!-- FINANZEN -->
-
-            <article class="dashboard-card">
-
-                <div class="dashboard-card-icon">
-                    💶
-                </div>
-
-                <div>
-
-                    <h2>
-                        Finanzen
-                    </h2>
-
-                    <p>
-                        Budget, Ausgaben und Fixkosten
-                        im Blick behalten.
-                    </p>
-
-                </div>
-
-                <a
-                    href="/finanzen"
-                    class="btn"
-                >
-                    Finanzen öffnen
-                </a>
-
-            </article>
-
-
-            <!-- VERBESSERUNGSVORSCHLAG -->
-
-            <article class="dashboard-card">
-
-                <div class="dashboard-card-icon">
-                    💡
-                </div>
-
-                <div>
-
-                    <h2>
-                        Verbesserungsvorschlag
-                    </h2>
-
-                    <p>
-                        Hast du eine Idee für den
-                        Familienplaner? Schick sie direkt
-                        an den Admin.
-                    </p>
-
-                </div>
-
-                <a
-                    href="/vorschlag"
-                    class="btn"
-                >
-                    Vorschlag senden
-                </a>
-
-            </article>
-
-
-            <!-- ADMIN VORSCHLÄGE -->
-
-            {% if rolle == "admin" %}
-
-                <article class="dashboard-card">
-
-                    <div class="dashboard-card-icon">
-                        📬
-                    </div>
-
-                    <div>
-
-                        <h2>
-                            Vorschläge verwalten
-                        </h2>
-
-                        <p>
-                            Eingegangene Verbesserungsvorschläge
-                            ansehen und bearbeiten.
-                        </p>
-
-                    </div>
-
-                    <a
-                        href="/admin/vorschlaege"
-                        class="btn"
-                    >
-                        Vorschläge öffnen
-                    </a>
-
-                </article>
-
-            {% endif %}
-
-
-            <!-- ADMIN BENUTZERVERWALTUNG -->
-
-            {% if rolle == "admin" %}
-
-                <article class="dashboard-card">
-
-                    <div class="dashboard-card-icon">
-                        👤
-                    </div>
-
-                    <div>
-
-                        <h2>
-                            Benutzerverwaltung
-                        </h2>
-
-                        <p>
-                            Benutzer anlegen, bearbeiten
-                            und verwalten.
-                        </p>
-
-                    </div>
-
-                    <a
-                        href="/admin"
-                        class="btn"
-                    >
-                        Benutzer verwalten
-                    </a>
-
-                </article>
-
-            {% endif %}
-
-
-        </section>
-
-    </main>
-
+    <!-- =========================================
+         SERVICE WORKER
+    ========================================== -->
 
     <script>
 
@@ -362,7 +410,7 @@
                             "/service-worker.js"
                         )
                         .then(
-                            function(registration) {
+                            function() {
 
                                 console.log(
                                     "Familienplaner Service Worker aktiv."
@@ -374,7 +422,7 @@
                             function(error) {
 
                                 console.log(
-                                    "Service Worker konnte nicht gestartet werden:",
+                                    "Service Worker Fehler:",
                                     error
                                 );
 
@@ -387,6 +435,7 @@
         }
 
     </script>
+
 
 </body>
 
