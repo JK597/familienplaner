@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Aufgaben | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+
+    <style>
+
+        .task-page {
+            width: min(1100px, calc(100% - 30px));
+            margin: 0 auto;
+            padding: 28px 0 70px;
+        }
+
+
+        .task-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+
+            border-bottom:
+                1px solid
+                rgba(240, 225, 188, 0.13);
+        }
+
+
+        .task-brand {
+            display: grid;
+            gap: 4px;
+        }
+
+
+        .task-brand strong {
+            font-size: 1.1rem;
+        }
+
+
+        .task-brand span {
+            opacity: 0.68;
+            font-size: 0.9rem;
+        }
+
+
+        .task-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .task-nav a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px 16px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+            font-weight: 700;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.52);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.08);
+        }
+
+
+        .task-hero {
+            padding: 30px;
+            margin-bottom: 25px;
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    115deg,
+                    rgba(55, 85, 64, 0.96),
+                    rgba(92, 105, 76, 0.93),
+                    rgba(178, 162, 120, 0.86)
+                );
+
+            box-shadow:
+                0 18px 50px
+                rgba(0, 0, 0, 0.14);
+        }
+
+
+        .task-hero h1 {
+            margin: 0 0 10px;
+            color: #fff8e8;
+        }
+
+
+        .task-hero p {
+            margin: 0;
+
+            color:
+                rgba(255, 247, 225, 0.82);
+        }
+
+
+        .task-stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 15px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .task-stat {
+            padding: 19px;
+
+            border-radius: 19px;
+
+            color: #183629;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(240, 229, 198, 0.96),
+                    rgba(213, 199, 157, 0.93)
+                );
+
+            box-shadow:
+                0 12px 30px
+                rgba(0, 0, 0, 0.10);
+        }
+
+
+        .task-stat span {
+            display: block;
+
+            margin-bottom: 7px;
+
+            opacity: 0.65;
+
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+
+        .task-stat strong {
+            font-size: 1.45rem;
+        }
+
+
+        .task-panel {
+            padding: 24px;
+            margin-bottom: 24px;
+
+            border-radius: 23px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(53, 82, 62, 0.95),
+                    rgba(95, 107, 77, 0.90)
+                );
+
+            border:
+                1px solid
+                rgba(226, 209, 165, 0.15);
+
+            box-shadow:
+                0 14px 38px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .task-panel h2 {
+            margin: 0 0 18px;
+
+            color: #fff8e8;
+        }
+
+
+        .task-form {
+            display: grid;
+            gap: 15px;
+        }
+
+
+        .task-field {
+            display: grid;
+            gap: 7px;
+        }
+
+
+        .task-field label {
+            color: #f6ead0;
+
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+
+
+        .task-field input,
+        .task-field textarea {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 12px 14px;
+
+            border-radius: 13px;
+
+            border:
+                1px solid
+                rgba(237, 219, 177, 0.17);
+
+            background:
+                rgba(247, 238, 213, 0.94);
+
+            color: #183629;
+
+            font: inherit;
+
+            outline: none;
+        }
+
+
+        .task-field textarea {
+            min-height: 95px;
+            resize: vertical;
+        }
+
+
+        .share-area {
+            padding: 16px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.11);
+        }
+
+
+        .share-title {
+            margin-bottom: 6px;
+
+            color: #fff5dc;
+
+            font-weight: 800;
+        }
+
+
+        .share-description {
+            margin: 0 0 14px;
+
+            color:
+                rgba(247, 235, 204, 0.67);
+
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+
+        .share-users {
+            display: grid;
+            gap: 9px;
+        }
+
+
+        .share-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 10px 12px;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            color:
+                rgba(255, 247, 225, 0.88);
+
+            background:
+                rgba(238, 221, 177, 0.08);
+        }
+
+
+        .share-user input {
+            width: 18px;
+            height: 18px;
+
+            accent-color: #d8c18c;
+        }
+
+
+        .no-share-users {
+            padding: 13px;
+
+            border-radius: 12px;
+
+            color:
+                rgba(249, 237, 206, 0.68);
+
+            background:
+                rgba(238, 221, 177, 0.07);
+
+            font-size: 0.9rem;
+        }
+
+
+        .task-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 45px;
+
+            padding: 10px 16px;
+
+            border: none;
+            border-radius: 13px;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ead7ad,
+                    #ceb685
+                );
+
+            color: #183629;
+
+            font: inherit;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+
+        .task-button:active {
+            transform: scale(0.98);
+        }
+
+
+        .task-button-secondary {
+            color: #f3e4c4;
+
+            background:
+                rgba(236, 222, 186, 0.11);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.14);
+        }
+
+
+        .task-button-danger {
+            color: #f4d3cd;
+
+            background:
+                rgba(165, 66, 56, 0.16);
+
+            border:
+                1px solid
+                rgba(214, 114, 100, 0.23);
+        }
+
+
+        .task-list {
+            display: grid;
+            gap: 16px;
+        }
+
+
+        .task-card {
+            padding: 20px;
+
+            border-radius: 19px;
+
+            background:
+                rgba(236, 222, 186, 0.09);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.13);
+        }
+
+
+        .task-card.done {
+            opacity: 0.67;
+        }
+
+
+        .task-card.done .task-title {
+            text-decoration: line-through;
+        }
+
+
+        .task-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+
+        .task-title {
+            margin: 0 0 8px;
+
+            color: #fff8e8;
+
+            font-size: 1.15rem;
+        }
+
+
+        .task-description {
+            margin: 9px 0 0;
+
+            color:
+                rgba(248, 237, 210, 0.77);
+
+            line-height: 1.55;
+        }
+
+
+        .task-badge {
+            display: inline-flex;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            font-size: 0.78rem;
+            font-weight: 800;
+
+            white-space: nowrap;
+
+            color: #f0ddb1;
+
+            background:
+                rgba(234, 213, 163, 0.13);
+        }
+
+
+        .task-owner {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            margin-top: 12px;
+
+            font-size: 0.82rem;
+
+            color:
+                rgba(246, 233, 199, 0.62);
+        }
+
+
+        .task-shared-with {
+            margin-top: 11px;
+
+            color:
+                rgba(247, 235, 204, 0.72);
+
+            font-size: 0.85rem;
+        }
+
+
+        .task-completed-by {
+            margin-top: 10px;
+
+            padding: 9px 11px;
+
+            border-radius: 11px;
+
+            background:
+                rgba(233, 216, 172, 0.08);
+
+            color:
+                rgba(247, 235, 204, 0.75);
+
+            font-size: 0.84rem;
+        }
+
+
+        .task-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+
+            margin-top: 17px;
+        }
+
+
+        .task-actions form {
+            margin: 0;
+        }
+
+
+        .task-edit {
+            margin-top: 17px;
+        }
+
+
+        .task-edit summary {
+            cursor: pointer;
+
+            color: #f0ddb1;
+
+            font-weight: 800;
+        }
+
+
+        .task-edit-form {
+            display: grid;
+            gap: 13px;
+
+            padding-top: 16px;
+        }
+
+
+        .empty-tasks {
+            padding: 30px;
+
+            text-align: center;
+
+            border-radius: 18px;
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            color:
+                rgba(248, 237, 210, 0.74);
+        }
+
+
+        .privacy-info {
+            padding: 14px 16px;
+            margin-top: 16px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(236, 222, 186, 0.07);
+
+            color:
+                rgba(247, 235, 204, 0.67);
+
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .task-page {
+                width:
+                    min(
+                        100% - 18px,
+                        1100px
+                    );
+
+                padding-top: 16px;
+            }
+
+
+            .task-stats {
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+                gap: 8px;
+            }
+
+
+            .task-stat {
+                padding: 13px 8px;
+
+                text-align: center;
+            }
+
+
+            .task-stat strong {
+                font-size: 1.15rem;
+            }
+
+
+            .task-panel {
+                padding: 18px 15px;
+            }
+
+
+            .task-hero {
+                padding: 22px 18px;
+            }
+
+
+            .task-nav {
+                width: 100%;
+            }
+
+
+            .task-nav a {
+                flex: 1;
+            }
+
+
+            .task-card-top {
+                flex-direction: column;
+            }
+
+
+            .task-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+
+            .task-actions form,
+            .task-actions button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="task-page">
+
+
+        <header class="task-topbar">
+
+            <div class="task-brand">
+
+                <strong>
+                    Familienplaner
+                </strong>
+
+                <span>
+                    {{ benutzer }}
+                </span>
+
+            </div>
+
+
+            <nav class="task-nav">
+
+                <a href="/dashboard">
+                    ← Dashboard
+                </a>
+
+                <a href="/logout">
+                    Abmelden
+                </a>
+
+            </nav>
+
+        </header>
+
+
+
+        <section class="task-hero">
+
+            <h1>
+                ✅ Aufgaben
+            </h1>
+
+            <p>
+                Erstelle eigene Aufgaben oder teile sie
+                mit freigegebenen Personen.
+            </p>
+
+        </section>
+
+
+
+        <section class="task-stats">
+
+            <article class="task-stat">
+
+                <span>
+                    Offen
+                </span>
+
+                <strong>
+                    {{ offene_anzahl }}
+                </strong>
+
+            </article>
+
+
+            <article class="task-stat">
+
+                <span>
+                    Erledigt
+                </span>
+
+                <strong>
+                    {{ erledigte_anzahl }}
+                </strong>
+
+            </article>
+
+
+            <article class="task-stat">
+
+                <span>
+                    Gesamt
+                </span>
+
+                <strong>
+                    {{ offene_anzahl + erledigte_anzahl }}
+                </strong>
+
+            </article>
+
+        </section>
+
+
+
+        <section class="task-panel">
+
+            <h2>
+                Neue Aufgabe
+            </h2>
+
+
+            <form
+                method="POST"
+                action="/aufgabe-hinzufuegen"
+                class="task-form remember-task-scroll"
+            >
+
+
+                <div class="task-field">
+
+                    <label for="titel">
+                        Aufgabe
+                    </label>
+
+                    <input
+                        id="titel"
+                        name="titel"
+                        type="text"
+                        maxlength="255"
+                        placeholder="z. B. Müll rausbringen"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="task-field">
+
+                    <label for="beschreibung">
+                        Beschreibung
+                    </label>
+
+                    <textarea
+                        id="beschreibung"
+                        name="beschreibung"
+                        placeholder="Optional..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="share-area">
+
+                    <div class="share-title">
+                        👥 Aufgabe teilen
+                    </div>
+
+                    <p class="share-description">
+                        Du siehst hier nur Benutzer,
+                        die vom Admin für dich freigegeben wurden.
+                    </p>
+
+
+                    {% if kontakte %}
+
+                        <div class="share-users">
+
+                            {% for kontakt in kontakte %}
+
+                                <label class="share-user">
+
+                                    <input
+                                        type="checkbox"
+                                        name="geteilt_mit"
+                                        value="{{ kontakt['id'] }}"
+                                    >
+
+                                    <span>
+                                        {{ kontakt["benutzername"] }}
+                                    </span>
+
+                                </label>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                    {% else %}
+
+                        <div class="no-share-users">
+
+                            Für dich wurden noch keine Personen
+                            zum Teilen freigegeben.
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="task-button"
+                >
+                    Aufgabe erstellen
+                </button>
+
+            </form>
+
+
+            <div class="privacy-info">
+
+                🔒 Andere Benutzerkonten werden dir nicht angezeigt.
+                Welche Personen miteinander Aufgaben teilen dürfen,
+                legt ausschließlich der Admin fest.
+
+            </div>
+
+        </section>
+
+
+
+        <section class="task-panel">
+
+            <h2>
+                Meine Aufgaben
+            </h2>
+
+
+            {% if aufgaben %}
+
+                <div class="task-list">
+
+
+                    {% for aufgabe in aufgaben %}
+
+
+                        <article
+                            class="
+                                task-card
+
+                                {% if aufgabe['erledigt'] %}
+                                    done
+                                {% endif %}
+                            "
+                        >
+
+
+                            <div class="task-card-top">
+
+
+                                <div>
+
+                                    <h3 class="task-title">
+                                        {{ aufgabe["titel"] }}
+                                    </h3>
+
+
+                                    {% if aufgabe["beschreibung"] %}
+
+                                        <p class="task-description">
+                                            {{ aufgabe["beschreibung"] }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+
+
+                                {% if aufgabe["erledigt"] %}
+
+                                    <span class="task-badge">
+                                        ✓ Erledigt
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="task-badge">
+                                        Offen
+                                    </span>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            <div class="task-owner">
+
+
+                                {% if aufgabe["ist_eigene"] %}
+
+                                    <span>
+                                        Von dir erstellt
+                                    </span>
+
+                                {% else %}
+
+                                    <span>
+                                        Geteilt von:
+                                        <strong>
+                                            {{ aufgabe["ersteller_name"] }}
+                                        </strong>
+                                    </span>
+
+                                {% endif %}
+
+
+                                <span>
+                                    {{ aufgabe["erstellt_am"] }}
+                                </span>
+
+                            </div>
+
+
+
+                            {% if
+                                aufgabe["ist_eigene"]
+                                and
+                                aufgabe["geteilt_mit"]
+                            %}
+
+                                <div class="task-shared-with">
+
+                                    Geteilt mit:
+
+                                    {% for kontakt in aufgabe["geteilt_mit"] %}
+
+                                        <strong>
+                                            {{ kontakt["benutzername"] }}
+                                        </strong>
+
+                                        {% if not loop.last %}
+                                            ,
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            {% if
+                                aufgabe["erledigt"]
+                                and
+                                aufgabe["erledigt_von_name"]
+                            %}
+
+                                <div class="task-completed-by">
+
+                                    Abgehakt von:
+                                    <strong>
+                                        {{ aufgabe["erledigt_von_name"] }}
+                                    </strong>
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            <div class="task-actions">
+
+
+                                <form
+                                    method="POST"
+                                    action="/aufgabe-status/{{ aufgabe['id'] }}"
+                                    class="remember-task-scroll"
+                                >
+
+                                    {% if aufgabe["erledigt"] %}
+
+                                        <button
+                                            type="submit"
+                                            class="
+                                                task-button
+                                                task-button-secondary
+                                            "
+                                        >
+                                            Wieder öffnen
+                                        </button>
+
+                                    {% else %}
+
+                                        <button
+                                            type="submit"
+                                            class="task-button"
+                                        >
+                                            ✓ Abhaken
+                                        </button>
+
+                                    {% endif %}
+
+                                </form>
+
+
+
+                                {% if aufgabe["ist_eigene"] %}
+
+                                    <form
+                                        method="POST"
+                                        action="/aufgabe-loeschen/{{ aufgabe['id'] }}"
+                                        class="remember-task-scroll"
+                                        onsubmit="
+                                            return confirm(
+                                                'Aufgabe wirklich löschen?'
+                                            );
+                                        "
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="
+                                                task-button
+                                                task-button-danger
+                                            "
+                                        >
+                                            Löschen
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            {% if aufgabe["ist_eigene"] %}
+
+
+                                <details class="task-edit">
+
+                                    <summary>
+                                        Aufgabe bearbeiten
+                                    </summary>
+
+
+                                    <form
+                                        method="POST"
+                                        action="/aufgabe-bearbeiten/{{ aufgabe['id'] }}"
+                                        class="
+                                            task-edit-form
+                                            remember-task-scroll
+                                        "
+                                    >
+
+
+                                        <div class="task-field">
+
+                                            <label>
+                                                Aufgabe
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                name="titel"
+                                                maxlength="255"
+                                                value="{{ aufgabe['titel'] }}"
+                                                required
+                                            >
+
+                                        </div>
+
+
+
+                                        <div class="task-field">
+
+                                            <label>
+                                                Beschreibung
+                                            </label>
+
+                                            <textarea
+                                                name="beschreibung"
+                                            >{{ aufgabe["beschreibung"] or "" }}</textarea>
+
+                                        </div>
+
+
+
+                                        <div class="share-area">
+
+                                            <div class="share-title">
+                                                👥 Teilen mit
+                                            </div>
+
+
+                                            {% if kontakte %}
+
+                                                <div class="share-users">
+
+
+                                                    {% for kontakt in kontakte %}
+
+                                                        <label class="share-user">
+
+                                                            <input
+                                                                type="checkbox"
+                                                                name="geteilt_mit"
+                                                                value="{{ kontakt['id'] }}"
+
+                                                                {% if
+                                                                    kontakt["id"]
+                                                                    in
+                                                                    aufgabe["geteilt_ids"]
+                                                                %}
+                                                                    checked
+                                                                {% endif %}
+                                                            >
+
+                                                            <span>
+                                                                {{ kontakt["benutzername"] }}
+                                                            </span>
+
+                                                        </label>
+
+                                                    {% endfor %}
+
+
+                                                </div>
+
+
+                                            {% else %}
+
+                                                <div class="no-share-users">
+
+                                                    Keine freigegebenen Personen.
+
+                                                </div>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+
+                                        <button
+                                            type="submit"
+                                            class="task-button"
+                                        >
+                                            Änderungen speichern
+                                        </button>
+
+                                    </form>
+
+                                </details>
+
+
+                            {% endif %}
+
+
+                        </article>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            {% else %}
+
+                <div class="empty-tasks">
+
+                    Du hast aktuell noch keine Aufgaben.
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+    </main>
+
+
+
+    <script>
+
+        const taskForms =
+            document.querySelectorAll(
+                ".remember-task-scroll"
+            );
+
+
+        taskForms.forEach(
+            function(form) {
+
+                form.addEventListener(
+                    "submit",
+                    function() {
+
+                        sessionStorage.setItem(
+                            "taskScrollPosition",
+                            String(
+                                window.scrollY
+                            )
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        const taskScroll =
+            sessionStorage.getItem(
+                "taskScrollPosition"
+            );
+
+
+        if (taskScroll !== null) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    window.scrollTo(
+                        0,
+                        Number(taskScroll)
+                    );
+
+                    sessionStorage.removeItem(
+                        "taskScrollPosition"
+                    );
+
+                }
+            );
+
+        }
+
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

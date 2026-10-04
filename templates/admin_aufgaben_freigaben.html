@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Aufgaben-Freigaben | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+
+    <style>
+
+        .share-admin-page {
+            width: min(1100px, calc(100% - 30px));
+            margin: 0 auto;
+            padding: 28px 0 70px;
+        }
+
+
+        .share-admin-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+
+            border-bottom:
+                1px solid
+                rgba(240, 225, 188, 0.13);
+        }
+
+
+        .share-admin-brand {
+            display: grid;
+            gap: 4px;
+        }
+
+
+        .share-admin-brand strong {
+            font-size: 1.1rem;
+        }
+
+
+        .share-admin-brand span {
+            opacity: 0.68;
+            font-size: 0.9rem;
+        }
+
+
+        .share-admin-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .share-admin-nav a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+            padding: 0 16px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+            font-weight: 700;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.52);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.08);
+        }
+
+
+        .share-admin-hero {
+            padding: 30px;
+            margin-bottom: 25px;
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    115deg,
+                    rgba(55, 85, 64, 0.96),
+                    rgba(92, 105, 76, 0.93),
+                    rgba(178, 162, 120, 0.86)
+                );
+
+            box-shadow:
+                0 18px 50px
+                rgba(0, 0, 0, 0.14);
+        }
+
+
+        .share-admin-hero h1 {
+            margin: 0 0 10px;
+            color: #fff8e8;
+        }
+
+
+        .share-admin-hero p {
+            margin: 0;
+
+            max-width: 760px;
+
+            color:
+                rgba(255, 247, 225, 0.82);
+
+            line-height: 1.55;
+        }
+
+
+        .share-admin-info {
+            padding: 16px 18px;
+            margin-bottom: 24px;
+
+            border-radius: 17px;
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.11);
+
+            color:
+                rgba(247, 235, 204, 0.74);
+
+            line-height: 1.55;
+        }
+
+
+        .share-admin-message {
+            padding: 13px 15px;
+            margin-bottom: 20px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(227, 213, 177, 0.12);
+
+            color: #f3e5c4;
+
+            font-weight: 700;
+        }
+
+
+        .user-share-list {
+            display: grid;
+            gap: 20px;
+        }
+
+
+        .user-share-card {
+            padding: 23px;
+
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(53, 82, 62, 0.95),
+                    rgba(95, 107, 77, 0.90)
+                );
+
+            border:
+                1px solid
+                rgba(226, 209, 165, 0.15);
+
+            box-shadow:
+                0 14px 38px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .user-share-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 14px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .user-share-head h2 {
+            margin: 0;
+
+            color: #fff8e8;
+
+            font-size: 1.35rem;
+        }
+
+
+        .user-role {
+            display: inline-flex;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(234, 213, 163, 0.13);
+
+            color: #f0ddb1;
+
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+
+        .share-form {
+            display: grid;
+            gap: 14px;
+        }
+
+
+        .share-options {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+
+        .share-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 12px 13px;
+
+            border-radius: 13px;
+
+            cursor: pointer;
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.10);
+
+            color:
+                rgba(255, 247, 225, 0.88);
+        }
+
+
+        .share-option:hover {
+            background:
+                rgba(236, 222, 186, 0.12);
+        }
+
+
+        .share-option input {
+            width: 18px;
+            height: 18px;
+
+            accent-color: #d8c18c;
+        }
+
+
+        .share-save {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 45px;
+
+            padding: 10px 16px;
+
+            border: none;
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ead7ad,
+                    #ceb685
+                );
+
+            color: #183629;
+
+            font: inherit;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+
+        .share-save:active {
+            transform: scale(0.98);
+        }
+
+
+        .no-users {
+            padding: 28px;
+
+            text-align: center;
+
+            border-radius: 20px;
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            color:
+                rgba(248, 237, 210, 0.74);
+        }
+
+
+        @media (max-width: 700px) {
+
+            .share-admin-page {
+                width:
+                    min(
+                        100% - 18px,
+                        1100px
+                    );
+
+                padding-top: 16px;
+            }
+
+
+            .share-admin-hero {
+                padding: 22px 18px;
+            }
+
+
+            .share-admin-nav {
+                width: 100%;
+            }
+
+
+            .share-admin-nav a {
+                flex: 1;
+            }
+
+
+            .user-share-card {
+                padding: 18px 15px;
+            }
+
+
+            .share-options {
+                grid-template-columns: 1fr;
+            }
+
+
+            .user-share-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="share-admin-page">
+
+
+        <header class="share-admin-topbar">
+
+            <div class="share-admin-brand">
+
+                <strong>
+                    Familienplaner
+                </strong>
+
+                <span>
+                    Adminbereich
+                </span>
+
+            </div>
+
+
+            <nav class="share-admin-nav">
+
+                <a href="/admin">
+                    ← Benutzerverwaltung
+                </a>
+
+                <a href="/dashboard">
+                    Dashboard
+                </a>
+
+            </nav>
+
+        </header>
+
+
+
+        <section class="share-admin-hero">
+
+            <h1>
+                👥 Aufgaben-Freigaben
+            </h1>
+
+            <p>
+                Hier legst du fest, welche Benutzer
+                miteinander Aufgaben teilen dürfen.
+                Normale Benutzer sehen ausschließlich
+                die Personen, die du hier für sie freigibst.
+            </p>
+
+        </section>
+
+
+
+        <div class="share-admin-info">
+
+            Beispiel: Wenn du bei
+            <strong>Anna</strong>
+            den Benutzer
+            <strong>Max</strong>
+            freigibst, darf Anna beim Erstellen einer Aufgabe
+            Max auswählen.
+
+            <br><br>
+
+            Die Freigabe wird automatisch in beide Richtungen
+            behandelt. Dadurch kann Max dann ebenfalls Anna
+            beim Teilen auswählen.
+
+        </div>
+
+
+
+        {% if meldung %}
+
+            <div class="share-admin-message">
+                {{ meldung }}
+            </div>
+
+        {% endif %}
+
+
+
+        {% if benutzer_liste %}
+
+            <section class="user-share-list">
+
+
+                {% for person in benutzer_liste %}
+
+
+                    <article class="user-share-card">
+
+
+                        <div class="user-share-head">
+
+                            <h2>
+                                {{ person["benutzername"] }}
+                            </h2>
+
+
+                            <span class="user-role">
+                                {{ person["rolle"] }}
+                            </span>
+
+                        </div>
+
+
+
+                        <form
+                            method="POST"
+                            action="/admin/aufgaben-freigaben/{{ person['id'] }}"
+                            class="share-form"
+                        >
+
+
+                            <div class="share-options">
+
+
+                                {% for anderer in benutzer_liste %}
+
+
+                                    {% if
+                                        anderer["id"]
+                                        !=
+                                        person["id"]
+                                    %}
+
+
+                                        <label class="share-option">
+
+                                            <input
+                                                type="checkbox"
+                                                name="freigaben"
+                                                value="{{ anderer['id'] }}"
+
+                                                {% if
+                                                    anderer["id"]
+                                                    in
+                                                    person["freigabe_ids"]
+                                                %}
+                                                    checked
+                                                {% endif %}
+                                            >
+
+                                            <span>
+                                                {{ anderer["benutzername"] }}
+                                            </span>
+
+                                        </label>
+
+
+                                    {% endif %}
+
+
+                                {% endfor %}
+
+
+                            </div>
+
+
+
+                            <button
+                                type="submit"
+                                class="share-save"
+                            >
+                                Freigaben speichern
+                            </button>
+
+
+                        </form>
+
+
+                    </article>
+
+
+                {% endfor %}
+
+
+            </section>
+
+
+        {% else %}
+
+            <div class="no-users">
+
+                Es sind noch keine Benutzer vorhanden.
+
+            </div>
+
+        {% endif %}
+
+
+    </main>
+
+
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

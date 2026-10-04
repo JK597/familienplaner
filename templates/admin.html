@@ -1,137 +1,1094 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Familienplaner - Admin</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="/static/style.css">
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Benutzerverwaltung | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+
+    <style>
+
+        .admin-page {
+            width: min(
+                1150px,
+                calc(100% - 30px)
+            );
+
+            margin: 0 auto;
+
+            padding:
+                28px
+                0
+                70px;
+        }
+
+
+        .admin-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+
+            gap: 16px;
+
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+
+            border-bottom:
+                1px solid
+                rgba(240, 225, 188, 0.13);
+        }
+
+
+        .admin-brand {
+            display: grid;
+            gap: 4px;
+        }
+
+
+        .admin-brand strong {
+            font-size: 1.1rem;
+        }
+
+
+        .admin-brand span {
+            opacity: 0.68;
+            font-size: 0.9rem;
+        }
+
+
+        .admin-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+
+        .admin-nav a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding:
+                0
+                16px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.52);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.08);
+        }
+
+
+        .admin-hero {
+            padding: 30px;
+            margin-bottom: 25px;
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    115deg,
+                    rgba(55, 85, 64, 0.96),
+                    rgba(92, 105, 76, 0.93),
+                    rgba(178, 162, 120, 0.86)
+                );
+
+            box-shadow:
+                0 18px 50px
+                rgba(0, 0, 0, 0.14);
+        }
+
+
+        .admin-hero h1 {
+            margin:
+                0
+                0
+                10px;
+
+            color: #fff8e8;
+        }
+
+
+        .admin-hero p {
+            margin: 0;
+
+            max-width: 720px;
+
+            color:
+                rgba(255, 247, 225, 0.82);
+
+            line-height: 1.55;
+        }
+
+
+        .admin-shortcuts {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 16px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .admin-shortcut {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 18px;
+
+            padding: 20px;
+
+            border-radius: 20px;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(240, 229, 198, 0.96),
+                    rgba(213, 199, 157, 0.93)
+                );
+
+            color: #183629;
+
+            box-shadow:
+                0 12px 30px
+                rgba(0, 0, 0, 0.10);
+        }
+
+
+        .admin-shortcut-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+
+        .admin-shortcut-icon {
+            width: 48px;
+            height: 48px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            font-size: 1.35rem;
+
+            background:
+                rgba(24, 54, 41, 0.10);
+        }
+
+
+        .admin-shortcut h3 {
+            margin:
+                0
+                0
+                4px;
+
+            font-size: 1rem;
+        }
+
+
+        .admin-shortcut p {
+            margin: 0;
+
+            opacity: 0.67;
+
+            font-size: 0.84rem;
+        }
+
+
+        .admin-shortcut-arrow {
+            font-size: 1.25rem;
+            font-weight: 900;
+        }
+
+
+        .admin-panel {
+            padding: 24px;
+            margin-bottom: 24px;
+
+            border-radius: 23px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(53, 82, 62, 0.95),
+                    rgba(95, 107, 77, 0.90)
+                );
+
+            border:
+                1px solid
+                rgba(226, 209, 165, 0.15);
+
+            box-shadow:
+                0 14px 38px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .admin-panel h2 {
+            margin:
+                0
+                0
+                18px;
+
+            color: #fff8e8;
+        }
+
+
+        .admin-message {
+            padding: 13px 15px;
+            margin-bottom: 18px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(227, 213, 177, 0.12);
+
+            color: #f3e5c4;
+
+            font-weight: 700;
+        }
+
+
+        .create-user-form {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                minmax(0, 1fr)
+                auto;
+
+            gap: 13px;
+
+            align-items: end;
+        }
+
+
+        .admin-field {
+            display: grid;
+            gap: 7px;
+        }
+
+
+        .admin-field label {
+            color: #f6ead0;
+
+            font-size: 0.91rem;
+            font-weight: 800;
+        }
+
+
+        .admin-field input {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 12px 14px;
+
+            border-radius: 13px;
+
+            border:
+                1px solid
+                rgba(237, 219, 177, 0.17);
+
+            background:
+                rgba(247, 238, 213, 0.94);
+
+            color: #183629;
+
+            font: inherit;
+
+            outline: none;
+        }
+
+
+        .admin-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 45px;
+
+            padding:
+                10px
+                16px;
+
+            border: none;
+            border-radius: 13px;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ead7ad,
+                    #ceb685
+                );
+
+            color: #183629;
+
+            font: inherit;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+
+        .admin-button:active {
+            transform:
+                scale(0.98);
+        }
+
+
+        .admin-button-secondary {
+            color: #f3e4c4;
+
+            background:
+                rgba(236, 222, 186, 0.11);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.14);
+        }
+
+
+        .admin-button-danger {
+            color: #f4d3cd;
+
+            background:
+                rgba(165, 66, 56, 0.16);
+
+            border:
+                1px solid
+                rgba(214, 114, 100, 0.23);
+        }
+
+
+        .user-list {
+            display: grid;
+            gap: 14px;
+        }
+
+
+        .user-card {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                auto;
+
+            align-items: center;
+
+            gap: 18px;
+
+            padding: 19px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(236, 222, 186, 0.09);
+
+            border:
+                1px solid
+                rgba(237, 220, 178, 0.13);
+        }
+
+
+        .user-info h3 {
+            margin:
+                0
+                0
+                7px;
+
+            color: #fff8e8;
+
+            font-size: 1.08rem;
+        }
+
+
+        .user-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            color:
+                rgba(246, 233, 199, 0.61);
+
+            font-size: 0.82rem;
+        }
+
+
+        .user-role {
+            display: inline-flex;
+
+            padding:
+                5px
+                9px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(234, 213, 163, 0.13);
+
+            color: #f0ddb1;
+
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+
+        .password-warning {
+            display: inline-flex;
+
+            padding:
+                5px
+                9px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(226, 177, 86, 0.12);
+
+            color: #f1daa8;
+
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+
+        .user-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            justify-content: flex-end;
+        }
+
+
+        .user-actions form {
+            margin: 0;
+        }
+
+
+        .empty-users {
+            padding: 28px;
+
+            text-align: center;
+
+            border-radius: 18px;
+
+            background:
+                rgba(236, 222, 186, 0.08);
+
+            color:
+                rgba(248, 237, 210, 0.74);
+        }
+
+
+        .privacy-box {
+            margin-top: 16px;
+
+            padding: 15px 17px;
+
+            border-radius: 15px;
+
+            color:
+                rgba(247, 235, 204, 0.69);
+
+            background:
+                rgba(236, 222, 186, 0.07);
+
+            line-height: 1.55;
+
+            font-size: 0.87rem;
+        }
+
+
+        @media (max-width: 850px) {
+
+            .create-user-form {
+                grid-template-columns: 1fr;
+            }
+
+
+            .admin-shortcuts {
+                grid-template-columns: 1fr;
+            }
+
+
+            .user-card {
+                grid-template-columns: 1fr;
+            }
+
+
+            .user-actions {
+                justify-content: flex-start;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .admin-page {
+                width:
+                    min(
+                        100% - 18px,
+                        1150px
+                    );
+
+                padding-top: 16px;
+            }
+
+
+            .admin-hero {
+                padding:
+                    22px
+                    18px;
+            }
+
+
+            .admin-nav {
+                width: 100%;
+            }
+
+
+            .admin-nav a {
+                flex: 1;
+            }
+
+
+            .admin-panel {
+                padding:
+                    18px
+                    15px;
+            }
+
+
+            .user-actions {
+                display: grid;
+
+                grid-template-columns:
+                    1fr
+                    1fr;
+
+                width: 100%;
+            }
+
+
+            .user-actions a,
+            .user-actions form,
+            .user-actions button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+        }
+
+    </style>
+
 </head>
 
-<body class="app-body">
 
-    <div class="app-container">
+<body>
 
-        <header class="topbar">
-            <div>
-                <h1>Admin-Bereich</h1>
-                <p>Benutzerverwaltung</p>
+
+    <main class="admin-page">
+
+
+        <!-- =========================================
+             TOPBAR
+        ========================================== -->
+
+        <header class="admin-topbar">
+
+
+            <div class="admin-brand">
+
+                <strong>
+                    Familienplaner
+                </strong>
+
+                <span>
+                    Adminbereich
+                </span>
+
             </div>
 
-            <a href="/dashboard" class="logout-button">
-                Zurück
-            </a>
+
+            <nav class="admin-nav">
+
+                <a href="/dashboard">
+                    ← Dashboard
+                </a>
+
+                <a href="/logout">
+                    Abmelden
+                </a>
+
+            </nav>
+
+
         </header>
 
 
-        <main class="dashboard">
 
-            <div class="welcome-card">
-                <h2>Neuen Benutzer erstellen</h2>
+        <!-- =========================================
+             HERO
+        ========================================== -->
 
-                <form method="POST" class="admin-form">
+        <section class="admin-hero">
 
-                    <label>Benutzername</label>
+            <h1>
+                ⚙️ Benutzerverwaltung
+            </h1>
+
+            <p>
+                Verwalte Benutzerkonten, Passwörter
+                und die Freigaben für gemeinsame
+                Aufgaben.
+            </p>
+
+        </section>
+
+
+
+        <!-- =========================================
+             SCHNELLZUGRIFF
+        ========================================== -->
+
+        <section class="admin-shortcuts">
+
+
+            <a
+                href="/admin/aufgaben-freigaben"
+                class="admin-shortcut"
+            >
+
+                <div class="admin-shortcut-left">
+
+                    <div class="admin-shortcut-icon">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Aufgaben-Freigaben
+                        </h3>
+
+                        <p>
+                            Festlegen, wer miteinander
+                            Aufgaben teilen darf.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-shortcut-arrow">
+                    →
+                </div>
+
+            </a>
+
+
+
+            <a
+                href="/admin/vorschlaege"
+                class="admin-shortcut"
+            >
+
+                <div class="admin-shortcut-left">
+
+                    <div class="admin-shortcut-icon">
+                        📬
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Verbesserungsvorschläge
+                        </h3>
+
+                        <p>
+                            Vorschläge der Benutzer
+                            prüfen und bearbeiten.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-shortcut-arrow">
+                    →
+                </div>
+
+            </a>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             BENUTZER ERSTELLEN
+        ========================================== -->
+
+        <section class="admin-panel">
+
+            <h2>
+                Benutzer erstellen
+            </h2>
+
+
+            {% if meldung %}
+
+                <div class="admin-message">
+                    {{ meldung }}
+                </div>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                action="/admin"
+                class="create-user-form"
+            >
+
+
+                <div class="admin-field">
+
+                    <label for="benutzername">
+                        Benutzername
+                    </label>
 
                     <input
-                        type="text"
+                        id="benutzername"
                         name="benutzername"
-                        placeholder="Benutzername"
+                        type="text"
+                        placeholder="z. B. Anna"
+                        autocomplete="off"
                         required
                     >
 
-                    <label>Passwort</label>
+                </div>
+
+
+
+                <div class="admin-field">
+
+                    <label for="passwort">
+                        Einmalpasswort
+                    </label>
 
                     <input
-                        type="password"
+                        id="passwort"
                         name="passwort"
-                        placeholder="Passwort"
+                        type="password"
+                        placeholder="Mindestens 4 Zeichen"
+                        autocomplete="new-password"
                         required
                     >
 
-                    <button type="submit">
-                        Benutzer erstellen
-                    </button>
+                </div>
 
-                </form>
 
-                {% if meldung %}
-                    <p class="meldung">
-                        {{ meldung }}
-                    </p>
-                {% endif %}
+
+                <button
+                    type="submit"
+                    class="admin-button"
+                >
+                    Benutzer erstellen
+                </button>
+
+
+            </form>
+
+
+            <div class="privacy-box">
+
+                Neue Benutzer erhalten zunächst ein
+                Einmalpasswort. Beim ersten Login
+                müssen sie ein eigenes Passwort festlegen.
+
             </div>
 
+        </section>
 
-            <div class="welcome-card">
 
-                <h2>Benutzer</h2>
+
+        <!-- =========================================
+             BENUTZERLISTE
+        ========================================== -->
+
+        <section class="admin-panel">
+
+            <h2>
+                Benutzer
+            </h2>
+
+
+            {% if benutzer_liste %}
+
 
                 <div class="user-list">
 
-                    {% for benutzer in benutzer_liste %}
 
-                        <div class="user-card">
+                    {% for person in benutzer_liste %}
 
-                            <div>
-                                <strong>
-                                    {{ benutzer["benutzername"] }}
-                                </strong>
 
-                                <p>
-                                    Rolle: {{ benutzer["rolle"] }}
-                                </p>
+                        <article class="user-card">
+
+
+                            <div class="user-info">
+
+                                <h3>
+                                    {{ person["benutzername"] }}
+                                </h3>
+
+
+                                <div class="user-meta">
+
+
+                                    <span class="user-role">
+
+                                        {% if person["rolle"] == "admin" %}
+
+                                            Admin
+
+                                        {% else %}
+
+                                            Benutzer
+
+                                        {% endif %}
+
+                                    </span>
+
+
+
+                                    {% if
+                                        person["passwort_muss_geaendert"]
+                                    %}
+
+                                        <span class="password-warning">
+                                            Passwortänderung offen
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    <span>
+                                        ID:
+                                        {{ person["id"] }}
+                                    </span>
+
+
+                                </div>
+
                             </div>
+
 
 
                             <div class="user-actions">
 
+
                                 <a
-                                    href="/benutzername-aendern/{{ benutzer['id'] }}"
-                                    class="small-button"
+                                    href="/benutzername-aendern/{{ person['id'] }}"
+                                    class="
+                                        admin-button
+                                        admin-button-secondary
+                                    "
                                 >
                                     Name ändern
                                 </a>
 
 
+
                                 <a
-                                    href="/passwort-aendern/{{ benutzer['id'] }}"
-                                    class="small-button"
+                                    href="/passwort-aendern/{{ person['id'] }}"
+                                    class="
+                                        admin-button
+                                        admin-button-secondary
+                                    "
                                 >
-                                    Passwort ändern
+                                    Passwort
                                 </a>
 
 
-                                {% if benutzer["rolle"] != "admin" %}
+
+                                {% if person["rolle"] != "admin" %}
+
 
                                     <form
-                                        action="/benutzer-loeschen/{{ benutzer['id'] }}"
                                         method="POST"
+                                        action="/benutzer-loeschen/{{ person['id'] }}"
+                                        onsubmit="
+                                            return confirm(
+                                                'Benutzer wirklich löschen? Alle zugehörigen Daten werden ebenfalls gelöscht.'
+                                            );
+                                        "
                                     >
+
                                         <button
                                             type="submit"
-                                            class="delete-button"
+                                            class="
+                                                admin-button
+                                                admin-button-danger
+                                            "
                                         >
                                             Löschen
                                         </button>
+
                                     </form>
+
 
                                 {% endif %}
 
+
                             </div>
 
-                        </div>
+
+                        </article>
+
 
                     {% endfor %}
 
+
                 </div>
+
+
+            {% else %}
+
+
+                <div class="empty-users">
+
+                    Keine Benutzer vorhanden.
+
+                </div>
+
+
+            {% endif %}
+
+
+            <div class="privacy-box">
+
+                🔒 Normale Benutzer sehen nicht automatisch
+                alle anderen Konten. Für gemeinsame Aufgaben
+                sind ausschließlich die Personen sichtbar,
+                die du unter
+                <strong>Aufgaben-Freigaben</strong>
+                miteinander verbunden hast.
 
             </div>
 
-        </main>
+        </section>
 
-    </div>
+
+    </main>
+
+
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
 
 </body>
+
 </html>

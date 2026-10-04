@@ -31,7 +31,7 @@
     >
 
     <title>
-        Familienplaner
+        Dashboard | Familienplaner
     </title>
 
     <link
@@ -60,8 +60,13 @@
     <style>
 
         .dashboard-wrapper {
-            width: min(1390px, calc(100% - 48px));
+            width: min(
+                1390px,
+                calc(100% - 48px)
+            );
+
             margin: 0 auto;
+
             padding-top: 26px;
             padding-bottom: 80px;
         }
@@ -101,7 +106,8 @@
 
 
         .dashboard-brand-user {
-            color: rgba(245, 234, 208, 0.68);
+            color:
+                rgba(245, 234, 208, 0.68);
         }
 
 
@@ -124,6 +130,7 @@
             border-radius: 12px;
 
             text-decoration: none;
+
             font-weight: 700;
 
             color: #ead9c6;
@@ -282,7 +289,9 @@
 
             filter:
                 drop-shadow(
-                    0 15px 18px
+                    0
+                    15px
+                    18px
                     rgba(0, 0, 0, 0.16)
                 );
         }
@@ -292,7 +301,10 @@
             display: grid;
 
             grid-template-columns:
-                repeat(4, minmax(0, 1fr));
+                repeat(
+                    4,
+                    minmax(0, 1fr)
+                );
 
             gap: 28px;
         }
@@ -380,6 +392,7 @@
             color: #fff8e8;
 
             font-size: 1.55rem;
+
             line-height: 1.2;
         }
 
@@ -473,7 +486,10 @@
 
             .dashboard-card-grid {
                 grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
             }
 
         }
@@ -585,6 +601,7 @@
 
         <header class="dashboard-topbar">
 
+
             <div class="dashboard-brand">
 
                 <span class="dashboard-brand-name">
@@ -592,13 +609,14 @@
                 </span>
 
                 <span class="dashboard-brand-user">
-                    {{ benutzer }}
+                    · {{ benutzer }}
                 </span>
 
             </div>
 
 
             <div class="dashboard-top-actions">
+
 
                 {% if rolle == "admin" %}
 
@@ -619,12 +637,16 @@
                     Abmelden
                 </a>
 
+
             </div>
+
 
         </header>
 
 
+
         <section class="dashboard-welcome">
+
 
             <div class="welcome-text">
 
@@ -645,18 +667,21 @@
             </div>
 
 
-            <div
-                class="welcome-hand"
-                aria-hidden="true"
-            >
+            <div class="welcome-hand">
                 👋
             </div>
+
 
         </section>
 
 
+
         <section class="dashboard-card-grid">
 
+
+            <!-- =====================================
+                 KALENDER
+            ====================================== -->
 
             <article class="dashboard-home-card">
 
@@ -670,26 +695,29 @@
 
                 <p>
                     Termine und wichtige Ereignisse
-                    übersichtlich verwalten.
+                    deiner Familie an einem Ort.
                 </p>
 
                 <div class="home-card-bottom">
 
-                    <button
-                        type="button"
+                    <div
                         class="
                             home-card-button
                             disabled
                         "
-                        disabled
                     >
-                        Bald verfügbar
-                    </button>
+                        Kommt noch
+                    </div>
 
                 </div>
 
             </article>
 
+
+
+            <!-- =====================================
+                 AUFGABEN
+            ====================================== -->
 
             <article class="dashboard-home-card">
 
@@ -702,27 +730,29 @@
                 </h2>
 
                 <p>
-                    Aufgaben für den Alltag
-                    organisieren und im Blick behalten.
+                    Erstelle Aufgaben für dich oder
+                    teile sie mit freigegebenen
+                    Familienmitgliedern.
                 </p>
 
                 <div class="home-card-bottom">
 
-                    <button
-                        type="button"
-                        class="
-                            home-card-button
-                            disabled
-                        "
-                        disabled
+                    <a
+                        href="/aufgaben"
+                        class="home-card-button"
                     >
-                        Bald verfügbar
-                    </button>
+                        Aufgaben öffnen
+                    </a>
 
                 </div>
 
             </article>
 
+
+
+            <!-- =====================================
+                 EINKAUFSLISTE
+            ====================================== -->
 
             <article class="dashboard-home-card">
 
@@ -735,8 +765,8 @@
                 </h2>
 
                 <p>
-                    Deine persönliche Einkaufsliste
-                    einfach und übersichtlich verwalten.
+                    Plane deine Einkäufe und hake
+                    erledigte Artikel einfach ab.
                 </p>
 
                 <div class="home-card-bottom">
@@ -753,6 +783,11 @@
             </article>
 
 
+
+            <!-- =====================================
+                 FINANZEN
+            ====================================== -->
+
             <article class="dashboard-home-card">
 
                 <div class="home-card-icon">
@@ -764,8 +799,9 @@
                 </h2>
 
                 <p>
-                    Budget, Ausgaben und Fixkosten
-                    jederzeit im Blick behalten.
+                    Behalte Budget, Ausgaben,
+                    Fixkosten und deinen Übertrag
+                    im Blick.
                 </p>
 
                 <div class="home-card-bottom">
@@ -782,6 +818,12 @@
             </article>
 
 
+
+            <!-- =====================================
+                 NORMALER BENUTZER:
+                 VERBESSERUNGSVORSCHLAG
+            ====================================== -->
+
             {% if rolle != "admin" %}
 
                 <article class="dashboard-home-card">
@@ -795,9 +837,8 @@
                     </h2>
 
                     <p>
-                        Hast du eine Idee für den
-                        Familienplaner? Schick sie
-                        direkt an den Admin.
+                        Teile Ideen für neue Funktionen
+                        oder Verbesserungen mit dem Admin.
                     </p>
 
                     <div class="home-card-bottom">
@@ -816,6 +857,12 @@
             {% endif %}
 
 
+
+            <!-- =====================================
+                 ADMIN:
+                 VORSCHLÄGE PRÜFEN
+            ====================================== -->
+
             {% if rolle == "admin" %}
 
                 <article class="dashboard-home-card">
@@ -829,9 +876,9 @@
                     </h2>
 
                     <p>
-                        Eingegangene Vorschläge der
-                        Benutzer prüfen, bearbeiten
-                        und beantworten.
+                        Sieh dir Verbesserungsvorschläge
+                        der Benutzer an und bearbeite
+                        deren Status.
                     </p>
 
                     <div class="home-card-bottom">
@@ -848,10 +895,52 @@
                 </article>
 
 
+
+                <!-- =================================
+                     ADMIN:
+                     AUFGABEN-FREIGABEN
+                ================================== -->
+
                 <article class="dashboard-home-card">
 
                     <div class="home-card-icon">
-                        👤
+                        👥
+                    </div>
+
+                    <h2>
+                        Aufgaben-Freigaben
+                    </h2>
+
+                    <p>
+                        Lege fest, welche Benutzer sich
+                        gegenseitig sehen und Aufgaben
+                        miteinander teilen dürfen.
+                    </p>
+
+                    <div class="home-card-bottom">
+
+                        <a
+                            href="/admin/aufgaben-freigaben"
+                            class="home-card-button"
+                        >
+                            Freigaben verwalten
+                        </a>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================
+                     ADMIN:
+                     BENUTZERVERWALTUNG
+                ================================== -->
+
+                <article class="dashboard-home-card">
+
+                    <div class="home-card-icon">
+                        ⚙️
                     </div>
 
                     <h2>
@@ -859,8 +948,10 @@
                     </h2>
 
                     <p>
-                        Benutzer erstellen,
-                        bearbeiten und verwalten.
+                        Benutzer anlegen,
+                        Benutzernamen ändern,
+                        Passwörter vergeben
+                        oder Konten löschen.
                     </p>
 
                     <div class="home-card-bottom">
@@ -885,6 +976,7 @@
     </main>
 
 
+
     <script>
 
         if ("serviceWorker" in navigator) {
@@ -893,10 +985,9 @@
                 "load",
                 function() {
 
-                    navigator.serviceWorker
-                        .register(
-                            "/service-worker.js"
-                        );
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
 
                 }
             );
