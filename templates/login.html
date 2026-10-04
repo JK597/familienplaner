@@ -1,177 +1,344 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#183629">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Familienplaner">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Login | Familienplaner</title>
 
-    <meta
-        name="theme-color"
-        content="#183629"
-    >
+    <link rel="manifest" href="/static/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32.png">
 
-    <meta
-        name="apple-mobile-web-app-capable"
-        content="yes"
-    >
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    <meta
-        name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent"
-    >
+        html {
+            scroll-behavior: smooth;
+        }
 
-    <meta
-        name="apple-mobile-web-app-title"
-        content="Familienplaner"
-    >
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #f8f2e8;
+            background:
+                radial-gradient(circle at top left, rgba(73, 120, 87, 0.35), transparent 35%),
+                radial-gradient(circle at top right, rgba(220, 202, 163, 0.28), transparent 30%),
+                linear-gradient(135deg, #183629 0%, #274c39 35%, #5f7153 68%, #b7ab92 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    <title>
-        Login | Familienplaner
-    </title>
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.14;
+        }
 
-    <link
-        rel="manifest"
-        href="/static/manifest.webmanifest"
-    >
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(to bottom right, rgba(255,255,255,0.06), transparent 40%),
+                linear-gradient(to top left, rgba(255,255,255,0.04), transparent 30%);
+            opacity: 0.8;
+        }
 
-    <link
-        rel="apple-touch-icon"
-        href="/static/icons/apple-touch-icon.png"
-    >
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+            position: relative;
+            z-index: 1;
+        }
 
-    <link
-        rel="icon"
-        type="image/png"
-        sizes="32x32"
-        href="/static/icons/favicon-32.png"
-    >
+        .login-card {
+            width: 100%;
+            max-width: 460px;
+            padding: 34px 28px;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.22),
+                inset 0 1px 0 rgba(255,255,255,0.14);
+            position: relative;
+            overflow: hidden;
+        }
 
-    <link
-        rel="stylesheet"
-        href="/static/style.css"
-    >
+        .login-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.15), transparent 30%, transparent 65%, rgba(255,255,255,0.08));
+            pointer-events: none;
+        }
 
+        .brand {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 26px;
+        }
+
+        .brand-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            color: #f2e6cf;
+            opacity: 0.95;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .brand h1 {
+            margin: 0 0 10px 0;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.05;
+            color: #fff7e8;
+        }
+
+        .brand p {
+            margin: 0;
+            color: rgba(255, 245, 226, 0.9);
+            font-size: 1.02rem;
+            line-height: 1.55;
+        }
+
+        .login-form {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.96rem;
+            font-weight: 700;
+            color: #fff5e2;
+        }
+
+        .form-group input {
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(18, 49, 36, 0.35);
+            color: #fff8ec;
+            border-radius: 16px;
+            padding: 15px 16px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s ease;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.04);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(248, 240, 224, 0.65);
+        }
+
+        .form-group input:focus {
+            border-color: rgba(244, 221, 177, 0.7);
+            background: rgba(18, 49, 36, 0.52);
+            box-shadow:
+                0 0 0 4px rgba(235, 216, 179, 0.12),
+                inset 0 1px 2px rgba(255,255,255,0.04);
+        }
+
+        .login-button {
+            margin-top: 4px;
+            border: none;
+            border-radius: 16px;
+            padding: 15px 18px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            color: #183629;
+            background: linear-gradient(135deg, #f0ddb1 0%, #d6bf90 100%);
+            box-shadow:
+                0 12px 26px rgba(0, 0, 0, 0.14),
+                inset 0 1px 0 rgba(255,255,255,0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.02);
+            box-shadow:
+                0 14px 28px rgba(0, 0, 0, 0.18),
+                inset 0 1px 0 rgba(255,255,255,0.35);
+        }
+
+        .login-button:active {
+            transform: scale(0.985);
+        }
+
+        .error-box {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(152, 46, 46, 0.18);
+            border: 1px solid rgba(255, 180, 180, 0.22);
+            color: #ffe4e4;
+            font-weight: 700;
+        }
+
+        .login-footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 246, 227, 0.75);
+            text-align: center;
+        }
+
+        .glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.22;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-1 {
+            top: 70px;
+            left: -80px;
+            background: #5b8c69;
+        }
+
+        .glow-2 {
+            right: -90px;
+            bottom: 60px;
+            background: #dcc79b;
+        }
+
+        @media (max-width: 600px) {
+            .login-wrapper {
+                align-items: stretch;
+                padding: 18px 12px;
+            }
+
+            .login-card {
+                max-width: 100%;
+                margin: auto 0;
+                padding: 26px 18px;
+                border-radius: 24px;
+            }
+
+            .brand h1 {
+                font-size: 2.2rem;
+            }
+
+            .brand p {
+                font-size: 0.96rem;
+            }
+
+            .form-group input {
+                padding: 14px 14px;
+            }
+
+            .login-button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
+<body>
 
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
 
-<body class="login-body">
-
-
-    <main class="login-page">
-
-
+    <main class="login-wrapper">
         <section class="login-card">
 
-
-            <div class="login-brand">
-
-                <div class="login-icon">
-                    🏠
-                </div>
-
-                <h1>
-                    Familienplaner
-                </h1>
-
+            <div class="brand">
+                <div class="brand-top">🏡 Familienplaner</div>
+                <h1>Willkommen zurück</h1>
                 <p>
-                    Willkommen zurück.
+                    Melde dich an und verwalte Familie, Finanzen,
+                    Einkäufe und mehr an einem Ort.
                 </p>
-
             </div>
 
-
             {% if fehler %}
-
-                <div class="login-error">
+                <div class="error-box">
                     {{ fehler }}
                 </div>
-
             {% endif %}
 
-
-            <form
-                method="POST"
-                action="/"
-                class="login-form"
-            >
-
-
-                <div class="login-field">
-
-                    <label for="benutzername">
-                        Benutzername
-                    </label>
-
+            <form method="POST" class="login-form">
+                <div class="form-group">
+                    <label for="benutzername">Benutzername</label>
                     <input
                         type="text"
                         id="benutzername"
                         name="benutzername"
+                        placeholder="Benutzername eingeben"
+                        value="{{ request.form.get('benutzername', '') }}"
                         autocomplete="username"
                         required
                     >
-
                 </div>
 
-
-                <div class="login-field">
-
-                    <label for="passwort">
-                        Passwort
-                    </label>
-
+                <div class="form-group">
+                    <label for="passwort">Passwort</label>
                     <input
                         type="password"
                         id="passwort"
                         name="passwort"
+                        placeholder="Passwort eingeben"
                         autocomplete="current-password"
                         required
                     >
-
                 </div>
 
-
-                <button
-                    type="submit"
-                    class="login-button"
-                >
+                <button type="submit" class="login-button">
                     Anmelden
                 </button>
-
-
             </form>
 
+            <div class="login-footer">
+                Sicherer Zugang zu deinem Familienplaner
+            </div>
 
         </section>
-
-
     </main>
 
-
     <script>
-
         if ("serviceWorker" in navigator) {
-
-            window.addEventListener(
-                "load",
-                function() {
-
-                    navigator.serviceWorker.register(
-                        "/service-worker.js"
-                    );
-
-                }
-            );
-
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/service-worker.js");
+            });
         }
-
     </script>
 
-
 </body>
-
 </html>
