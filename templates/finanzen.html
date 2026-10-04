@@ -235,7 +235,7 @@
                 <form
                     method="POST"
                     action="/finanz-einstellungen-speichern"
-                    class="form-grid"
+                    class="form-grid remember-scroll-form"
                 >
 
                     <div class="form-group full-width">
@@ -334,7 +334,7 @@
                 <form
                     method="POST"
                     action="/ausgabe-hinzufuegen"
-                    class="form-grid"
+                    class="form-grid remember-scroll-form"
                 >
 
                     <div class="form-group full-width">
@@ -569,8 +569,6 @@
                     </div>
 
 
-                    <!-- BEARBEITEN -->
-
                     <details class="edit-box">
 
                         <summary>
@@ -580,7 +578,7 @@
                         <form
                             method="POST"
                             action="/ausgabe-bearbeiten/{{ ausgabe['id'] }}"
-                            class="form-grid edit-form"
+                            class="form-grid edit-form remember-scroll-form"
                         >
 
                             <div class="form-group full-width">
@@ -698,12 +696,10 @@
                     </details>
 
 
-                    <!-- LÖSCHEN -->
-
                     <form
                         method="POST"
                         action="/ausgabe-loeschen/{{ ausgabe['id'] }}"
-                        class="expense-delete-form"
+                        class="expense-delete-form remember-scroll-form"
                         onsubmit="return confirm('Ausgabe wirklich löschen?');"
                     >
 
@@ -814,10 +810,59 @@
 
 
 <script>
+    /*
+        Fortschrittsbalken
+    */
+
     document.querySelectorAll(".progress-bar").forEach(function(bar) {
         const value = Number(bar.dataset.progress || 0);
         const safeValue = Math.min(Math.max(value, 0), 100);
         bar.style.width = safeValue + "%";
+    });
+
+
+    /*
+        Scrollposition wiederherstellen
+    */
+
+    const savedScrollPosition = sessionStorage.getItem(
+        "finanzenScrollPosition"
+    );
+
+    if (savedScrollPosition !== null) {
+
+        window.scrollTo({
+            top: Number(savedScrollPosition),
+            behavior: "instant"
+        });
+
+        sessionStorage.removeItem(
+            "finanzenScrollPosition"
+        );
+    }
+
+
+    /*
+        Vor dem Speichern die aktuelle
+        Scrollposition merken
+    */
+
+    document.querySelectorAll(
+        ".remember-scroll-form"
+    ).forEach(function(form) {
+
+        form.addEventListener(
+            "submit",
+            function() {
+
+                sessionStorage.setItem(
+                    "finanzenScrollPosition",
+                    String(window.scrollY)
+                );
+
+            }
+        );
+
     });
 </script>
 
