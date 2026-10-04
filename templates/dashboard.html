@@ -59,10 +59,6 @@
 
     <style>
 
-        /* =========================================
-           DASHBOARD SPEZIAL
-        ========================================== */
-
         .dashboard-wrapper {
             width: min(1390px, calc(100% - 48px));
             margin: 0 auto;
@@ -70,10 +66,6 @@
             padding-bottom: 80px;
         }
 
-
-        /* =========================================
-           OBERE LEISTE
-        ========================================== */
 
         .dashboard-topbar {
             min-height: 68px;
@@ -159,11 +151,6 @@
             transform: scale(0.97);
         }
 
-
-
-        /* =========================================
-           WILLKOMMEN
-        ========================================== */
 
         .dashboard-welcome {
             position: relative;
@@ -300,11 +287,6 @@
                 );
         }
 
-
-
-        /* =========================================
-           KARTEN
-        ========================================== */
 
         .dashboard-card-grid {
             display: grid;
@@ -487,11 +469,6 @@
         }
 
 
-
-        /* =========================================
-           MOBILE / TABLET
-        ========================================== */
-
         @media (max-width: 1150px) {
 
             .dashboard-card-grid {
@@ -606,10 +583,6 @@
     <main class="dashboard-wrapper">
 
 
-        <!-- =========================================
-             OBEN
-        ========================================== -->
-
         <header class="dashboard-topbar">
 
             <div class="dashboard-brand">
@@ -651,11 +624,6 @@
         </header>
 
 
-
-        <!-- =========================================
-             WILLKOMMEN
-        ========================================== -->
-
         <section class="dashboard-welcome">
 
             <div class="welcome-text">
@@ -687,15 +655,8 @@
         </section>
 
 
-
-        <!-- =========================================
-             KARTEN
-        ========================================== -->
-
         <section class="dashboard-card-grid">
 
-
-            <!-- KALENDER -->
 
             <article class="dashboard-home-card">
 
@@ -730,9 +691,6 @@
             </article>
 
 
-
-            <!-- AUFGABEN -->
-
             <article class="dashboard-home-card">
 
                 <div class="home-card-icon">
@@ -766,9 +724,6 @@
             </article>
 
 
-
-            <!-- EINKAUFSLISTE -->
-
             <article class="dashboard-home-card">
 
                 <div class="home-card-icon">
@@ -797,9 +752,6 @@
 
             </article>
 
-
-
-            <!-- FINANZEN -->
 
             <article class="dashboard-home-card">
 
@@ -830,41 +782,39 @@
             </article>
 
 
+            {% if rolle != "admin" %}
 
-            <!-- VERBESSERUNGSVORSCHLAG -->
+                <article class="dashboard-home-card">
 
-            <article class="dashboard-home-card">
+                    <div class="home-card-icon">
+                        💡
+                    </div>
 
-                <div class="home-card-icon">
-                    💡
-                </div>
+                    <h2>
+                        Verbesserungsvorschlag
+                    </h2>
 
-                <h2>
-                    Verbesserungsvorschlag
-                </h2>
+                    <p>
+                        Hast du eine Idee für den
+                        Familienplaner? Schick sie
+                        direkt an den Admin.
+                    </p>
 
-                <p>
-                    Hast du eine Idee für den
-                    Familienplaner? Schick sie direkt
-                    an den Admin.
-                </p>
+                    <div class="home-card-bottom">
 
-                <div class="home-card-bottom">
+                        <a
+                            href="/vorschlag"
+                            class="home-card-button"
+                        >
+                            Vorschläge öffnen
+                        </a>
 
-                    <a
-                        href="/vorschlag"
-                        class="home-card-button"
-                    >
-                        Vorschlag senden
-                    </a>
+                    </div>
 
-                </div>
+                </article>
 
-            </article>
+            {% endif %}
 
-
-
-            <!-- ADMIN VORSCHLÄGE -->
 
             {% if rolle == "admin" %}
 
@@ -875,12 +825,13 @@
                     </div>
 
                     <h2>
-                        Vorschläge
+                        Vorschläge prüfen
                     </h2>
 
                     <p>
                         Eingegangene Vorschläge der
-                        Benutzer ansehen und bearbeiten.
+                        Benutzer prüfen, bearbeiten
+                        und beantworten.
                     </p>
 
                     <div class="home-card-bottom">
@@ -889,20 +840,13 @@
                             href="/admin/vorschlaege"
                             class="home-card-button"
                         >
-                            Vorschläge verwalten
+                            Vorschläge prüfen
                         </a>
 
                     </div>
 
                 </article>
 
-            {% endif %}
-
-
-
-            <!-- ADMIN BENUTZERVERWALTUNG -->
-
-            {% if rolle == "admin" %}
 
                 <article class="dashboard-home-card">
 
@@ -940,11 +884,6 @@
 
     </main>
 
-
-
-    <!-- =========================================
-         SERVICE WORKER
-    ========================================== -->
 
     <script>
 
