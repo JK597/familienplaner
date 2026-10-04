@@ -17,25 +17,37 @@
     <header class="topbar">
 
         <div class="brand">
+
             <div class="brand-icon">
                 🏠
             </div>
 
             <div>
                 <h1>Familienplaner</h1>
-                <p>Willkommen zurück, {{ benutzer }}</p>
+                <p>Willkommen, {{ benutzer }}</p>
             </div>
+
         </div>
+
 
         <div class="topbar-actions">
 
             {% if rolle == "admin" %}
-                <a href="/admin" class="secondary-button">
-                    ⚙️ Verwaltung
-                </a>
+
+            <a
+                href="/admin"
+                class="secondary-button"
+            >
+                ⚙️ Benutzerverwaltung
+            </a>
+
             {% endif %}
 
-            <a href="/logout" class="logout-button">
+
+            <a
+                href="/logout"
+                class="logout-button"
+            >
                 Abmelden
             </a>
 
@@ -46,36 +58,45 @@
 
     <main class="dashboard">
 
+
+        <!-- WILLKOMMEN -->
+
         <section class="hero-card">
 
             <div>
+
                 <span class="eyebrow">
                     DEIN FAMILIENBEREICH
                 </span>
 
                 <h2>
-                    Hallo {{ benutzer }} 👋
+                    Willkommen zuhause 👋
                 </h2>
 
                 <p>
-                    Organisiere deinen Alltag, deine Finanzen,
-                    Aufgaben und gemeinsame Familienbereiche
-                    an einem Ort.
+                    Organisiere euren Familienalltag an einem Ort.
+                    Finanzen, Aufgaben, Termine und vieles mehr
+                    sollen hier später gemeinsam verwaltet werden.
                 </p>
+
             </div>
 
+
             <div class="hero-emoji">
-                👨‍👩‍👧‍👦
+                🏡
             </div>
 
         </section>
 
+
+        <!-- BEREICHE -->
 
         <section>
 
             <div class="section-heading">
 
                 <div>
+
                     <span class="eyebrow">
                         ÜBERSICHT
                     </span>
@@ -83,6 +104,7 @@
                     <h2>
                         Deine Bereiche
                     </h2>
+
                 </div>
 
             </div>
@@ -90,6 +112,8 @@
 
             <div class="dashboard-grid">
 
+
+                <!-- KALENDER -->
 
                 <article class="feature-card">
 
@@ -99,21 +123,28 @@
 
                     <div class="feature-content">
 
-                        <h3>Kalender</h3>
+                        <h3>
+                            Kalender
+                        </h3>
 
                         <p>
-                            Gemeinsame Termine, Geburtstage
-                            und Ereignisse verwalten.
+                            Familien-Termine und wichtige
+                            Ereignisse gemeinsam organisieren.
                         </p>
 
                     </div>
 
-                    <button class="disabled-button" disabled>
+                    <button
+                        class="disabled-button"
+                        disabled
+                    >
                         Bald verfügbar
                     </button>
 
                 </article>
 
+
+                <!-- AUFGABEN -->
 
                 <article class="feature-card">
 
@@ -123,21 +154,28 @@
 
                     <div class="feature-content">
 
-                        <h3>Aufgaben</h3>
+                        <h3>
+                            Aufgaben
+                        </h3>
 
                         <p>
-                            Aufgaben erstellen und innerhalb
-                            der Familie verteilen.
+                            Aufgaben innerhalb der Familie
+                            verteilen und gemeinsam erledigen.
                         </p>
 
                     </div>
 
-                    <button class="disabled-button" disabled>
+                    <button
+                        class="disabled-button"
+                        disabled
+                    >
                         Bald verfügbar
                     </button>
 
                 </article>
 
+
+                <!-- EINKAUFSLISTE -->
 
                 <article class="feature-card">
 
@@ -147,21 +185,28 @@
 
                     <div class="feature-content">
 
-                        <h3>Einkaufsliste</h3>
+                        <h3>
+                            Einkaufsliste
+                        </h3>
 
                         <p>
-                            Eine gemeinsame Liste für Einkäufe
-                            und Besorgungen.
+                            Gemeinsame Einkäufe planen und
+                            wichtige Dinge nicht vergessen.
                         </p>
 
                     </div>
 
-                    <button class="disabled-button" disabled>
+                    <button
+                        class="disabled-button"
+                        disabled
+                    >
                         Bald verfügbar
                     </button>
 
                 </article>
 
+
+                <!-- FINANZEN -->
 
                 <article class="feature-card highlight-card">
 
@@ -173,7 +218,9 @@
 
                         <div class="card-title-row">
 
-                            <h3>Finanzen</h3>
+                            <h3>
+                                Finanzen
+                            </h3>
 
                             <span class="status-badge">
                                 Verfügbar
@@ -182,22 +229,24 @@
                         </div>
 
                         <p>
-                            Dein persönliches Budget verwalten,
-                            Ausgaben eintragen und Restbudget
-                            automatisch berechnen.
+                            Behalte Budget, Ausgaben,
+                            Fixkosten und monatlichen
+                            Übertrag im Blick.
                         </p>
 
                     </div>
 
                     <a
                         href="/finanzen"
-                        class="primary-button"
+                        class="card-button"
                     >
                         Finanzen öffnen
                     </a>
 
                 </article>
 
+
+                <!-- NUR ADMIN -->
 
                 {% if rolle == "admin" %}
 
@@ -209,20 +258,31 @@
 
                     <div class="feature-content">
 
-                        <h3>Benutzerverwaltung</h3>
+                        <div class="card-title-row">
+
+                            <h3>
+                                Benutzerverwaltung
+                            </h3>
+
+                            <span class="status-badge">
+                                Admin
+                            </span>
+
+                        </div>
 
                         <p>
-                            Benutzer erstellen, Namen ändern
-                            und Einmalpasswörter vergeben.
+                            Benutzer erstellen, Namen ändern,
+                            Passwörter zurücksetzen und
+                            Benutzer verwalten.
                         </p>
 
                     </div>
 
                     <a
                         href="/admin"
-                        class="primary-button"
+                        class="card-button"
                     >
-                        Admin-Bereich öffnen
+                        Benutzerverwaltung öffnen
                     </a>
 
                 </article>
@@ -234,9 +294,11 @@
 
         </section>
 
+
     </main>
 
 </div>
 
 </body>
+
 </html>
