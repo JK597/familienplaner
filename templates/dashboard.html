@@ -890,6 +890,787 @@
 
         }
 
+
+        /* =========================================================
+           PREMIUM / LUXURY DESIGN
+           Gleiche Farbwelt: Dunkelgrün + Beige + Champagner
+        ========================================================= */
+
+        :root {
+            --lux-green-1: #10271e;
+            --lux-green-2: #17372a;
+            --lux-green-3: #234b39;
+            --lux-cream: #f6ecd2;
+            --lux-gold: #d9c18e;
+            --lux-gold-soft: rgba(217, 193, 142, 0.26);
+            --lux-line: rgba(246, 236, 210, 0.13);
+        }
+
+
+        body {
+            background:
+                radial-gradient(
+                    circle at 18% 4%,
+                    rgba(157, 151, 101, 0.14),
+                    transparent 31%
+                ),
+                radial-gradient(
+                    circle at 92% 18%,
+                    rgba(101, 128, 97, 0.14),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    150deg,
+                    #10271e 0%,
+                    #17372a 48%,
+                    #112a20 100%
+                );
+
+            background-attachment: fixed;
+        }
+
+
+        .dashboard-wrapper {
+            position: relative;
+        }
+
+
+        .dashboard-wrapper::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.012) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.012) 1px,
+                    transparent 1px
+                );
+
+            background-size: 34px 34px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,0.28),
+                    transparent 68%
+                );
+
+            -webkit-mask-image:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,0.28),
+                    transparent 68%
+                );
+        }
+
+
+        .dashboard-topbar {
+            position: relative;
+
+            margin-top: 4px;
+
+            padding:
+                12px
+                14px;
+
+            margin-bottom: 24px;
+
+            border:
+                1px solid
+                rgba(246, 236, 210, 0.10);
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.070),
+                    rgba(255, 255, 255, 0.025)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.05),
+                0 14px 35px rgba(0,0,0,0.10);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+
+        .dashboard-brand-name {
+            position: relative;
+
+            letter-spacing: 0.025em;
+
+            font-weight: 800;
+        }
+
+
+        .dashboard-brand-name::after {
+            content: "";
+
+            display: inline-block;
+
+            width: 5px;
+            height: 5px;
+
+            margin-left: 7px;
+
+            vertical-align: middle;
+
+            border-radius: 50%;
+
+            background: #d9c18e;
+
+            box-shadow:
+                0 0 0 4px rgba(217, 193, 142, 0.08);
+        }
+
+
+        .dashboard-top-button {
+            position: relative;
+
+            overflow: hidden;
+
+            color: #f0e1c1;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(123, 93, 68, 0.42),
+                    rgba(79, 66, 53, 0.38)
+                );
+
+            border:
+                1px solid
+                rgba(233, 211, 165, 0.14);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.035);
+        }
+
+
+        .dashboard-top-button::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    115deg,
+                    transparent 20%,
+                    rgba(255,255,255,0.08) 48%,
+                    transparent 76%
+                );
+
+            transform: translateX(-130%);
+
+            transition: transform 0.45s ease;
+        }
+
+
+        .dashboard-top-button:hover::before {
+            transform: translateX(130%);
+        }
+
+
+        .dashboard-welcome {
+            isolation: isolate;
+
+            min-height: 205px;
+
+            border:
+                1px solid
+                rgba(236, 216, 171, 0.22);
+
+            background:
+                radial-gradient(
+                    circle at 82% 20%,
+                    rgba(244, 226, 181, 0.14),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    118deg,
+                    rgba(35, 75, 57, 0.98),
+                    rgba(79, 101, 72, 0.94) 54%,
+                    rgba(163, 149, 108, 0.88)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -1px 0 rgba(0,0,0,0.08),
+                0 26px 70px rgba(0,0,0,0.18);
+
+            border-radius: 30px;
+        }
+
+
+        .dashboard-welcome::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 13px;
+
+            z-index: 0;
+
+            border:
+                1px solid
+                rgba(255, 247, 225, 0.10);
+
+            border-radius: 21px;
+
+            pointer-events: none;
+        }
+
+
+        .dashboard-welcome::after {
+            width: 350px;
+            height: 350px;
+
+            right: -115px;
+            bottom: -205px;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(248, 229, 180, 0.13),
+                    rgba(248, 229, 180, 0.02) 58%,
+                    transparent 72%
+                );
+        }
+
+
+        .welcome-small {
+            width: fit-content;
+
+            padding:
+                6px
+                10px;
+
+            margin-bottom: 11px;
+
+            border:
+                1px solid
+                rgba(248, 232, 193, 0.14);
+
+            border-radius: 999px;
+
+            background:
+                rgba(21, 46, 34, 0.19);
+
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+
+        .dashboard-welcome h1 {
+            letter-spacing: -0.025em;
+
+            text-shadow:
+                0 8px 24px rgba(0,0,0,0.16);
+        }
+
+
+        .welcome-hand {
+            opacity: 0.95;
+
+            filter:
+                drop-shadow(
+                    0 18px 24px
+                    rgba(0, 0, 0, 0.18)
+                );
+        }
+
+
+        .dashboard-overview {
+            gap: 12px;
+
+            margin:
+                -8px
+                0
+                24px;
+        }
+
+
+        .overview-card {
+            position: relative;
+
+            isolation: isolate;
+
+            overflow: hidden;
+
+            padding:
+                15px
+                16px;
+
+            border-radius: 20px;
+
+            border:
+                1px solid
+                rgba(244, 229, 194, 0.12);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.085),
+                    rgba(255,255,255,0.025)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.055),
+                0 16px 32px rgba(0,0,0,0.105);
+        }
+
+
+        .overview-card::before {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 16%;
+            bottom: 16%;
+
+            width: 2px;
+
+            border-radius: 999px;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    transparent,
+                    #d9c18e,
+                    transparent
+                );
+
+            opacity: 0.65;
+        }
+
+
+        .overview-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 120px;
+            height: 120px;
+
+            right: -58px;
+            top: -62px;
+
+            z-index: -1;
+
+            border-radius: 50%;
+
+            background:
+                rgba(217, 193, 142, 0.07);
+        }
+
+
+        .overview-icon {
+            border:
+                1px solid
+                rgba(240, 220, 175, 0.18);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(233, 217, 174, 0.24),
+                    rgba(157, 142, 104, 0.18)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+
+        .overview-label {
+            letter-spacing: 0.035em;
+
+            text-transform: uppercase;
+
+            font-size: 0.69rem;
+        }
+
+
+        .overview-value {
+            color: #fff5dd;
+
+            letter-spacing: -0.015em;
+        }
+
+
+        .dashboard-card-grid {
+            gap: 18px;
+        }
+
+
+        .dashboard-home-card {
+            position: relative;
+
+            isolation: isolate;
+
+            min-height: 292px;
+
+            padding: 24px;
+
+            border-radius: 25px;
+
+            border:
+                1px solid
+                rgba(238, 221, 179, 0.15);
+
+            background:
+                radial-gradient(
+                    circle at 90% 8%,
+                    rgba(234, 218, 177, 0.10),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    148deg,
+                    rgba(44, 76, 58, 0.96),
+                    rgba(83, 99, 72, 0.90)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.075),
+                0 20px 45px rgba(0,0,0,0.14);
+        }
+
+
+        .dashboard-home-card::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            z-index: -1;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    transparent 0%,
+                    rgba(255,255,255,0.035) 42%,
+                    transparent 68%
+                );
+        }
+
+
+        .dashboard-home-card::after {
+            content: "";
+
+            position: absolute;
+
+            left: 24px;
+            right: 24px;
+            top: 0;
+
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    to right,
+                    transparent,
+                    rgba(232, 210, 163, 0.48),
+                    transparent
+                );
+        }
+
+
+        .dashboard-home-card:hover {
+            transform:
+                translateY(-5px);
+
+            border-color:
+                rgba(238, 221, 179, 0.24);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.09),
+                0 28px 58px rgba(0,0,0,0.18);
+        }
+
+
+        .home-card-icon {
+            width: 50px;
+            height: 50px;
+
+            margin-bottom: 24px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(239, 222, 178, 0.34),
+                    rgba(184, 166, 123, 0.24)
+                );
+
+            border:
+                1px solid
+                rgba(245, 230, 190, 0.18);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.11),
+                0 10px 25px rgba(0,0,0,0.10);
+        }
+
+
+        .dashboard-home-card h2 {
+            margin-bottom: 13px;
+
+            font-size: 1.38rem;
+
+            letter-spacing: -0.018em;
+        }
+
+
+        .dashboard-home-card p {
+            color:
+                rgba(248, 239, 216, 0.72);
+        }
+
+
+        .home-card-button {
+            position: relative;
+
+            overflow: hidden;
+
+            min-height: 46px;
+
+            border:
+                1px solid
+                rgba(255, 246, 219, 0.22);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f0ddb1 0%,
+                    #d5bc86 52%,
+                    #c6a970 100%
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.38),
+                0 10px 24px rgba(0,0,0,0.12);
+        }
+
+
+        .home-card-button::after {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            bottom: 0;
+
+            width: 55px;
+
+            left: -80px;
+
+            transform: skewX(-18deg);
+
+            background:
+                linear-gradient(
+                    to right,
+                    transparent,
+                    rgba(255,255,255,0.30),
+                    transparent
+                );
+
+            transition: left 0.45s ease;
+        }
+
+
+        .home-card-button:hover::after {
+            left: calc(100% + 30px);
+        }
+
+
+        @media (max-width: 700px) {
+
+            body {
+                background:
+                    radial-gradient(
+                        circle at 50% 0%,
+                        rgba(156, 150, 102, 0.12),
+                        transparent 30%
+                    ),
+                    linear-gradient(
+                        155deg,
+                        #10271e 0%,
+                        #17372a 55%,
+                        #112a20 100%
+                    );
+            }
+
+
+            .dashboard-topbar {
+                margin-top: 0;
+
+                padding:
+                    7px
+                    8px;
+
+                margin-bottom: 10px;
+
+                border-radius: 14px;
+            }
+
+
+            .dashboard-welcome {
+                min-height: 128px;
+
+                padding:
+                    16px
+                    64px
+                    16px
+                    16px;
+
+                margin-bottom: 11px;
+
+                border-radius: 19px;
+            }
+
+
+            .dashboard-welcome::before {
+                inset: 8px;
+
+                border-radius: 13px;
+            }
+
+
+            .welcome-small {
+                padding:
+                    4px
+                    7px;
+
+                margin-bottom: 6px;
+
+                font-size: 0.60rem;
+            }
+
+
+            .dashboard-welcome h1 {
+                font-size: 1.36rem;
+            }
+
+
+            .dashboard-overview {
+                gap: 7px;
+
+                margin-bottom: 11px;
+            }
+
+
+            .overview-card {
+                min-height: 72px;
+
+                padding:
+                    9px;
+
+                gap: 7px;
+
+                border-radius: 13px;
+            }
+
+
+            .overview-card::before {
+                top: 20%;
+                bottom: 20%;
+            }
+
+
+            .overview-icon {
+                width: 32px;
+                height: 32px;
+
+                border-radius: 9px;
+            }
+
+
+            .overview-label {
+                font-size: 0.57rem;
+            }
+
+
+            .overview-value {
+                font-size: 0.86rem;
+            }
+
+
+            .overview-subline {
+                font-size: 0.58rem;
+            }
+
+
+            .dashboard-card-grid {
+                gap: 8px;
+            }
+
+
+            .dashboard-home-card {
+                min-height: 155px;
+
+                padding: 12px;
+
+                border-radius: 15px;
+            }
+
+
+            .dashboard-home-card::after {
+                left: 12px;
+                right: 12px;
+            }
+
+
+            .home-card-icon {
+                width: 35px;
+                height: 35px;
+
+                margin-bottom: 8px;
+
+                border-radius: 10px;
+
+                font-size: 0.98rem;
+            }
+
+
+            .dashboard-home-card h2 {
+                margin-bottom: 6px;
+
+                font-size: 0.94rem;
+            }
+
+
+            .home-card-button {
+                min-height: 36px;
+
+                padding:
+                    6px
+                    7px;
+
+                border-radius: 9px;
+
+                font-size: 0.69rem;
+            }
+
+        }
+
     </style>
 
 </head>
