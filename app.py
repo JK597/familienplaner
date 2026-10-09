@@ -507,6 +507,52 @@ def datenbank_erstellen():
                 )
             """)
 
+            # ==================================================
+            # KALENDER
+            # ==================================================
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS termine
+                (
+                    id SERIAL PRIMARY KEY,
+
+                    ersteller_id INTEGER NOT NULL
+                        REFERENCES benutzer(id)
+                        ON DELETE CASCADE,
+
+                    titel VARCHAR(255) NOT NULL,
+                    beschreibung TEXT DEFAULT '',
+
+                    start_datum DATE NOT NULL,
+                    start_zeit TIME,
+                    end_datum DATE,
+                    end_zeit TIME,
+
+                    erstellt_am TIMESTAMP
+                        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS termine_geteilt
+                (
+                    id SERIAL PRIMARY KEY,
+
+                    termin_id INTEGER NOT NULL
+                        REFERENCES termine(id)
+                        ON DELETE CASCADE,
+
+                    benutzer_id INTEGER NOT NULL
+                        REFERENCES benutzer(id)
+                        ON DELETE CASCADE,
+
+                    UNIQUE (
+                        termin_id,
+                        benutzer_id
+                    )
+                )
+            """)
+
             cursor.close()
 
         else:
@@ -743,6 +789,56 @@ def datenbank_erstellen():
 
                     FOREIGN KEY (aufgabe_id)
                     REFERENCES aufgaben(id)
+                    ON DELETE CASCADE,
+
+                    FOREIGN KEY (benutzer_id)
+                    REFERENCES benutzer(id)
+                    ON DELETE CASCADE
+                )
+            """)
+
+            # ==================================================
+            # KALENDER
+            # ==================================================
+
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS termine
+                (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    ersteller_id INTEGER NOT NULL,
+
+                    titel TEXT NOT NULL,
+                    beschreibung TEXT DEFAULT '',
+
+                    start_datum TEXT NOT NULL,
+                    start_zeit TEXT,
+                    end_datum TEXT,
+                    end_zeit TEXT,
+
+                    erstellt_am TEXT NOT NULL,
+
+                    FOREIGN KEY (ersteller_id)
+                    REFERENCES benutzer(id)
+                    ON DELETE CASCADE
+                )
+            """)
+
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS termine_geteilt
+                (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    termin_id INTEGER NOT NULL,
+                    benutzer_id INTEGER NOT NULL,
+
+                    UNIQUE (
+                        termin_id,
+                        benutzer_id
+                    ),
+
+                    FOREIGN KEY (termin_id)
+                    REFERENCES termine(id)
                     ON DELETE CASCADE,
 
                     FOREIGN KEY (benutzer_id)
@@ -1544,6 +1640,375 @@ def aufgaben_fuer_benutzer(
 
         daten["geteilt_mit"] = geteilt
         daten["geteilt_ids"] = geteilt_ids
+
+        ergebnis.append(
+            daten
+        )
+
+    return ergebnis
+
+
+# ============================================================
+# KALENDER-HILFSFUNKTIONEN
+# ============================================================
+
+def datum_als_iso(wert):
+
+    if wert is None or wert == "":
+        return ""
+
+    if isinstance(wert, datetime):
+        wert = wert.date()
+
+    if isinstance(wert, date):
+        return wert.isoformat()
+
+    text = str(wert).strip()
+
+    if " " in text:
+        text = text.split(" ", 1)[0]
+
+    return text[:10]
+
+
+def datum_als_anzeige(wert):
+
+    iso = datum_als_iso(wert)
+
+    if not iso:
+        return ""
+
+    try:
+        return date.fromisoformat(
+            iso
+        ).strftime(
+            "%d.%m.%Y"
+        )
+    except ValueError:
+        return iso
+
+
+def zeit_als_text(wert):
+
+    if wert is None or wert == "":
+        return ""
+
+    if hasattr(wert, "strftime"):
+
+        try:
+            return wert.strftime(
+                "%H:%M"
+            )
+        except Exception:
+            pass
+
+    text = str(wert).strip()
+
+    if len(text) >= 5:
+        return text[:5]
+
+    return text
+
+
+def termin_ist_ersteller(
+    termin_id,
+    benutzer_id
+):
+
+    eintrag = query_einen(
+
+        """
+        SELECT id
+        FROM termine
+
+        WHERE
+            id = %s
+            AND ersteller_id = %s
+        """,
+
+        """
+        SELECT id
+        FROM termine
+
+        WHERE
+            id = ?
+            AND ersteller_id = ?
+        """,
+
+        (
+            termin_id,
+            benutzer_id
+        )
+    )
+
+    return eintrag is not None
+
+
+def termine_fuer_benutzer(
+    benutzer_id
+):
+
+    termine = query_alle(
+
+        """
+        SELECT
+            t.id,
+            t.ersteller_id,
+            t.titel,
+            t.beschreibung,
+            t.start_datum,
+            t.start_zeit,
+            t.end_datum,
+            t.end_zeit,
+            t.erstellt_am,
+            ersteller.benutzername AS ersteller_name
+
+        FROM termine t
+
+        JOIN benutzer ersteller
+            ON ersteller.id = t.ersteller_id
+
+        WHERE
+            t.ersteller_id = %s
+
+            OR EXISTS
+            (
+                SELECT 1
+                FROM termine_geteilt tg
+
+                WHERE
+                    tg.termin_id = t.id
+                    AND tg.benutzer_id = %s
+
+                    AND EXISTS
+                    (
+                        SELECT 1
+                        FROM aufgaben_freigaben f
+
+                        WHERE
+                            (
+                                f.benutzer_id_1 = LEAST(
+                                    t.ersteller_id,
+                                    tg.benutzer_id
+                                )
+                                AND
+                                f.benutzer_id_2 = GREATEST(
+                                    t.ersteller_id,
+                                    tg.benutzer_id
+                                )
+                            )
+                    )
+            )
+
+        ORDER BY
+            t.start_datum ASC,
+            t.start_zeit ASC NULLS FIRST,
+            t.id ASC
+        """,
+
+        """
+        SELECT
+            t.id,
+            t.ersteller_id,
+            t.titel,
+            t.beschreibung,
+            t.start_datum,
+            t.start_zeit,
+            t.end_datum,
+            t.end_zeit,
+            t.erstellt_am,
+            ersteller.benutzername AS ersteller_name
+
+        FROM termine t
+
+        JOIN benutzer ersteller
+            ON ersteller.id = t.ersteller_id
+
+        WHERE
+            t.ersteller_id = ?
+
+            OR EXISTS
+            (
+                SELECT 1
+                FROM termine_geteilt tg
+
+                WHERE
+                    tg.termin_id = t.id
+                    AND tg.benutzer_id = ?
+
+                    AND EXISTS
+                    (
+                        SELECT 1
+                        FROM aufgaben_freigaben f
+
+                        WHERE
+                            (
+                                f.benutzer_id_1 = MIN(
+                                    t.ersteller_id,
+                                    tg.benutzer_id
+                                )
+                                AND
+                                f.benutzer_id_2 = MAX(
+                                    t.ersteller_id,
+                                    tg.benutzer_id
+                                )
+                            )
+                    )
+            )
+
+        ORDER BY
+            t.start_datum ASC,
+            CASE
+                WHEN t.start_zeit IS NULL
+                OR t.start_zeit = ''
+                THEN '00:00'
+                ELSE t.start_zeit
+            END ASC,
+            t.id ASC
+        """,
+
+        (
+            benutzer_id,
+            benutzer_id
+        )
+    )
+
+    ergebnis = []
+
+    for termin in termine:
+
+        geteilt = query_alle(
+
+            """
+            SELECT
+                b.id,
+                b.benutzername
+
+            FROM termine_geteilt tg
+
+            JOIN benutzer b
+                ON b.id = tg.benutzer_id
+
+            JOIN termine t
+                ON t.id = tg.termin_id
+
+            WHERE
+                tg.termin_id = %s
+
+                AND EXISTS
+                (
+                    SELECT 1
+                    FROM aufgaben_freigaben f
+
+                    WHERE
+                        f.benutzer_id_1 = LEAST(
+                            t.ersteller_id,
+                            tg.benutzer_id
+                        )
+                        AND
+                        f.benutzer_id_2 = GREATEST(
+                            t.ersteller_id,
+                            tg.benutzer_id
+                        )
+                )
+
+            ORDER BY
+                b.benutzername
+            """,
+
+            """
+            SELECT
+                b.id,
+                b.benutzername
+
+            FROM termine_geteilt tg
+
+            JOIN benutzer b
+                ON b.id = tg.benutzer_id
+
+            JOIN termine t
+                ON t.id = tg.termin_id
+
+            WHERE
+                tg.termin_id = ?
+
+                AND EXISTS
+                (
+                    SELECT 1
+                    FROM aufgaben_freigaben f
+
+                    WHERE
+                        f.benutzer_id_1 = MIN(
+                            t.ersteller_id,
+                            tg.benutzer_id
+                        )
+                        AND
+                        f.benutzer_id_2 = MAX(
+                            t.ersteller_id,
+                            tg.benutzer_id
+                        )
+                )
+
+            ORDER BY
+                b.benutzername
+            """,
+
+            (
+                termin["id"],
+            )
+        )
+
+        daten = dict(
+            termin
+        )
+
+        daten["ist_eigener"] = (
+            int(termin["ersteller_id"])
+            == int(benutzer_id)
+        )
+
+        daten["start_datum"] = (
+            datum_als_iso(
+                termin["start_datum"]
+            )
+        )
+
+        daten["start_datum_anzeige"] = (
+            datum_als_anzeige(
+                termin["start_datum"]
+            )
+        )
+
+        daten["start_zeit"] = (
+            zeit_als_text(
+                termin["start_zeit"]
+            )
+        )
+
+        daten["end_datum"] = (
+            datum_als_iso(
+                termin["end_datum"]
+            )
+        )
+
+        daten["end_datum_anzeige"] = (
+            datum_als_anzeige(
+                termin["end_datum"]
+            )
+        )
+
+        daten["end_zeit"] = (
+            zeit_als_text(
+                termin["end_zeit"]
+            )
+        )
+
+        daten["geteilt_mit"] = geteilt
+
+        daten["geteilt_ids"] = [
+            int(person["id"])
+            for person in geteilt
+        ]
 
         ergebnis.append(
             daten
@@ -2452,6 +2917,692 @@ def aufgabe_loeschen(
 
     return redirect(
         "/aufgaben"
+    )
+
+
+# ============================================================
+# KALENDER
+# ============================================================
+
+@app.route(
+    "/kalender"
+)
+def kalender():
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+    kontakte = freigegebene_kontakte(
+        benutzer_id
+    )
+
+    alle_termine = termine_fuer_benutzer(
+        benutzer_id
+    )
+
+    kommende_termine = []
+    vergangene_termine = []
+
+    heute_datum = heute()
+
+    for termin in alle_termine:
+
+        start = datum_lesen(
+            termin["start_datum"]
+        )
+
+        if termin["end_datum"]:
+            ende = datum_lesen(
+                termin["end_datum"]
+            )
+        else:
+            ende = start
+
+        if ende < heute_datum:
+            vergangene_termine.append(
+                termin
+            )
+        else:
+            kommende_termine.append(
+                termin
+            )
+
+    vergangene_termine.sort(
+        key=lambda eintrag: (
+            eintrag["start_datum"],
+            eintrag["start_zeit"] or "00:00",
+            eintrag["id"]
+        ),
+        reverse=True
+    )
+
+    return render_template(
+        "kalender.html",
+        benutzer=session[
+            "benutzer"
+        ],
+        kontakte=kontakte,
+        kommende_termine=kommende_termine,
+        vergangene_termine=vergangene_termine,
+        kommende_anzahl=len(
+            kommende_termine
+        ),
+        vergangene_anzahl=len(
+            vergangene_termine
+        ),
+        heute_iso=heute().isoformat()
+    )
+
+
+# ============================================================
+# TERMIN HINZUFÜGEN
+# ============================================================
+
+@app.route(
+    "/termin-hinzufuegen",
+    methods=[
+        "POST"
+    ]
+)
+def termin_hinzufuegen():
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+    titel = request.form.get(
+        "titel",
+        ""
+    ).strip()
+
+    beschreibung = request.form.get(
+        "beschreibung",
+        ""
+    ).strip()
+
+    start_datum_text = request.form.get(
+        "start_datum",
+        ""
+    ).strip()
+
+    start_zeit = request.form.get(
+        "start_zeit",
+        ""
+    ).strip()
+
+    end_datum_text = request.form.get(
+        "end_datum",
+        ""
+    ).strip()
+
+    end_zeit = request.form.get(
+        "end_zeit",
+        ""
+    ).strip()
+
+    if titel == "" or start_datum_text == "":
+        return redirect(
+            "/kalender"
+        )
+
+    try:
+        start_datum = date.fromisoformat(
+            start_datum_text
+        )
+    except ValueError:
+        return redirect(
+            "/kalender"
+        )
+
+    end_datum = None
+
+    if end_datum_text:
+
+        try:
+            end_datum = date.fromisoformat(
+                end_datum_text
+            )
+        except ValueError:
+            return redirect(
+                "/kalender"
+            )
+
+        if end_datum < start_datum:
+            return redirect(
+                "/kalender"
+            )
+
+    erlaubte_kontakte = (
+        freigegebene_kontakte(
+            benutzer_id
+        )
+    )
+
+    erlaubte_ids = {
+        int(person["id"])
+        for person in erlaubte_kontakte
+    }
+
+    ausgewaehlt = []
+
+    for wert in request.form.getlist(
+        "geteilt_mit"
+    ):
+
+        try:
+            ziel_id = int(wert)
+        except ValueError:
+            continue
+
+        if ziel_id in erlaubte_ids:
+            ausgewaehlt.append(
+                ziel_id
+            )
+
+    db = datenbank()
+
+    try:
+
+        if postgres_verwenden():
+
+            cursor = db.cursor()
+
+            cursor.execute(
+                """
+                INSERT INTO termine
+                (
+                    ersteller_id,
+                    titel,
+                    beschreibung,
+                    start_datum,
+                    start_zeit,
+                    end_datum,
+                    end_zeit
+                )
+
+                VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                )
+
+                RETURNING id
+                """,
+                (
+                    benutzer_id,
+                    titel,
+                    beschreibung,
+                    start_datum,
+                    start_zeit or None,
+                    end_datum,
+                    end_zeit or None
+                )
+            )
+
+            termin_id = (
+                cursor.fetchone()[0]
+            )
+
+            for ziel_id in set(
+                ausgewaehlt
+            ):
+
+                cursor.execute(
+                    """
+                    INSERT INTO termine_geteilt
+                    (
+                        termin_id,
+                        benutzer_id
+                    )
+
+                    VALUES (
+                        %s,
+                        %s
+                    )
+
+                    ON CONFLICT
+                    (
+                        termin_id,
+                        benutzer_id
+                    )
+
+                    DO NOTHING
+                    """,
+                    (
+                        termin_id,
+                        ziel_id
+                    )
+                )
+
+            cursor.close()
+
+        else:
+
+            cursor = db.execute(
+                """
+                INSERT INTO termine
+                (
+                    ersteller_id,
+                    titel,
+                    beschreibung,
+                    start_datum,
+                    start_zeit,
+                    end_datum,
+                    end_zeit,
+                    erstellt_am
+                )
+
+                VALUES (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )
+                """,
+                (
+                    benutzer_id,
+                    titel,
+                    beschreibung,
+                    start_datum.isoformat(),
+                    start_zeit or None,
+                    (
+                        end_datum.isoformat()
+                        if end_datum
+                        else None
+                    ),
+                    end_zeit or None,
+                    jetzt().strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+                )
+            )
+
+            termin_id = (
+                cursor.lastrowid
+            )
+
+            for ziel_id in set(
+                ausgewaehlt
+            ):
+
+                db.execute(
+                    """
+                    INSERT OR IGNORE
+                    INTO termine_geteilt
+                    (
+                        termin_id,
+                        benutzer_id
+                    )
+
+                    VALUES (
+                        ?,
+                        ?
+                    )
+                    """,
+                    (
+                        termin_id,
+                        ziel_id
+                    )
+                )
+
+        db.commit()
+
+    except Exception:
+
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
+
+    return redirect(
+        "/kalender"
+    )
+
+
+# ============================================================
+# TERMIN BEARBEITEN
+# ============================================================
+
+@app.route(
+    "/termin-bearbeiten/<int:termin_id>",
+    methods=[
+        "POST"
+    ]
+)
+def termin_bearbeiten(
+    termin_id
+):
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+    if not termin_ist_ersteller(
+        termin_id,
+        benutzer_id
+    ):
+
+        return redirect(
+            "/kalender"
+        )
+
+    titel = request.form.get(
+        "titel",
+        ""
+    ).strip()
+
+    beschreibung = request.form.get(
+        "beschreibung",
+        ""
+    ).strip()
+
+    start_datum_text = request.form.get(
+        "start_datum",
+        ""
+    ).strip()
+
+    start_zeit = request.form.get(
+        "start_zeit",
+        ""
+    ).strip()
+
+    end_datum_text = request.form.get(
+        "end_datum",
+        ""
+    ).strip()
+
+    end_zeit = request.form.get(
+        "end_zeit",
+        ""
+    ).strip()
+
+    if titel == "" or start_datum_text == "":
+        return redirect(
+            "/kalender"
+        )
+
+    try:
+        start_datum = date.fromisoformat(
+            start_datum_text
+        )
+    except ValueError:
+        return redirect(
+            "/kalender"
+        )
+
+    end_datum = None
+
+    if end_datum_text:
+
+        try:
+            end_datum = date.fromisoformat(
+                end_datum_text
+            )
+        except ValueError:
+            return redirect(
+                "/kalender"
+            )
+
+        if end_datum < start_datum:
+            return redirect(
+                "/kalender"
+            )
+
+    erlaubte_kontakte = (
+        freigegebene_kontakte(
+            benutzer_id
+        )
+    )
+
+    erlaubte_ids = {
+        int(person["id"])
+        for person in erlaubte_kontakte
+    }
+
+    neue_freigaben = []
+
+    for wert in request.form.getlist(
+        "geteilt_mit"
+    ):
+
+        try:
+            ziel_id = int(wert)
+        except ValueError:
+            continue
+
+        if ziel_id in erlaubte_ids:
+            neue_freigaben.append(
+                ziel_id
+            )
+
+    db = datenbank()
+
+    try:
+
+        if postgres_verwenden():
+
+            cursor = db.cursor()
+
+            cursor.execute(
+                """
+                UPDATE termine
+
+                SET
+                    titel = %s,
+                    beschreibung = %s,
+                    start_datum = %s,
+                    start_zeit = %s,
+                    end_datum = %s,
+                    end_zeit = %s
+
+                WHERE
+                    id = %s
+                    AND ersteller_id = %s
+                """,
+                (
+                    titel,
+                    beschreibung,
+                    start_datum,
+                    start_zeit or None,
+                    end_datum,
+                    end_zeit or None,
+                    termin_id,
+                    benutzer_id
+                )
+            )
+
+            cursor.execute(
+                """
+                DELETE FROM termine_geteilt
+                WHERE termin_id = %s
+                """,
+                (
+                    termin_id,
+                )
+            )
+
+            for ziel_id in set(
+                neue_freigaben
+            ):
+
+                cursor.execute(
+                    """
+                    INSERT INTO termine_geteilt
+                    (
+                        termin_id,
+                        benutzer_id
+                    )
+
+                    VALUES (
+                        %s,
+                        %s
+                    )
+
+                    ON CONFLICT
+                    (
+                        termin_id,
+                        benutzer_id
+                    )
+
+                    DO NOTHING
+                    """,
+                    (
+                        termin_id,
+                        ziel_id
+                    )
+                )
+
+            cursor.close()
+
+        else:
+
+            db.execute(
+                """
+                UPDATE termine
+
+                SET
+                    titel = ?,
+                    beschreibung = ?,
+                    start_datum = ?,
+                    start_zeit = ?,
+                    end_datum = ?,
+                    end_zeit = ?
+
+                WHERE
+                    id = ?
+                    AND ersteller_id = ?
+                """,
+                (
+                    titel,
+                    beschreibung,
+                    start_datum.isoformat(),
+                    start_zeit or None,
+                    (
+                        end_datum.isoformat()
+                        if end_datum
+                        else None
+                    ),
+                    end_zeit or None,
+                    termin_id,
+                    benutzer_id
+                )
+            )
+
+            db.execute(
+                """
+                DELETE FROM termine_geteilt
+                WHERE termin_id = ?
+                """,
+                (
+                    termin_id,
+                )
+            )
+
+            for ziel_id in set(
+                neue_freigaben
+            ):
+
+                db.execute(
+                    """
+                    INSERT OR IGNORE
+                    INTO termine_geteilt
+                    (
+                        termin_id,
+                        benutzer_id
+                    )
+
+                    VALUES (
+                        ?,
+                        ?
+                    )
+                    """,
+                    (
+                        termin_id,
+                        ziel_id
+                    )
+                )
+
+        db.commit()
+
+    except Exception:
+
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
+
+    return redirect(
+        "/kalender"
+    )
+
+
+# ============================================================
+# TERMIN LÖSCHEN
+# ============================================================
+
+@app.route(
+    "/termin-loeschen/<int:termin_id>",
+    methods=[
+        "POST"
+    ]
+)
+def termin_loeschen(
+    termin_id
+):
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+    execute_query(
+
+        """
+        DELETE FROM termine
+
+        WHERE
+            id = %s
+            AND ersteller_id = %s
+        """,
+
+        """
+        DELETE FROM termine
+
+        WHERE
+            id = ?
+            AND ersteller_id = ?
+        """,
+
+        (
+            termin_id,
+            benutzer_id
+        )
+    )
+
+    return redirect(
+        "/kalender"
     )
 
 

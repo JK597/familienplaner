@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Kalender | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+        }
+
+
+        .calendar-page {
+            width: min(
+                1180px,
+                calc(100% - 30px)
+            );
+
+            margin: 0 auto;
+
+            padding:
+                28px
+                0
+                70px;
+        }
+
+
+        .calendar-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+            flex-wrap: wrap;
+
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+
+            border-bottom:
+                1px solid
+                rgba(240, 225, 188, 0.13);
+        }
+
+
+        .calendar-brand {
+            display: grid;
+            gap: 4px;
+        }
+
+
+        .calendar-brand strong {
+            color: #f5ead0;
+
+            font-size: 1.1rem;
+        }
+
+
+        .calendar-brand span {
+            color:
+                rgba(245, 234, 208, 0.68);
+
+            font-size: 0.9rem;
+        }
+
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .calendar-nav a {
+            min-height: 42px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                0
+                16px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.52);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.08);
+        }
+
+
+        .calendar-hero {
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 32px;
+
+            margin-bottom: 25px;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    115deg,
+                    rgba(55, 85, 64, 0.88),
+                    rgba(92, 105, 76, 0.82),
+                    rgba(178, 162, 120, 0.72)
+                );
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.14);
+
+            box-shadow:
+                0 18px 50px
+                rgba(0, 0, 0, 0.14);
+        }
+
+
+        .calendar-hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 260px;
+            height: 260px;
+
+            right: -70px;
+            top: -110px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255, 244, 214, 0.08);
+        }
+
+
+        .calendar-hero h1 {
+            position: relative;
+            z-index: 2;
+
+            margin:
+                0
+                0
+                10px;
+
+            color: #fff8e8;
+        }
+
+
+        .calendar-hero p {
+            position: relative;
+            z-index: 2;
+
+            max-width: 720px;
+
+            margin: 0;
+
+            color:
+                rgba(255, 247, 225, 0.82);
+
+            line-height: 1.55;
+        }
+
+
+        .calendar-grid {
+            display: grid;
+
+            grid-template-columns:
+                390px
+                minmax(0, 1fr);
+
+            gap: 24px;
+
+            align-items: start;
+        }
+
+
+        .glass-panel {
+            padding: 23px;
+
+            border-radius: 24px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.10),
+                    rgba(255, 255, 255, 0.055)
+                );
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.13);
+
+            box-shadow:
+                0 16px 40px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .glass-panel h2 {
+            margin:
+                0
+                0
+                18px;
+
+            color: #fff8e8;
+        }
+
+
+        .calendar-form {
+            display: grid;
+            gap: 15px;
+        }
+
+
+        .calendar-field {
+            display: grid;
+            gap: 7px;
+        }
+
+
+        .calendar-field label {
+            color: #f7ead0;
+
+            font-size: 0.91rem;
+            font-weight: 800;
+        }
+
+
+        .calendar-field input,
+        .calendar-field textarea,
+        .calendar-field select {
+            width: 100%;
+
+            padding:
+                12px
+                14px;
+
+            border-radius: 14px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.16);
+
+            background:
+                rgba(18, 49, 36, 0.40);
+
+            color: #fff8ec;
+
+            font: inherit;
+
+            outline: none;
+
+            transition:
+                border-color 0.18s ease,
+                background 0.18s ease,
+                box-shadow 0.18s ease;
+        }
+
+
+        .calendar-field input:focus,
+        .calendar-field textarea:focus,
+        .calendar-field select:focus {
+            border-color:
+                rgba(240, 216, 170, 0.65);
+
+            background:
+                rgba(18, 49, 36, 0.55);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(240, 216, 170, 0.10);
+        }
+
+
+        .calendar-field textarea {
+            min-height: 95px;
+            resize: vertical;
+        }
+
+
+        .date-row {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr;
+
+            gap: 12px;
+        }
+
+
+        .share-box {
+            padding: 15px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255, 255, 255, 0.055);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.09);
+        }
+
+
+        .share-box-title {
+            margin-bottom: 5px;
+
+            color: #fff4da;
+
+            font-weight: 800;
+        }
+
+
+        .share-box-text {
+            margin:
+                0
+                0
+                12px;
+
+            color:
+                rgba(247, 235, 204, 0.64);
+
+            font-size: 0.84rem;
+            line-height: 1.45;
+        }
+
+
+        .share-users {
+            display: grid;
+            gap: 8px;
+        }
+
+
+        .share-user {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding:
+                10px
+                11px;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            background:
+                rgba(255, 255, 255, 0.055);
+
+            color:
+                rgba(255, 247, 225, 0.88);
+        }
+
+
+        .share-user input {
+            width: 18px;
+            height: 18px;
+
+            accent-color: #d8c18c;
+        }
+
+
+        .share-empty {
+            padding: 12px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(255, 255, 255, 0.045);
+
+            color:
+                rgba(247, 235, 204, 0.62);
+
+            font-size: 0.85rem;
+        }
+
+
+        .calendar-button {
+            min-height: 46px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                10px
+                16px;
+
+            border: none;
+            border-radius: 14px;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            font: inherit;
+            font-weight: 800;
+
+            color: #183629;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f0ddb1,
+                    #d1b783
+                );
+
+            box-shadow:
+                0 10px 22px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .calendar-button:hover {
+            filter:
+                brightness(1.03);
+        }
+
+
+        .calendar-button:active {
+            transform:
+                scale(0.98);
+        }
+
+
+        .calendar-button-secondary {
+            color: #f5e6c5;
+
+            background:
+                rgba(255, 255, 255, 0.08);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+        }
+
+
+        .calendar-button-danger {
+            color: #f8d8d1;
+
+            background:
+                rgba(160, 66, 56, 0.15);
+
+            border:
+                1px solid
+                rgba(220, 130, 116, 0.22);
+        }
+
+
+        .event-section + .event-section {
+            margin-top: 26px;
+        }
+
+
+        .event-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .event-section-header h2 {
+            margin: 0;
+        }
+
+
+        .event-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 34px;
+            min-height: 30px;
+
+            padding:
+                4px
+                10px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(234, 213, 163, 0.13);
+
+            color: #f0ddb1;
+
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+
+        .event-list {
+            display: grid;
+            gap: 14px;
+        }
+
+
+        .event-card {
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 19px;
+
+            border-radius: 19px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.095),
+                    rgba(255, 255, 255, 0.045)
+                );
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.11);
+        }
+
+
+        .event-card::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            width: 4px;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    #efd9a9,
+                    #9aae79
+                );
+        }
+
+
+        .event-card.past {
+            opacity: 0.60;
+        }
+
+
+        .event-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+
+            gap: 15px;
+        }
+
+
+        .event-title {
+            margin:
+                0
+                0
+                7px;
+
+            color: #fff8e8;
+
+            font-size: 1.12rem;
+        }
+
+
+        .event-date {
+            display: inline-flex;
+
+            padding:
+                6px
+                10px;
+
+            border-radius: 999px;
+
+            white-space: nowrap;
+
+            background:
+                rgba(234, 213, 163, 0.13);
+
+            color: #f0ddb1;
+
+            font-size: 0.79rem;
+            font-weight: 800;
+        }
+
+
+        .event-description {
+            margin:
+                12px
+                0
+                0;
+
+            color:
+                rgba(248, 237, 210, 0.75);
+
+            line-height: 1.5;
+        }
+
+
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap:
+                7px
+                12px;
+
+            margin-top: 13px;
+
+            color:
+                rgba(246, 233, 199, 0.58);
+
+            font-size: 0.82rem;
+        }
+
+
+        .event-shared {
+            margin-top: 11px;
+
+            color:
+                rgba(247, 235, 204, 0.68);
+
+            font-size: 0.84rem;
+        }
+
+
+        .event-actions {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-top: 15px;
+        }
+
+
+        .event-actions form {
+            margin: 0;
+        }
+
+
+        .event-edit {
+            margin-top: 15px;
+        }
+
+
+        .event-edit summary {
+            cursor: pointer;
+
+            color: #efd9aa;
+
+            font-weight: 800;
+        }
+
+
+        .event-edit-form {
+            display: grid;
+
+            gap: 13px;
+
+            padding-top: 15px;
+        }
+
+
+        .empty-events {
+            padding: 26px;
+
+            text-align: center;
+
+            border-radius: 18px;
+
+            background:
+                rgba(255, 255, 255, 0.045);
+
+            color:
+                rgba(248, 237, 210, 0.68);
+        }
+
+
+        .privacy-note {
+            margin-top: 15px;
+
+            padding: 13px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(255, 255, 255, 0.045);
+
+            color:
+                rgba(247, 235, 204, 0.62);
+
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+
+        @media (max-width: 900px) {
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 620px) {
+
+            .calendar-page {
+                width:
+                    min(
+                        100% - 18px,
+                        1180px
+                    );
+
+                padding-top: 16px;
+            }
+
+
+            .calendar-hero {
+                padding:
+                    22px
+                    18px;
+            }
+
+
+            .glass-panel {
+                padding:
+                    18px
+                    15px;
+            }
+
+
+            .date-row {
+                grid-template-columns: 1fr;
+            }
+
+
+            .calendar-nav {
+                width: 100%;
+            }
+
+
+            .calendar-nav a {
+                flex: 1;
+            }
+
+
+            .event-top {
+                flex-direction: column;
+            }
+
+
+            .event-actions {
+                display: grid;
+
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+
+            .event-actions form,
+            .event-actions button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="calendar-page">
+
+
+        <header class="calendar-topbar">
+
+
+            <div class="calendar-brand">
+
+                <strong>
+                    Familienplaner
+                </strong>
+
+                <span>
+                    {{ benutzer }}
+                </span>
+
+            </div>
+
+
+            <nav class="calendar-nav">
+
+                <a href="/dashboard">
+                    ← Dashboard
+                </a>
+
+                <a href="/logout">
+                    Abmelden
+                </a>
+
+            </nav>
+
+
+        </header>
+
+
+
+        <section class="calendar-hero">
+
+            <h1>
+                📅 Kalender
+            </h1>
+
+            <p>
+                Plane Termine für dich selbst oder teile
+                sie mit freigegebenen Familienmitgliedern.
+                Gemeinsame Termine erscheinen automatisch
+                bei allen Beteiligten.
+            </p>
+
+        </section>
+
+
+
+        <div class="calendar-grid">
+
+
+            <!-- =====================================
+                 NEUER TERMIN
+            ====================================== -->
+
+            <aside class="glass-panel">
+
+
+                <h2>
+                    Neuer Termin
+                </h2>
+
+
+                <form
+                    method="POST"
+                    action="/termin-hinzufuegen"
+                    class="calendar-form"
+                >
+
+
+                    <div class="calendar-field">
+
+                        <label for="titel">
+                            Titel
+                        </label>
+
+                        <input
+                            id="titel"
+                            name="titel"
+                            type="text"
+                            maxlength="255"
+                            placeholder="z. B. Zahnarzt"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="calendar-field">
+
+                        <label for="beschreibung">
+                            Beschreibung
+                        </label>
+
+                        <textarea
+                            id="beschreibung"
+                            name="beschreibung"
+                            placeholder="Optional..."
+                        ></textarea>
+
+                    </div>
+
+
+
+                    <div class="date-row">
+
+
+                        <div class="calendar-field">
+
+                            <label for="start_datum">
+                                Datum
+                            </label>
+
+                            <input
+                                id="start_datum"
+                                name="start_datum"
+                                type="date"
+                                value="{{ heute_iso }}"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="calendar-field">
+
+                            <label for="start_zeit">
+                                Uhrzeit
+                            </label>
+
+                            <input
+                                id="start_zeit"
+                                name="start_zeit"
+                                type="time"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="date-row">
+
+
+                        <div class="calendar-field">
+
+                            <label for="end_datum">
+                                Enddatum
+                            </label>
+
+                            <input
+                                id="end_datum"
+                                name="end_datum"
+                                type="date"
+                            >
+
+                        </div>
+
+
+
+                        <div class="calendar-field">
+
+                            <label for="end_zeit">
+                                Endzeit
+                            </label>
+
+                            <input
+                                id="end_zeit"
+                                name="end_zeit"
+                                type="time"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="share-box">
+
+
+                        <div class="share-box-title">
+                            👥 Termin teilen
+                        </div>
+
+
+                        <p class="share-box-text">
+                            Hier werden nur Personen angezeigt,
+                            die der Admin für dich freigegeben hat.
+                        </p>
+
+
+                        {% if kontakte %}
+
+
+                            <div class="share-users">
+
+
+                                {% for kontakt in kontakte %}
+
+
+                                    <label class="share-user">
+
+                                        <input
+                                            type="checkbox"
+                                            name="geteilt_mit"
+                                            value="{{ kontakt['id'] }}"
+                                        >
+
+                                        <span>
+                                            {{ kontakt["benutzername"] }}
+                                        </span>
+
+                                    </label>
+
+
+                                {% endfor %}
+
+
+                            </div>
+
+
+                        {% else %}
+
+
+                            <div class="share-empty">
+
+                                Für dich wurden noch keine
+                                Personen freigegeben.
+
+                            </div>
+
+
+                        {% endif %}
+
+
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        class="calendar-button"
+                    >
+                        Termin speichern
+                    </button>
+
+
+                </form>
+
+
+
+                <div class="privacy-note">
+
+                    🔒 Andere Benutzerkonten werden nicht
+                    automatisch angezeigt. Es gelten dieselben
+                    Freigaben wie bei gemeinsamen Aufgaben.
+
+                </div>
+
+
+            </aside>
+
+
+
+            <!-- =====================================
+                 TERMINE
+            ====================================== -->
+
+            <section class="glass-panel">
+
+
+                <div class="event-section">
+
+
+                    <div class="event-section-header">
+
+                        <h2>
+                            Kommende Termine
+                        </h2>
+
+                        <span class="event-count">
+                            {{ kommende_anzahl }}
+                        </span>
+
+                    </div>
+
+
+
+                    {% if kommende_termine %}
+
+
+                        <div class="event-list">
+
+
+                            {% for termin in kommende_termine %}
+
+
+                                <article class="event-card">
+
+
+                                    <div class="event-top">
+
+
+                                        <div>
+
+                                            <h3 class="event-title">
+                                                {{ termin["titel"] }}
+                                            </h3>
+
+                                        </div>
+
+
+                                        <span class="event-date">
+
+                                            {{ termin["start_datum_anzeige"] }}
+
+                                            {% if termin["start_zeit"] %}
+
+                                                ·
+                                                {{ termin["start_zeit"] }}
+
+                                            {% endif %}
+
+                                        </span>
+
+
+                                    </div>
+
+
+
+                                    {% if termin["beschreibung"] %}
+
+                                        <p class="event-description">
+                                            {{ termin["beschreibung"] }}
+                                        </p>
+
+                                    {% endif %}
+
+
+
+                                    <div class="event-meta">
+
+
+                                        {% if termin["ist_eigener"] %}
+
+                                            <span>
+                                                Von dir erstellt
+                                            </span>
+
+                                        {% else %}
+
+                                            <span>
+                                                Geteilt von:
+                                                <strong>
+                                                    {{ termin["ersteller_name"] }}
+                                                </strong>
+                                            </span>
+
+                                        {% endif %}
+
+
+
+                                        {% if termin["end_datum_anzeige"] %}
+
+                                            <span>
+
+                                                Ende:
+                                                {{ termin["end_datum_anzeige"] }}
+
+                                                {% if termin["end_zeit"] %}
+
+                                                    ·
+                                                    {{ termin["end_zeit"] }}
+
+                                                {% endif %}
+
+                                            </span>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+
+                                    {% if
+                                        termin["ist_eigener"]
+                                        and
+                                        termin["geteilt_mit"]
+                                    %}
+
+                                        <div class="event-shared">
+
+                                            Geteilt mit:
+
+                                            {% for person in termin["geteilt_mit"] %}
+
+                                                <strong>
+                                                    {{ person["benutzername"] }}
+                                                </strong>
+
+                                                {% if not loop.last %}
+                                                    ,
+                                                {% endif %}
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+
+                                    {% if termin["ist_eigener"] %}
+
+
+                                        <div class="event-actions">
+
+
+                                            <form
+                                                method="POST"
+                                                action="/termin-loeschen/{{ termin['id'] }}"
+                                                onsubmit="
+                                                    return confirm(
+                                                        'Termin wirklich löschen?'
+                                                    );
+                                                "
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="
+                                                        calendar-button
+                                                        calendar-button-danger
+                                                    "
+                                                >
+                                                    Löschen
+                                                </button>
+
+                                            </form>
+
+
+                                        </div>
+
+
+
+                                        <details class="event-edit">
+
+
+                                            <summary>
+                                                Termin bearbeiten
+                                            </summary>
+
+
+
+                                            <form
+                                                method="POST"
+                                                action="/termin-bearbeiten/{{ termin['id'] }}"
+                                                class="event-edit-form"
+                                            >
+
+
+                                                <div class="calendar-field">
+
+                                                    <label>
+                                                        Titel
+                                                    </label>
+
+                                                    <input
+                                                        type="text"
+                                                        name="titel"
+                                                        maxlength="255"
+                                                        value="{{ termin['titel'] }}"
+                                                        required
+                                                    >
+
+                                                </div>
+
+
+
+                                                <div class="calendar-field">
+
+                                                    <label>
+                                                        Beschreibung
+                                                    </label>
+
+                                                    <textarea
+                                                        name="beschreibung"
+                                                    >{{ termin["beschreibung"] or "" }}</textarea>
+
+                                                </div>
+
+
+
+                                                <div class="date-row">
+
+
+                                                    <div class="calendar-field">
+
+                                                        <label>
+                                                            Datum
+                                                        </label>
+
+                                                        <input
+                                                            type="date"
+                                                            name="start_datum"
+                                                            value="{{ termin['start_datum'] }}"
+                                                            required
+                                                        >
+
+                                                    </div>
+
+
+
+                                                    <div class="calendar-field">
+
+                                                        <label>
+                                                            Uhrzeit
+                                                        </label>
+
+                                                        <input
+                                                            type="time"
+                                                            name="start_zeit"
+                                                            value="{{ termin['start_zeit'] or '' }}"
+                                                        >
+
+                                                    </div>
+
+
+                                                </div>
+
+
+
+                                                <div class="date-row">
+
+
+                                                    <div class="calendar-field">
+
+                                                        <label>
+                                                            Enddatum
+                                                        </label>
+
+                                                        <input
+                                                            type="date"
+                                                            name="end_datum"
+                                                            value="{{ termin['end_datum'] or '' }}"
+                                                        >
+
+                                                    </div>
+
+
+
+                                                    <div class="calendar-field">
+
+                                                        <label>
+                                                            Endzeit
+                                                        </label>
+
+                                                        <input
+                                                            type="time"
+                                                            name="end_zeit"
+                                                            value="{{ termin['end_zeit'] or '' }}"
+                                                        >
+
+                                                    </div>
+
+
+                                                </div>
+
+
+
+                                                <div class="share-box">
+
+
+                                                    <div class="share-box-title">
+                                                        👥 Teilen mit
+                                                    </div>
+
+
+                                                    {% if kontakte %}
+
+
+                                                        <div class="share-users">
+
+
+                                                            {% for kontakt in kontakte %}
+
+
+                                                                <label class="share-user">
+
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        name="geteilt_mit"
+                                                                        value="{{ kontakt['id'] }}"
+
+                                                                        {% if
+                                                                            kontakt["id"]
+                                                                            in
+                                                                            termin["geteilt_ids"]
+                                                                        %}
+                                                                            checked
+                                                                        {% endif %}
+                                                                    >
+
+                                                                    <span>
+                                                                        {{ kontakt["benutzername"] }}
+                                                                    </span>
+
+                                                                </label>
+
+
+                                                            {% endfor %}
+
+
+                                                        </div>
+
+
+                                                    {% else %}
+
+
+                                                        <div class="share-empty">
+                                                            Keine freigegebenen Personen.
+                                                        </div>
+
+
+                                                    {% endif %}
+
+
+                                                </div>
+
+
+
+                                                <button
+                                                    type="submit"
+                                                    class="calendar-button"
+                                                >
+                                                    Änderungen speichern
+                                                </button>
+
+
+                                            </form>
+
+
+                                        </details>
+
+
+                                    {% endif %}
+
+
+                                </article>
+
+
+                            {% endfor %}
+
+
+                        </div>
+
+
+                    {% else %}
+
+
+                        <div class="empty-events">
+
+                            Keine kommenden Termine vorhanden.
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </div>
+
+
+
+                <!-- =================================
+                     VERGANGENE TERMINE
+                ================================== -->
+
+                <div class="event-section">
+
+
+                    <div class="event-section-header">
+
+                        <h2>
+                            Vergangene Termine
+                        </h2>
+
+                        <span class="event-count">
+                            {{ vergangene_anzahl }}
+                        </span>
+
+                    </div>
+
+
+
+                    {% if vergangene_termine %}
+
+
+                        <div class="event-list">
+
+
+                            {% for termin in vergangene_termine %}
+
+
+                                <article class="event-card past">
+
+
+                                    <div class="event-top">
+
+
+                                        <h3 class="event-title">
+                                            {{ termin["titel"] }}
+                                        </h3>
+
+
+                                        <span class="event-date">
+
+                                            {{ termin["start_datum_anzeige"] }}
+
+                                            {% if termin["start_zeit"] %}
+
+                                                ·
+                                                {{ termin["start_zeit"] }}
+
+                                            {% endif %}
+
+                                        </span>
+
+
+                                    </div>
+
+
+
+                                    {% if termin["beschreibung"] %}
+
+                                        <p class="event-description">
+                                            {{ termin["beschreibung"] }}
+                                        </p>
+
+                                    {% endif %}
+
+
+
+                                    <div class="event-meta">
+
+
+                                        {% if termin["ist_eigener"] %}
+
+                                            <span>
+                                                Von dir erstellt
+                                            </span>
+
+                                        {% else %}
+
+                                            <span>
+                                                Geteilt von:
+                                                <strong>
+                                                    {{ termin["ersteller_name"] }}
+                                                </strong>
+                                            </span>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+
+                                    {% if termin["ist_eigener"] %}
+
+                                        <div class="event-actions">
+
+
+                                            <form
+                                                method="POST"
+                                                action="/termin-loeschen/{{ termin['id'] }}"
+                                                onsubmit="
+                                                    return confirm(
+                                                        'Termin wirklich löschen?'
+                                                    );
+                                                "
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="
+                                                        calendar-button
+                                                        calendar-button-danger
+                                                    "
+                                                >
+                                                    Löschen
+                                                </button>
+
+                                            </form>
+
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                </article>
+
+
+                            {% endfor %}
+
+
+                        </div>
+
+
+                    {% else %}
+
+
+                        <div class="empty-events">
+
+                            Noch keine vergangenen Termine.
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+
+    </main>
+
+
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
