@@ -1,4 +1,4 @@
-const CACHE_NAME = "familienplaner-static-v2";
+const CACHE_NAME = "familienplaner-static-v3";
 
 const STATIC_FILES = [
     "/static/style.css",
@@ -190,3 +190,140 @@ self.addEventListener(
 
     }
 );
+
+/* =========================================================
+   PUSH-BENACHRICHTIGUNGEN
+========================================================= */
+
+self.addEventListener(
+    "push",
+    function(event) {
+
+        let daten = {
+            title: "Familienplaner",
+            body: "Du hast eine neue Benachrichtigung.",
+            url: "/dashboard"
+        };
+
+        if (event.data) {
+
+            try {
+
+                daten = event.data.json();
+
+            } catch (fehler) {
+
+                daten.body =
+                    event.data.text();
+
+            }
+
+        }
+
+        const optionen = {
+
+            body:
+                daten.body
+                || "Du hast eine neue Benachrichtigung.",
+
+            icon:
+                "/static/icons/icon-192.png",
+
+            badge:
+                "/static/icons/favicon-32.png",
+
+            data: {
+                url:
+                    daten.url
+                    || "/dashboard"
+            },
+
+            vibrate: [
+                120,
+                60,
+                120
+            ]
+        };
+
+        event.waitUntil(
+
+            self.registration.showNotification(
+                daten.title
+                || "Familienplaner",
+                optionen
+            )
+
+        );
+
+    }
+);
+
+
+/* =========================================================
+   KLICK AUF BENACHRICHTIGUNG
+========================================================= */
+
+self.addEventListener(
+    "notificationclick",
+    function(event) {
+
+        event.notification.close();
+
+        const ziel =
+            event.notification.data
+            &&
+            event.notification.data.url
+            ?
+            event.notification.data.url
+            :
+            "/dashboard";
+
+        event.waitUntil(
+
+            clients
+                .matchAll(
+                    {
+                        type: "window",
+                        includeUncontrolled: true
+                    }
+                )
+                .then(
+                    function(clientListe) {
+
+                        for (
+                            const client of
+                            clientListe
+                        ) {
+
+                            if (
+                                "focus" in client
+                            ) {
+
+                                client.navigate(
+                                    ziel
+                                );
+
+                                return client.focus();
+
+                            }
+
+                        }
+
+                        if (
+                            clients.openWindow
+                        ) {
+
+                            return clients.openWindow(
+                                ziel
+                            );
+
+                        }
+
+                    }
+                )
+
+        );
+
+    }
+);
+

@@ -2,3 +2,5 @@ Flask
 gunicorn
 Werkzeug
 psycopg2-binary
+pywebpush
+tzdata

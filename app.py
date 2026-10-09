@@ -1,5 +1,8 @@
 import os
 import sqlite3
+import json
+import base64
+import tempfile
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
@@ -9,7 +12,8 @@ from flask import (
     redirect,
     session,
     render_template,
-    send_from_directory
+    send_from_directory,
+    jsonify
 )
 
 from werkzeug.security import (
@@ -22,6 +26,16 @@ try:
     import psycopg2.extras
 except ImportError:
     psycopg2 = None
+
+
+try:
+    from pywebpush import (
+        webpush,
+        WebPushException
+    )
+except ImportError:
+    webpush = None
+    WebPushException = Exception
 
 
 app = Flask(__name__)
@@ -39,6 +53,21 @@ ADMIN_PASSWORD = os.environ.get(
 DATABASE_URL = os.environ.get(
     "DATABASE_URL"
 )
+
+VAPID_PUBLIC_KEY = os.environ.get(
+    "VAPID_PUBLIC_KEY",
+    ""
+).strip()
+
+VAPID_PRIVATE_KEY_B64 = os.environ.get(
+    "VAPID_PRIVATE_KEY_B64",
+    ""
+).strip()
+
+VAPID_SUBJECT = os.environ.get(
+    "VAPID_SUBJECT",
+    "https://familienplaner-zbwi.onrender.com"
+).strip()
 
 
 # ============================================================
@@ -553,6 +582,28 @@ def datenbank_erstellen():
                 )
             """)
 
+            # ==================================================
+            # PUSH-BENACHRICHTIGUNGEN
+            # ==================================================
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS push_abonnements
+                (
+                    id SERIAL PRIMARY KEY,
+
+                    benutzer_id INTEGER NOT NULL
+                        REFERENCES benutzer(id)
+                        ON DELETE CASCADE,
+
+                    endpoint TEXT UNIQUE NOT NULL,
+                    p256dh TEXT NOT NULL,
+                    auth TEXT NOT NULL,
+
+                    erstellt_am TIMESTAMP
+                        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
             cursor.close()
 
         else:
@@ -840,6 +891,29 @@ def datenbank_erstellen():
                     FOREIGN KEY (termin_id)
                     REFERENCES termine(id)
                     ON DELETE CASCADE,
+
+                    FOREIGN KEY (benutzer_id)
+                    REFERENCES benutzer(id)
+                    ON DELETE CASCADE
+                )
+            """)
+
+            # ==================================================
+            # PUSH-BENACHRICHTIGUNGEN
+            # ==================================================
+
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS push_abonnements
+                (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    benutzer_id INTEGER NOT NULL,
+
+                    endpoint TEXT UNIQUE NOT NULL,
+                    p256dh TEXT NOT NULL,
+                    auth TEXT NOT NULL,
+
+                    erstellt_am TEXT NOT NULL,
 
                     FOREIGN KEY (benutzer_id)
                     REFERENCES benutzer(id)
@@ -2018,6 +2092,553 @@ def termine_fuer_benutzer(
 
 
 # ============================================================
+# PUSH-BENACHRICHTIGUNGEN - HILFSFUNKTIONEN
+# ============================================================
+
+def vapid_private_key_datei():
+
+    if not VAPID_PRIVATE_KEY_B64:
+        return None
+
+    try:
+
+        key_bytes = base64.b64decode(
+            VAPID_PRIVATE_KEY_B64
+        )
+
+    except Exception:
+        return None
+
+    pfad = os.path.join(
+        tempfile.gettempdir(),
+        "familienplaner_vapid_private_key.pem"
+    )
+
+    try:
+
+        with open(
+            pfad,
+            "wb"
+        ) as datei:
+
+            datei.write(
+                key_bytes
+            )
+
+    except OSError:
+        return None
+
+    return pfad
+
+
+def push_konfiguriert():
+
+    return bool(
+        webpush
+        and
+        VAPID_PUBLIC_KEY
+        and
+        VAPID_PRIVATE_KEY_B64
+    )
+
+
+def push_abonnement_loeschen(
+    endpoint
+):
+
+    if not endpoint:
+        return
+
+    execute_query(
+
+        """
+        DELETE FROM push_abonnements
+        WHERE endpoint = %s
+        """,
+
+        """
+        DELETE FROM push_abonnements
+        WHERE endpoint = ?
+        """,
+
+        (
+            endpoint,
+        )
+    )
+
+
+def push_an_benutzer(
+    benutzer_id,
+    titel,
+    nachricht,
+    url="/dashboard"
+):
+
+    if not push_konfiguriert():
+        return
+
+    abonnements = query_alle(
+
+        """
+        SELECT
+            endpoint,
+            p256dh,
+            auth
+
+        FROM push_abonnements
+
+        WHERE benutzer_id = %s
+        """,
+
+        """
+        SELECT
+            endpoint,
+            p256dh,
+            auth
+
+        FROM push_abonnements
+
+        WHERE benutzer_id = ?
+        """,
+
+        (
+            benutzer_id,
+        )
+    )
+
+    if not abonnements:
+        return
+
+    private_key = (
+        vapid_private_key_datei()
+    )
+
+    if not private_key:
+        return
+
+    payload = json.dumps(
+        {
+            "title": titel,
+            "body": nachricht,
+            "url": url
+        },
+        ensure_ascii=False
+    )
+
+    for abonnement in abonnements:
+
+        subscription_info = {
+            "endpoint":
+                abonnement["endpoint"],
+
+            "keys": {
+                "p256dh":
+                    abonnement["p256dh"],
+
+                "auth":
+                    abonnement["auth"]
+            }
+        }
+
+        try:
+
+            webpush(
+                subscription_info=
+                    subscription_info,
+
+                data=
+                    payload,
+
+                vapid_private_key=
+                    private_key,
+
+                vapid_claims={
+                    "sub":
+                        VAPID_SUBJECT
+                }
+            )
+
+        except WebPushException as fehler:
+
+            status_code = None
+
+            antwort = getattr(
+                fehler,
+                "response",
+                None
+            )
+
+            if antwort is not None:
+
+                status_code = getattr(
+                    antwort,
+                    "status_code",
+                    None
+                )
+
+            if status_code in (
+                404,
+                410
+            ):
+
+                try:
+
+                    push_abonnement_loeschen(
+                        abonnement["endpoint"]
+                    )
+
+                except Exception:
+                    pass
+
+        except Exception:
+            pass
+
+
+# ============================================================
+# PUSH-BENACHRICHTIGUNGEN - ROUTEN
+# ============================================================
+
+@app.route(
+    "/benachrichtigungen"
+)
+def benachrichtigungen():
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    return render_template(
+        "benachrichtigungen.html",
+
+        benutzer=
+            session.get(
+                "benutzer",
+                ""
+            ),
+
+        vapid_public_key=
+            VAPID_PUBLIC_KEY,
+
+        push_bereit=
+            push_konfiguriert()
+    )
+
+
+@app.route(
+    "/push-public-key"
+)
+def push_public_key():
+
+    if "benutzer_id" not in session:
+
+        return jsonify(
+            {
+                "ok": False,
+                "fehler":
+                    "Nicht angemeldet."
+            }
+        ), 401
+
+    return jsonify(
+        {
+            "ok":
+                bool(
+                    VAPID_PUBLIC_KEY
+                ),
+
+            "publicKey":
+                VAPID_PUBLIC_KEY
+        }
+    )
+
+
+@app.route(
+    "/push-abonnieren",
+    methods=[
+        "POST"
+    ]
+)
+def push_abonnieren():
+
+    if "benutzer_id" not in session:
+
+        return jsonify(
+            {
+                "ok": False,
+                "fehler":
+                    "Nicht angemeldet."
+            }
+        ), 401
+
+    daten = request.get_json(
+        silent=True
+    ) or {}
+
+    endpoint = str(
+        daten.get(
+            "endpoint",
+            ""
+        )
+    ).strip()
+
+    keys = daten.get(
+        "keys",
+        {}
+    ) or {}
+
+    p256dh = str(
+        keys.get(
+            "p256dh",
+            ""
+        )
+    ).strip()
+
+    auth = str(
+        keys.get(
+            "auth",
+            ""
+        )
+    ).strip()
+
+    if (
+        not endpoint
+        or
+        not p256dh
+        or
+        not auth
+    ):
+
+        return jsonify(
+            {
+                "ok": False,
+                "fehler":
+                    "Ungültiges Push-Abonnement."
+            }
+        ), 400
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+    db = datenbank()
+
+    try:
+
+        if postgres_verwenden():
+
+            cursor = db.cursor()
+
+            cursor.execute(
+                """
+                INSERT INTO push_abonnements
+                (
+                    benutzer_id,
+                    endpoint,
+                    p256dh,
+                    auth
+                )
+
+                VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                )
+
+                ON CONFLICT (
+                    endpoint
+                )
+
+                DO UPDATE SET
+                    benutzer_id =
+                        EXCLUDED.benutzer_id,
+
+                    p256dh =
+                        EXCLUDED.p256dh,
+
+                    auth =
+                        EXCLUDED.auth
+                """,
+                (
+                    benutzer_id,
+                    endpoint,
+                    p256dh,
+                    auth
+                )
+            )
+
+            cursor.close()
+
+        else:
+
+            db.execute(
+                """
+                INSERT INTO push_abonnements
+                (
+                    benutzer_id,
+                    endpoint,
+                    p256dh,
+                    auth,
+                    erstellt_am
+                )
+
+                VALUES (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )
+
+                ON CONFLICT(endpoint)
+                DO UPDATE SET
+
+                    benutzer_id =
+                        excluded.benutzer_id,
+
+                    p256dh =
+                        excluded.p256dh,
+
+                    auth =
+                        excluded.auth
+                """,
+                (
+                    benutzer_id,
+                    endpoint,
+                    p256dh,
+                    auth,
+                    jetzt().strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+                )
+            )
+
+        db.commit()
+
+    except Exception:
+
+        db.rollback()
+
+        return jsonify(
+            {
+                "ok": False,
+                "fehler":
+                    "Abonnement konnte nicht gespeichert werden."
+            }
+        ), 500
+
+    finally:
+        db.close()
+
+    return jsonify(
+        {
+            "ok": True
+        }
+    )
+
+
+@app.route(
+    "/push-abmelden",
+    methods=[
+        "POST"
+    ]
+)
+def push_abmelden():
+
+    if "benutzer_id" not in session:
+
+        return jsonify(
+            {
+                "ok": False
+            }
+        ), 401
+
+    daten = request.get_json(
+        silent=True
+    ) or {}
+
+    endpoint = str(
+        daten.get(
+            "endpoint",
+            ""
+        )
+    ).strip()
+
+    if endpoint:
+
+        execute_query(
+
+            """
+            DELETE FROM push_abonnements
+
+            WHERE
+                endpoint = %s
+                AND benutzer_id = %s
+            """,
+
+            """
+            DELETE FROM push_abonnements
+
+            WHERE
+                endpoint = ?
+                AND benutzer_id = ?
+            """,
+
+            (
+                endpoint,
+                session["benutzer_id"]
+            )
+        )
+
+    return jsonify(
+        {
+            "ok": True
+        }
+    )
+
+
+@app.route(
+    "/push-test",
+    methods=[
+        "POST"
+    ]
+)
+def push_test():
+
+    if "benutzer_id" not in session:
+
+        return jsonify(
+            {
+                "ok": False,
+                "fehler":
+                    "Nicht angemeldet."
+            }
+        ), 401
+
+    if not push_konfiguriert():
+
+        return jsonify(
+            {
+                "ok": False,
+                "fehler":
+                    "Push ist auf dem Server noch nicht eingerichtet."
+            }
+        ), 503
+
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Familienplaner",
+        "🎉 Deine Handy-Benachrichtigungen funktionieren.",
+        "/dashboard"
+    )
+
+    return jsonify(
+        {
+            "ok": True
+        }
+    )
+
+
+# ============================================================
 # PWA
 # ============================================================
 
@@ -2539,6 +3160,25 @@ def aufgabe_hinzufuegen():
 
     finally:
         db.close()
+
+    for ziel_id in set(
+        ausgewaehlt
+    ):
+
+        push_an_benutzer(
+            ziel_id,
+            "Neue Aufgabe",
+            (
+                session.get(
+                    "benutzer",
+                    "Jemand"
+                )
+                + " hat dir die Aufgabe „"
+                + titel
+                + "“ geteilt."
+            ),
+            "/aufgaben"
+        )
 
     return redirect(
         "/aufgaben"
@@ -3269,6 +3909,39 @@ def termin_hinzufuegen():
 
     finally:
         db.close()
+
+    for ziel_id in set(
+        ausgewaehlt
+    ):
+
+        datum_text = start_datum.strftime(
+            "%d.%m.%Y"
+        )
+
+        if start_zeit:
+
+            datum_text += (
+                " um "
+                + start_zeit
+                + " Uhr"
+            )
+
+        push_an_benutzer(
+            ziel_id,
+            "Neuer gemeinsamer Termin",
+            (
+                session.get(
+                    "benutzer",
+                    "Jemand"
+                )
+                + " hat „"
+                + titel
+                + "“ am "
+                + datum_text
+                + " mit dir geteilt."
+            ),
+            "/kalender"
+        )
 
     return redirect(
         "/kalender"

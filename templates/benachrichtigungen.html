@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#183629"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Familienplaner"
+    >
+
+    <title>
+        Benachrichtigungen | Familienplaner
+    </title>
+
+    <link
+        rel="manifest"
+        href="/static/manifest.webmanifest"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/icons/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/static/icons/favicon-32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .push-page {
+            width: min(
+                850px,
+                calc(100% - 28px)
+            );
+
+            margin: 0 auto;
+
+            padding:
+                26px
+                0
+                70px;
+        }
+
+        .push-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 14px;
+
+            margin-bottom: 28px;
+        }
+
+        .push-brand {
+            color: #f4e8cb;
+
+            font-weight: 800;
+        }
+
+        .push-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding:
+                0
+                16px;
+
+            border-radius: 12px;
+
+            color: #ead9c6;
+
+            background:
+                rgba(119, 91, 71, 0.54);
+
+            border:
+                1px solid
+                rgba(240, 219, 189, 0.09);
+
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .push-card {
+            padding: 30px;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.11),
+                    rgba(255, 255, 255, 0.055)
+                );
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.14);
+
+            box-shadow:
+                0 22px 60px
+                rgba(0, 0, 0, 0.16);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+        }
+
+        .push-icon {
+            width: 70px;
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 20px;
+
+            border-radius: 20px;
+
+            font-size: 2rem;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(231, 219, 178, 0.38),
+                    rgba(205, 192, 151, 0.66)
+                );
+
+            border:
+                1px solid
+                rgba(244, 232, 196, 0.28);
+        }
+
+        h1 {
+            margin:
+                0
+                0
+                12px;
+
+            color: #fff8e8;
+
+            font-size:
+                clamp(
+                    1.9rem,
+                    4vw,
+                    2.7rem
+                );
+        }
+
+        .push-intro {
+            margin:
+                0
+                0
+                24px;
+
+            color:
+                rgba(248, 238, 212, 0.78);
+
+            line-height: 1.6;
+        }
+
+        .status-box {
+            padding: 16px;
+
+            margin-bottom: 18px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(20, 54, 39, 0.42);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.10);
+
+            color: #f5e9cd;
+
+            line-height: 1.5;
+        }
+
+        .status-box strong {
+            color: #fff5dc;
+        }
+
+        .push-actions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    minmax(0, 1fr)
+                );
+
+            gap: 12px;
+
+            margin-top: 18px;
+        }
+
+        .push-button {
+            min-height: 48px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                10px
+                16px;
+
+            border: none;
+            border-radius: 14px;
+
+            cursor: pointer;
+
+            font: inherit;
+            font-weight: 800;
+
+            color: #183629;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ead7ad,
+                    #ceb685
+                );
+        }
+
+        .push-button.secondary {
+            color: #f3e6c9;
+
+            background:
+                rgba(255, 255, 255, 0.08);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+        }
+
+        .push-button.danger {
+            color: #f4d5cf;
+
+            background:
+                rgba(145, 62, 52, 0.18);
+
+            border:
+                1px solid
+                rgba(222, 142, 127, 0.22);
+        }
+
+        .push-button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .push-note {
+            margin-top: 20px;
+
+            padding: 16px;
+
+            border-radius: 16px;
+
+            color:
+                rgba(246, 234, 205, 0.70);
+
+            background:
+                rgba(255, 255, 255, 0.045);
+
+            line-height: 1.55;
+            font-size: 0.9rem;
+        }
+
+        .push-message {
+            min-height: 24px;
+
+            margin-top: 17px;
+
+            color: #f4e2b8;
+
+            font-weight: 700;
+        }
+
+        @media (max-width: 700px) {
+
+            .push-page {
+                width:
+                    min(
+                        100% - 18px,
+                        850px
+                    );
+
+                padding-top: 14px;
+            }
+
+            .push-card {
+                padding:
+                    22px
+                    17px;
+
+                border-radius: 22px;
+            }
+
+            .push-actions {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <main class="push-page">
+
+        <header class="push-topbar">
+
+            <div class="push-brand">
+                Familienplaner · {{ benutzer }}
+            </div>
+
+            <a
+                href="/dashboard"
+                class="push-back"
+            >
+                ← Dashboard
+            </a>
+
+        </header>
+
+        <section class="push-card">
+
+            <div class="push-icon">
+                🔔
+            </div>
+
+            <h1>
+                Handy-Benachrichtigungen
+            </h1>
+
+            <p class="push-intro">
+                Aktiviere Push-Nachrichten für neue
+                gemeinsame Aufgaben und Termine.
+                Die Benachrichtigungen können auch
+                erscheinen, wenn der Familienplaner
+                gerade nicht geöffnet ist.
+            </p>
+
+            <div class="status-box">
+
+                <strong>
+                    Status:
+                </strong>
+
+                <span id="push-status">
+                    Wird geprüft …
+                </span>
+
+            </div>
+
+            {% if not push_bereit %}
+
+                <div class="status-box">
+                    Die Push-Funktion ist auf dem Server
+                    noch nicht vollständig eingerichtet.
+                    Die VAPID-Schlüssel müssen zuerst
+                    als Umgebungsvariablen gesetzt werden.
+                </div>
+
+            {% endif %}
+
+            <div class="push-actions">
+
+                <button
+                    id="push-enable"
+                    type="button"
+                    class="push-button"
+                >
+                    Benachrichtigungen aktivieren
+                </button>
+
+                <button
+                    id="push-test"
+                    type="button"
+                    class="push-button secondary"
+                >
+                    Test senden
+                </button>
+
+                <button
+                    id="push-disable"
+                    type="button"
+                    class="push-button danger"
+                >
+                    Deaktivieren
+                </button>
+
+            </div>
+
+            <div
+                id="push-message"
+                class="push-message"
+            ></div>
+
+            <div class="push-note">
+                <strong>iPhone:</strong>
+                Öffne den Familienplaner in Safari und
+                füge ihn zuerst über
+                „Zum Home-Bildschirm“ hinzu. Danach die
+                installierte App öffnen und hier
+                Benachrichtigungen aktivieren.
+                <br><br>
+                <strong>Android:</strong>
+                Die installierte PWA oder Chrome kann
+                die Berechtigung direkt abfragen.
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+
+        const VAPID_PUBLIC_KEY =
+            {{ vapid_public_key | tojson }};
+
+        const statusElement =
+            document.getElementById(
+                "push-status"
+            );
+
+        const messageElement =
+            document.getElementById(
+                "push-message"
+            );
+
+        const enableButton =
+            document.getElementById(
+                "push-enable"
+            );
+
+        const testButton =
+            document.getElementById(
+                "push-test"
+            );
+
+        const disableButton =
+            document.getElementById(
+                "push-disable"
+            );
+
+
+        function meldung(text) {
+
+            messageElement.textContent =
+                text;
+
+        }
+
+
+        function urlBase64ToUint8Array(
+            base64String
+        ) {
+
+            const padding =
+                "=".repeat(
+                    (
+                        4
+                        -
+                        base64String.length
+                        % 4
+                    )
+                    % 4
+                );
+
+            const base64 =
+                (
+                    base64String
+                    + padding
+                )
+                    .replace(
+                        /-/g,
+                        "+"
+                    )
+                    .replace(
+                        /_/g,
+                        "/"
+                    );
+
+            const rawData =
+                window.atob(
+                    base64
+                );
+
+            return Uint8Array.from(
+                [
+                    ...rawData
+                ].map(
+                    function(character) {
+
+                        return character.charCodeAt(
+                            0
+                        );
+
+                    }
+                )
+            );
+
+        }
+
+
+        async function registrationHolen() {
+
+            if (
+                !(
+                    "serviceWorker"
+                    in navigator
+                )
+            ) {
+
+                throw new Error(
+                    "Service Worker wird nicht unterstützt."
+                );
+
+            }
+
+            await navigator
+                .serviceWorker
+                .register(
+                    "/service-worker.js"
+                );
+
+            return navigator
+                .serviceWorker
+                .ready;
+
+        }
+
+
+        async function statusPruefen() {
+
+            if (
+                !(
+                    "Notification"
+                    in window
+                )
+                ||
+                !(
+                    "PushManager"
+                    in window
+                )
+            ) {
+
+                statusElement.textContent =
+                    "Dieses Gerät unterstützt Web Push nicht.";
+
+                enableButton.disabled =
+                    true;
+
+                testButton.disabled =
+                    true;
+
+                disableButton.disabled =
+                    true;
+
+                return;
+
+            }
+
+            if (
+                Notification.permission
+                === "denied"
+            ) {
+
+                statusElement.textContent =
+                    "Im Browser blockiert.";
+
+                return;
+
+            }
+
+            try {
+
+                const registration =
+                    await registrationHolen();
+
+                const abonnement =
+                    await registration
+                        .pushManager
+                        .getSubscription();
+
+                if (abonnement) {
+
+                    statusElement.textContent =
+                        "Aktiv ✅";
+
+                } else {
+
+                    statusElement.textContent =
+                        "Noch nicht aktiviert.";
+
+                }
+
+            } catch (fehler) {
+
+                statusElement.textContent =
+                    "Status konnte nicht geprüft werden.";
+
+            }
+
+        }
+
+
+        enableButton.addEventListener(
+            "click",
+            async function() {
+
+                meldung("");
+
+                if (!VAPID_PUBLIC_KEY) {
+
+                    meldung(
+                        "Die Push-Schlüssel fehlen noch auf dem Server."
+                    );
+
+                    return;
+
+                }
+
+                try {
+
+                    const erlaubnis =
+                        await Notification
+                            .requestPermission();
+
+                    if (
+                        erlaubnis
+                        !== "granted"
+                    ) {
+
+                        meldung(
+                            "Benachrichtigungen wurden nicht erlaubt."
+                        );
+
+                        await statusPruefen();
+
+                        return;
+
+                    }
+
+                    const registration =
+                        await registrationHolen();
+
+                    let abonnement =
+                        await registration
+                            .pushManager
+                            .getSubscription();
+
+                    if (!abonnement) {
+
+                        abonnement =
+                            await registration
+                                .pushManager
+                                .subscribe(
+                                    {
+                                        userVisibleOnly:
+                                            true,
+
+                                        applicationServerKey:
+                                            urlBase64ToUint8Array(
+                                                VAPID_PUBLIC_KEY
+                                            )
+                                    }
+                                );
+
+                    }
+
+                    const antwort =
+                        await fetch(
+                            "/push-abonnieren",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        abonnement
+                                    )
+                            }
+                        );
+
+                    const daten =
+                        await antwort.json();
+
+                    if (!daten.ok) {
+
+                        throw new Error(
+                            daten.fehler
+                            || "Speichern fehlgeschlagen."
+                        );
+
+                    }
+
+                    meldung(
+                        "Benachrichtigungen sind aktiviert. ✅"
+                    );
+
+                    await statusPruefen();
+
+                } catch (fehler) {
+
+                    meldung(
+                        "Aktivierung fehlgeschlagen: "
+                        + fehler.message
+                    );
+
+                }
+
+            }
+        );
+
+
+        testButton.addEventListener(
+            "click",
+            async function() {
+
+                meldung(
+                    "Test wird gesendet …"
+                );
+
+                try {
+
+                    const antwort =
+                        await fetch(
+                            "/push-test",
+                            {
+                                method: "POST"
+                            }
+                        );
+
+                    const daten =
+                        await antwort.json();
+
+                    if (!daten.ok) {
+
+                        throw new Error(
+                            daten.fehler
+                            || "Test fehlgeschlagen."
+                        );
+
+                    }
+
+                    meldung(
+                        "Test wurde gesendet. Schau auf deine Benachrichtigungen. 🔔"
+                    );
+
+                } catch (fehler) {
+
+                    meldung(
+                        "Test fehlgeschlagen: "
+                        + fehler.message
+                    );
+
+                }
+
+            }
+        );
+
+
+        disableButton.addEventListener(
+            "click",
+            async function() {
+
+                meldung("");
+
+                try {
+
+                    const registration =
+                        await registrationHolen();
+
+                    const abonnement =
+                        await registration
+                            .pushManager
+                            .getSubscription();
+
+                    if (!abonnement) {
+
+                        meldung(
+                            "Benachrichtigungen sind bereits deaktiviert."
+                        );
+
+                        await statusPruefen();
+
+                        return;
+
+                    }
+
+                    await fetch(
+                        "/push-abmelden",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    {
+                                        endpoint:
+                                            abonnement.endpoint
+                                    }
+                                )
+                        }
+                    );
+
+                    await abonnement
+                        .unsubscribe();
+
+                    meldung(
+                        "Benachrichtigungen wurden deaktiviert."
+                    );
+
+                    await statusPruefen();
+
+                } catch (fehler) {
+
+                    meldung(
+                        "Deaktivieren fehlgeschlagen: "
+                        + fehler.message
+                    );
+
+                }
+
+            }
+        );
+
+
+        statusPruefen();
+
+    </script>
+
+</body>
+
+</html>
