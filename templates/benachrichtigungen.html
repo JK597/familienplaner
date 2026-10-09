@@ -427,6 +427,7 @@
                     id="push-test"
                     type="button"
                     class="push-button secondary"
+                    disabled
                 >
                     Test senden
                 </button>
@@ -435,6 +436,7 @@
                     id="push-disable"
                     type="button"
                     class="push-button danger"
+                    disabled
                 >
                     Deaktivieren
                 </button>
@@ -552,6 +554,42 @@
 
         }
 
+        function mitTimeout(
+            promise,
+            millisekunden,
+            meldung
+        ) {
+
+            return Promise.race(
+                [
+                    promise,
+
+                    new Promise(
+                        function(
+                            _resolve,
+                            reject
+                        ) {
+
+                            setTimeout(
+                                function() {
+
+                                    reject(
+                                        new Error(
+                                            meldung
+                                        )
+                                    );
+
+                                },
+                                millisekunden
+                            );
+
+                        }
+                    )
+                ]
+            );
+
+        }
+
 
         async function registrationHolen() {
 
@@ -563,23 +601,40 @@
             ) {
 
                 throw new Error(
-                    "Service Worker wird nicht unterstützt."
+                    "Service Worker wird auf diesem Gerät nicht unterstützt."
                 );
 
             }
 
-            await navigator
-                .serviceWorker
-                .register(
-                    "/service-worker.js"
+
+            const registration =
+                await mitTimeout(
+                    navigator
+                        .serviceWorker
+                        .register(
+                            "/service-worker.js"
+                        ),
+
+                    8000,
+
+                    "Der Service Worker konnte nicht geladen werden."
                 );
 
-            return navigator
-                .serviceWorker
-                .ready;
+
+            await mitTimeout(
+                navigator
+                    .serviceWorker
+                    .ready,
+
+                8000,
+
+                "Der Service Worker ist nicht bereit. Öffne den Familienplaner über das Symbol auf deinem Home-Bildschirm und lade die Seite neu."
+            );
+
+
+            return registration;
 
         }
-
 
         async function statusPruefen() {
 
@@ -619,40 +674,106 @@
                 statusElement.textContent =
                     "Im Browser blockiert.";
 
+                enableButton.disabled =
+                    true;
+
+                testButton.disabled =
+                    true;
+
+                disableButton.disabled =
+                    true;
+
                 return;
 
             }
 
             try {
 
+                statusElement.textContent =
+                    "Wird geprüft …";
+
+
                 const registration =
                     await registrationHolen();
 
+
+                if (
+                    !registration
+                    ||
+                    !registration.pushManager
+                ) {
+
+                    throw new Error(
+                        "PushManager ist nicht verfügbar."
+                    );
+
+                }
+
+
                 const abonnement =
-                    await registration
-                        .pushManager
-                        .getSubscription();
+                    await mitTimeout(
+                        registration
+                            .pushManager
+                            .getSubscription(),
+
+                        6000,
+
+                        "Push-Status konnte nicht geladen werden."
+                    );
+
 
                 if (abonnement) {
 
                     statusElement.textContent =
                         "Aktiv ✅";
 
+                    enableButton.disabled =
+                        false;
+
+                    testButton.disabled =
+                        false;
+
+                    disableButton.disabled =
+                        false;
+
                 } else {
 
                     statusElement.textContent =
                         "Noch nicht aktiviert.";
+
+                    enableButton.disabled =
+                        false;
+
+                    testButton.disabled =
+                        true;
+
+                    disableButton.disabled =
+                        true;
 
                 }
 
             } catch (fehler) {
 
                 statusElement.textContent =
-                    "Status konnte nicht geprüft werden.";
+                    "Nicht bereit ⚠️";
+
+                enableButton.disabled =
+                    false;
+
+                testButton.disabled =
+                    true;
+
+                disableButton.disabled =
+                    true;
+
+                meldung(
+                    fehler.message
+                );
 
             }
 
         }
+
 
 
         enableButton.addEventListener(
