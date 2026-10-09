@@ -2090,6 +2090,516 @@
 
         }
 
+    
+        /* =========================================================
+           LUXURY WILLKOMMENSBEREICH
+        ========================================================= */
+
+        .welcome-luxury {
+            position: relative;
+
+            min-height: 210px;
+
+            padding:
+                32px
+                210px
+                32px
+                34px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(244, 225, 180, 0.24);
+
+            border-radius: 30px;
+
+            background:
+                radial-gradient(
+                    circle at 88% 18%,
+                    rgba(248, 229, 181, 0.16),
+                    transparent 27%
+                ),
+                radial-gradient(
+                    circle at 72% 86%,
+                    rgba(196, 179, 131, 0.10),
+                    transparent 31%
+                ),
+                linear-gradient(
+                    120deg,
+                    rgba(29, 67, 49, 0.99) 0%,
+                    rgba(62, 91, 66, 0.97) 53%,
+                    rgba(145, 132, 96, 0.92) 100%
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.14),
+                inset 0 -1px 0 rgba(0,0,0,0.10),
+                0 28px 68px rgba(0,0,0,0.18);
+        }
+
+
+        .welcome-luxury::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 12px;
+
+            border:
+                1px solid
+                rgba(255, 244, 215, 0.11);
+
+            border-radius: 21px;
+
+            pointer-events: none;
+        }
+
+
+        .welcome-luxury::after {
+            content: "";
+
+            position: absolute;
+
+            width: 360px;
+            height: 360px;
+
+            right: -130px;
+            bottom: -215px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(246, 224, 176, 0.18),
+                    rgba(246, 224, 176, 0.035) 52%,
+                    transparent 72%
+                );
+
+            pointer-events: none;
+        }
+
+
+        .welcome-luxury-content {
+            position: relative;
+            z-index: 3;
+        }
+
+
+        .welcome-eyebrow {
+            width: fit-content;
+
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap: 7px;
+
+            min-height: 31px;
+
+            padding:
+                5px
+                10px;
+
+            margin-bottom: 16px;
+
+            border:
+                1px solid
+                rgba(248, 230, 187, 0.14);
+
+            border-radius: 999px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(16, 42, 30, 0.26),
+                    rgba(255,255,255,0.04)
+                );
+
+            color: #f3e3bf;
+
+            font-size: 0.70rem;
+            font-weight: 850;
+            letter-spacing: 0.085em;
+            text-transform: uppercase;
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+
+        .welcome-eyebrow-dot {
+            width: 7px;
+            height: 7px;
+
+            flex: 0 0 auto;
+
+            border-radius: 50%;
+
+            background: #e0c88e;
+
+            box-shadow:
+                0 0 0 5px rgba(224, 200, 142, 0.08),
+                0 0 18px rgba(224, 200, 142, 0.18);
+        }
+
+
+        .welcome-eyebrow-separator {
+            color:
+                rgba(244, 229, 198, 0.38);
+        }
+
+
+        .welcome-eyebrow-soft {
+            color:
+                rgba(244, 229, 198, 0.57);
+        }
+
+
+        .welcome-title-row {
+            position: relative;
+        }
+
+
+        .welcome-luxury h1 {
+            max-width: 700px;
+
+            margin:
+                0
+                0
+                12px;
+
+            color: #fff6df;
+
+            font-size:
+                clamp(
+                    2.25rem,
+                    4vw,
+                    3.65rem
+                );
+
+            line-height: 0.98;
+
+            letter-spacing: -0.045em;
+
+            text-shadow:
+                0 16px 35px rgba(0,0,0,0.17);
+        }
+
+
+        .welcome-name {
+            color: #f0dca8;
+        }
+
+
+        .welcome-luxury-subtitle {
+            max-width: 610px;
+
+            margin:
+                0
+                0
+                17px;
+
+            color:
+                rgba(255, 247, 226, 0.76);
+
+            font-size: 0.96rem;
+            line-height: 1.55;
+        }
+
+
+        .welcome-mini-line {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap:
+                8px
+                15px;
+        }
+
+
+        .welcome-mini-item {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 7px;
+
+            color:
+                rgba(247, 234, 204, 0.55);
+
+            font-size: 0.69rem;
+            font-weight: 700;
+        }
+
+
+        .welcome-mini-dot {
+            width: 5px;
+            height: 5px;
+
+            border-radius: 50%;
+
+            background: #dbc48d;
+
+            box-shadow:
+                0 0 10px rgba(219, 196, 141, 0.34);
+        }
+
+
+        .welcome-luxury-emblem {
+            position: absolute;
+
+            right: 43px;
+            top: 50%;
+
+            z-index: 4;
+
+            transform:
+                translateY(-50%);
+
+            width: 124px;
+
+            display: grid;
+            justify-items: center;
+
+            gap: 8px;
+        }
+
+
+        .welcome-emblem-ring {
+            width: 112px;
+            height: 112px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            border:
+                1px solid
+                rgba(247, 229, 184, 0.23);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.10),
+                    rgba(255,255,255,0.025)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.10),
+                0 22px 40px rgba(0,0,0,0.17);
+        }
+
+
+        .welcome-emblem-ring::before {
+            content: "";
+
+            position: absolute;
+
+            width: 86px;
+            height: 86px;
+
+            border-radius: 50%;
+
+            border:
+                1px solid
+                rgba(239, 216, 166, 0.15);
+        }
+
+
+        .welcome-emblem-core {
+            width: 70px;
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 35% 28%,
+                    #f3e1b6,
+                    #d5bb82 52%,
+                    #b9975e 100%
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.50),
+                0 12px 26px rgba(0,0,0,0.15);
+        }
+
+
+        .welcome-emblem-home {
+            color: #183629;
+
+            font-size: 2rem;
+            font-weight: 900;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        .welcome-emblem-caption {
+            color:
+                rgba(248, 233, 202, 0.50);
+
+            font-size: 0.52rem;
+            font-weight: 900;
+            letter-spacing: 0.24em;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .welcome-luxury {
+                min-height: 116px;
+
+                padding:
+                    13px
+                    74px
+                    13px
+                    14px;
+
+                margin-bottom: 10px;
+
+                border-radius: 18px;
+            }
+
+
+            .welcome-luxury::before {
+                inset: 7px;
+
+                border-radius: 12px;
+            }
+
+
+            .welcome-luxury::after {
+                width: 190px;
+                height: 190px;
+
+                right: -76px;
+                bottom: -112px;
+            }
+
+
+            .welcome-eyebrow {
+                min-height: 24px;
+
+                gap: 5px;
+
+                padding:
+                    3px
+                    7px;
+
+                margin-bottom: 9px;
+
+                font-size: 0.51rem;
+                letter-spacing: 0.075em;
+            }
+
+
+            .welcome-eyebrow-dot {
+                width: 5px;
+                height: 5px;
+
+                box-shadow:
+                    0 0 0 4px rgba(224, 200, 142, 0.07);
+            }
+
+
+            .welcome-eyebrow-soft,
+            .welcome-eyebrow-separator {
+                display: none;
+            }
+
+
+            .welcome-luxury h1 {
+                margin-bottom: 5px;
+
+                font-size: 1.42rem;
+                line-height: 1.02;
+            }
+
+
+            .welcome-luxury-subtitle {
+                display: block;
+
+                max-width: 230px;
+
+                margin:
+                    0
+                    0
+                    6px;
+
+                font-size: 0.66rem;
+                line-height: 1.32;
+            }
+
+
+            .welcome-mini-line {
+                gap: 9px;
+            }
+
+
+            .welcome-mini-item {
+                font-size: 0.54rem;
+            }
+
+
+            .welcome-mini-item:last-child {
+                display: none;
+            }
+
+
+            .welcome-luxury-emblem {
+                right: 11px;
+
+                width: 57px;
+
+                gap: 4px;
+            }
+
+
+            .welcome-emblem-ring {
+                width: 54px;
+                height: 54px;
+
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.10),
+                    0 10px 20px rgba(0,0,0,0.13);
+            }
+
+
+            .welcome-emblem-ring::before {
+                width: 42px;
+                height: 42px;
+            }
+
+
+            .welcome-emblem-core {
+                width: 34px;
+                height: 34px;
+            }
+
+
+            .welcome-emblem-home {
+                font-size: 1.05rem;
+            }
+
+
+            .welcome-emblem-caption {
+                font-size: 0.38rem;
+                letter-spacing: 0.17em;
+            }
+
+        }
+
     </style>
 
 </head>
@@ -2160,30 +2670,83 @@
 
 
 
-        <section class="dashboard-welcome">
+        <section class="dashboard-welcome welcome-luxury">
 
 
-            <div class="welcome-text">
+            <div class="welcome-text welcome-luxury-content">
 
-                <span class="welcome-small">
-                    Familienplaner
-                </span>
+                <div class="welcome-eyebrow">
 
-                <h1>
-                    Willkommen, {{ benutzer }} 👋
-                </h1>
+                    <span class="welcome-eyebrow-dot"></span>
 
-                <p>
-                    Schön, dass du da bist.
-                    Hier hast du alles Wichtige für
-                    deinen Familienalltag an einem Ort.
+                    <span>
+                        Familienplaner
+                    </span>
+
+                    <span class="welcome-eyebrow-separator">
+                        ·
+                    </span>
+
+                    <span class="welcome-eyebrow-soft">
+                        Dein Zuhause im Blick
+                    </span>
+
+                </div>
+
+
+                <div class="welcome-title-row">
+
+                    <h1>
+                        Willkommen,
+                        <span class="welcome-name">
+                            {{ benutzer }}
+                        </span>
+                    </h1>
+
+                </div>
+
+
+                <p class="welcome-luxury-subtitle">
+                    Termine, Aufgaben, Einkäufe und Finanzen.
+                    Ruhig organisiert an einem Ort.
                 </p>
+
+
+                <div class="welcome-mini-line">
+
+                    <span class="welcome-mini-item">
+                        <span class="welcome-mini-dot"></span>
+                        Alles synchron
+                    </span>
+
+                    <span class="welcome-mini-item">
+                        Privat & persönlich
+                    </span>
+
+                </div>
 
             </div>
 
 
-            <div class="welcome-hand">
-                👋
+            <div
+                class="welcome-luxury-emblem"
+                aria-hidden="true"
+            >
+
+                <div class="welcome-emblem-ring">
+
+                    <div class="welcome-emblem-core">
+                        <span class="welcome-emblem-home">
+                            ⌂
+                        </span>
+                    </div>
+
+                </div>
+
+                <span class="welcome-emblem-caption">
+                    FAMILY
+                </span>
+
             </div>
 
 
