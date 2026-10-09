@@ -2792,6 +2792,165 @@
 
         }
 
+    
+        /* =========================================================
+           PINNWAND – COMING SOON
+        ========================================================= */
+
+        .coming-soon-card {
+            position: relative;
+            isolation: isolate;
+
+            border:
+                1px solid
+                rgba(236, 216, 171, 0.24);
+
+            background:
+                radial-gradient(
+                    circle at 88% 12%,
+                    rgba(241, 217, 164, 0.14),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(49, 85, 64, 0.97),
+                    rgba(103, 112, 80, 0.90)
+                );
+        }
+
+        .coming-soon-card::after {
+            content: "";
+
+            position: absolute;
+
+            right: -45px;
+            top: -55px;
+
+            z-index: -1;
+
+            width: 145px;
+            height: 145px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(239, 216, 166, 0.14),
+                    transparent 67%
+                );
+
+            pointer-events: none;
+        }
+
+        .coming-soon-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .coming-soon-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 27px;
+
+            padding:
+                4px
+                9px;
+
+            border-radius: 999px;
+
+            color: #f3dfad;
+
+            background:
+                rgba(18, 49, 36, 0.30);
+
+            border:
+                1px solid
+                rgba(240, 220, 175, 0.20);
+
+            font-size: 0.62rem;
+            font-weight: 900;
+            letter-spacing: 0.10em;
+        }
+
+        .coming-soon-button {
+            width: 100%;
+            min-height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                10px
+                14px;
+
+            border-radius: 13px;
+
+            color:
+                rgba(246, 232, 201, 0.72);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.075),
+                    rgba(255,255,255,0.030)
+                );
+
+            border:
+                1px solid
+                rgba(239, 219, 176, 0.13);
+
+            font-size: 0.82rem;
+            font-weight: 800;
+
+            cursor: default;
+        }
+
+        @media (max-width: 700px) {
+
+            .coming-soon-card {
+                min-height: 132px !important;
+            }
+
+            .coming-soon-card .home-card-icon {
+                margin-bottom: 8px;
+            }
+
+            .coming-soon-top {
+                align-items: center;
+            }
+
+            .coming-soon-badge {
+                min-height: 21px;
+
+                padding:
+                    3px
+                    6px;
+
+                font-size: 0.47rem;
+                letter-spacing: 0.08em;
+            }
+
+            .coming-soon-button {
+                min-height: 36px;
+
+                padding:
+                    7px
+                    8px;
+
+                border-radius: 10px;
+
+                font-size: 0.66rem;
+            }
+
+        }
+
     </style>
 
 </head>
@@ -3351,6 +3510,46 @@
                     >
                         Finanzen öffnen
                     </a>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- =====================================
+                 PINNWAND – DEMNÄCHST
+            ====================================== -->
+
+            <article class="dashboard-home-card coming-soon-card">
+
+                <div class="coming-soon-top">
+
+                    <div class="home-card-icon">
+                        📌
+                    </div>
+
+                    <span class="coming-soon-badge">
+                        DEMNÄCHST
+                    </span>
+
+                </div>
+
+                <h2>
+                    Familien-Pinnwand
+                </h2>
+
+                <p>
+                    Kurze Nachrichten, wichtige Hinweise
+                    und Neuigkeiten für die ganze Familie
+                    direkt an einem Ort.
+                </p>
+
+                <div class="home-card-bottom">
+
+                    <div class="coming-soon-button">
+                        Bald verfügbar
+                    </div>
 
                 </div>
 
