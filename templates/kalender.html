@@ -796,45 +796,326 @@
             .calendar-page {
                 width:
                     min(
-                        100% - 18px,
+                        100% - 14px,
                         1180px
                     );
 
-                padding-top: 16px;
+                padding:
+                    10px
+                    0
+                    38px;
+            }
+
+
+            .calendar-topbar {
+                gap: 10px;
+
+                padding:
+                    4px
+                    2px
+                    14px;
+
+                margin-bottom: 16px;
+
+                flex-wrap: nowrap;
+            }
+
+
+            .calendar-brand {
+                min-width: 0;
+            }
+
+
+            .calendar-brand strong {
+                font-size: 0.96rem;
+            }
+
+
+            .calendar-brand span {
+                font-size: 0.78rem;
+            }
+
+
+            .calendar-nav {
+                width: auto;
+                flex-shrink: 0;
+                gap: 7px;
+            }
+
+
+            .calendar-nav a {
+                min-height: 38px;
+
+                padding:
+                    0
+                    11px;
+
+                border-radius: 11px;
+
+                font-size: 0.82rem;
+
+                flex: 0 0 auto;
+            }
+
+
+            .calendar-nav a:last-child {
+                display: none;
             }
 
 
             .calendar-hero {
                 padding:
-                    22px
-                    18px;
+                    18px
+                    16px;
+
+                margin-bottom: 14px;
+
+                border-radius: 20px;
+            }
+
+
+            .calendar-hero h1 {
+                margin-bottom: 7px;
+
+                font-size: 1.45rem;
+            }
+
+
+            .calendar-hero p {
+                font-size: 0.86rem;
+                line-height: 1.45;
+            }
+
+
+            .calendar-grid {
+                gap: 14px;
             }
 
 
             .glass-panel {
                 padding:
-                    18px
-                    15px;
+                    16px
+                    13px;
+
+                border-radius: 20px;
+            }
+
+
+            .glass-panel h2 {
+                margin-bottom: 14px;
+
+                font-size: 1.25rem;
+            }
+
+
+            .calendar-form {
+                gap: 11px;
+            }
+
+
+            .calendar-field {
+                gap: 5px;
+                min-width: 0;
+            }
+
+
+            .calendar-field label {
+                font-size: 0.84rem;
+            }
+
+
+            .calendar-field input,
+            .calendar-field textarea,
+            .calendar-field select {
+                min-width: 0;
+                max-width: 100%;
+
+                min-height: 46px;
+
+                padding:
+                    10px
+                    12px;
+
+                border-radius: 12px;
+
+                font-size: 16px;
+            }
+
+
+            .calendar-field input[type="date"],
+            .calendar-field input[type="time"] {
+                width: 100%;
+                min-width: 0;
+
+                height: 46px;
+
+                padding:
+                    7px
+                    9px;
+
+                line-height: 1.2;
+
+                -webkit-appearance: none;
+                appearance: none;
+            }
+
+
+            .calendar-field textarea {
+                min-height: 76px;
             }
 
 
             .date-row {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    minmax(0, 1fr)
+                    minmax(0, 0.82fr);
+
+                gap: 8px;
             }
 
 
-            .calendar-nav {
-                width: 100%;
+            .share-box {
+                padding: 12px;
+
+                border-radius: 14px;
             }
 
 
-            .calendar-nav a {
-                flex: 1;
+            .share-box-title {
+                font-size: 0.95rem;
+            }
+
+
+            .share-box-text {
+                margin-bottom: 9px;
+
+                font-size: 0.78rem;
+                line-height: 1.4;
+            }
+
+
+            .share-users {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+
+                gap: 7px;
+            }
+
+
+            .share-user {
+                min-width: 0;
+
+                gap: 8px;
+
+                padding:
+                    9px
+                    10px;
+
+                border-radius: 11px;
+
+                font-size: 0.86rem;
+            }
+
+
+            .share-user input {
+                width: 20px;
+                height: 20px;
+
+                flex: 0 0 auto;
+            }
+
+
+            .share-user span {
+                min-width: 0;
+
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+
+            .calendar-button {
+                min-height: 44px;
+
+                padding:
+                    9px
+                    13px;
+
+                border-radius: 12px;
+
+                font-size: 0.9rem;
+            }
+
+
+            .privacy-note {
+                margin-top: 11px;
+
+                padding: 10px;
+
+                border-radius: 12px;
+
+                font-size: 0.75rem;
+                line-height: 1.4;
+            }
+
+
+            .event-section + .event-section {
+                margin-top: 20px;
+            }
+
+
+            .event-section-header {
+                margin-bottom: 11px;
+            }
+
+
+            .event-section-header h2 {
+                font-size: 1.15rem;
+            }
+
+
+            .event-card {
+                padding: 15px;
+
+                border-radius: 16px;
             }
 
 
             .event-top {
-                flex-direction: column;
+                gap: 9px;
+
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+
+            .event-title {
+                font-size: 1rem;
+            }
+
+
+            .event-date {
+                padding:
+                    5px
+                    8px;
+
+                font-size: 0.72rem;
+            }
+
+
+            .event-description {
+                margin-top: 9px;
+
+                font-size: 0.87rem;
+            }
+
+
+            .event-meta,
+            .event-shared {
+                font-size: 0.76rem;
             }
 
 
@@ -844,12 +1125,58 @@
                 grid-template-columns:
                     1fr
                     1fr;
+
+                gap: 7px;
+
+                margin-top: 11px;
             }
 
 
             .event-actions form,
             .event-actions button {
                 width: 100%;
+            }
+
+
+            .event-edit {
+                margin-top: 11px;
+            }
+
+
+            .event-edit-form {
+                gap: 10px;
+
+                padding-top: 11px;
+            }
+
+
+            .empty-events {
+                padding: 18px 12px;
+
+                border-radius: 14px;
+
+                font-size: 0.86rem;
+            }
+
+        }
+
+
+        @media (max-width: 380px) {
+
+            .date-row {
+                grid-template-columns: 1fr;
+            }
+
+
+            .share-users {
+                grid-template-columns: 1fr;
+            }
+
+
+            .calendar-nav a {
+                padding:
+                    0
+                    9px;
             }
 
         }
