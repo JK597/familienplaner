@@ -482,6 +482,33 @@
         }
 
 
+
+        .notification-top-button {
+            gap: 7px;
+        }
+
+
+        .notification-bell {
+            line-height: 1;
+            font-size: 1rem;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .notification-top-button {
+                width: 42px;
+                min-width: 42px;
+                padding: 0;
+            }
+
+            .notification-label {
+                display: none;
+            }
+
+        }
+
+
         @media (max-width: 1150px) {
 
             .dashboard-card-grid {
@@ -631,6 +658,19 @@
 
 
                 <a
+                    href="/benachrichtigungen"
+                    class="dashboard-top-button notification-top-button"
+                    title="Benachrichtigungen"
+                    aria-label="Benachrichtigungen"
+                >
+                    <span class="notification-bell">🔔</span>
+                    <span class="notification-label">
+                        Benachrichtigungen
+                    </span>
+                </a>
+
+
+                <a
                     href="/logout"
                     class="dashboard-top-button"
                 >
@@ -705,41 +745,6 @@
                         class="home-card-button"
                     >
                         Kalender öffnen
-                    </a>
-
-                </div>
-
-            </article>
-
-
-
-            <!-- =====================================
-                 BENACHRICHTIGUNGEN
-            ====================================== -->
-
-            <article class="dashboard-home-card">
-
-                <div class="home-card-icon">
-                    🔔
-                </div>
-
-                <h2>
-                    Benachrichtigungen
-                </h2>
-
-                <p>
-                    Aktiviere Push-Nachrichten für
-                    gemeinsame Aufgaben und Termine
-                    direkt auf deinem Handy.
-                </p>
-
-                <div class="home-card-bottom">
-
-                    <a
-                        href="/benachrichtigungen"
-                        class="home-card-button"
-                    >
-                        Benachrichtigungen öffnen
                     </a>
 
                 </div>
