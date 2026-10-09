@@ -2889,6 +2889,194 @@ def dashboard():
             "/erstes-passwort"
         )
 
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+    # ========================================================
+    # KOMPAKTE DASHBOARD-ÜBERSICHT
+    # ========================================================
+
+    # Offene Aufgaben
+    aufgaben_liste = aufgaben_fuer_benutzer(
+        benutzer_id
+    )
+
+    offene_aufgaben = sum(
+        1
+        for aufgabe in aufgaben_liste
+        if not bool(
+            aufgabe["erledigt"]
+        )
+    )
+
+    # Offene Einkaufsartikel
+    einkauf_status = query_einen(
+
+        """
+        SELECT
+            COUNT(*) AS anzahl
+
+        FROM einkaufsliste
+
+        WHERE
+            benutzer_id = %s
+            AND erledigt = FALSE
+        """,
+
+        """
+        SELECT
+            COUNT(*) AS anzahl
+
+        FROM einkaufsliste
+
+        WHERE
+            benutzer_id = ?
+            AND erledigt = 0
+        """,
+
+        (
+            benutzer_id,
+        )
+    )
+
+    offene_einkaeufe = int(
+        einkauf_status["anzahl"] or 0
+    )
+
+    # Nächster Termin
+    alle_termine = termine_fuer_benutzer(
+        benutzer_id
+    )
+
+    naechster_termin = None
+    heute_datum = heute()
+
+    for termin in alle_termine:
+
+        start_datum = datum_lesen(
+            termin["start_datum"]
+        )
+
+        if start_datum >= heute_datum:
+
+            naechster_termin = termin
+            break
+
+    if naechster_termin:
+
+        termin_titel = (
+            naechster_termin["titel"]
+        )
+
+        termin_datum = datum_als_anzeige(
+            naechster_termin[
+                "start_datum"
+            ]
+        )
+
+        termin_zeit = (
+            naechster_termin[
+                "start_zeit"
+            ]
+            or ""
+        )
+
+    else:
+
+        termin_titel = "Kein Termin"
+        termin_datum = "–"
+        termin_zeit = ""
+
+    # Verfügbares Budget
+    einstellungen = monatswechsel_pruefen(
+        benutzer_id
+    )
+
+    standard_budget = float(
+        einstellungen[
+            "standard_budget"
+        ]
+    )
+
+    uebertrag = float(
+        einstellungen[
+            "uebertrag"
+        ]
+    )
+
+    periodenstart = datum_lesen(
+        einstellungen[
+            "periodenstart"
+        ]
+    )
+
+    budget_summe = query_einen(
+
+        """
+        SELECT
+            COALESCE(
+                SUM(betrag),
+                0
+            ) AS summe
+
+        FROM ausgaben
+
+        WHERE
+            benutzer_id = %s
+            AND periodenstart = %s
+        """,
+
+        """
+        SELECT
+            COALESCE(
+                SUM(betrag),
+                0
+            ) AS summe
+
+        FROM ausgaben
+
+        WHERE
+            benutzer_id = ?
+            AND periodenstart = ?
+        """,
+
+        (
+            benutzer_id,
+
+            periodenstart
+            if postgres_verwenden()
+            else periodenstart.isoformat()
+        )
+    )
+
+    ausgegeben = float(
+        budget_summe["summe"] or 0
+    )
+
+    verfuegbar = (
+        standard_budget
+        + uebertrag
+        - ausgegeben
+    )
+
+    verfuegbar_text = (
+        f"{verfuegbar:,.2f}"
+        .replace(
+            ",",
+            "X"
+        )
+        .replace(
+            ".",
+            ","
+        )
+        .replace(
+            "X",
+            "."
+        )
+        + " €"
+    )
+
     return render_template(
         "dashboard.html",
 
@@ -2898,7 +3086,25 @@ def dashboard():
 
         rolle=session[
             "rolle"
-        ]
+        ],
+
+        offene_aufgaben=
+            offene_aufgaben,
+
+        offene_einkaeufe=
+            offene_einkaeufe,
+
+        termin_titel=
+            termin_titel,
+
+        termin_datum=
+            termin_datum,
+
+        termin_zeit=
+            termin_zeit,
+
+        verfuegbar_text=
+            verfuegbar_text
     )
 
 

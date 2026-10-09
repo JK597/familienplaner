@@ -297,6 +297,148 @@
         }
 
 
+
+        .dashboard-overview {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(0, 1fr)
+                );
+
+            gap: 14px;
+
+            margin:
+                -12px
+                0
+                28px;
+        }
+
+
+        .overview-card {
+            min-width: 0;
+
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding:
+                16px
+                17px;
+
+            border-radius: 18px;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.10),
+                    rgba(255, 255, 255, 0.055)
+                );
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            box-shadow:
+                0 12px 28px
+                rgba(0, 0, 0, 0.10);
+
+            backdrop-filter:
+                blur(14px);
+
+            -webkit-backdrop-filter:
+                blur(14px);
+
+            transition:
+                transform 0.16s ease,
+                background 0.16s ease;
+        }
+
+
+        .overview-card:hover {
+            transform:
+                translateY(-2px);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.13),
+                    rgba(255, 255, 255, 0.07)
+                );
+        }
+
+
+        .overview-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 auto;
+
+            border-radius: 13px;
+
+            font-size: 1.2rem;
+
+            background:
+                rgba(231, 219, 178, 0.18);
+        }
+
+
+        .overview-content {
+            min-width: 0;
+        }
+
+
+        .overview-label {
+            display: block;
+
+            margin-bottom: 3px;
+
+            color:
+                rgba(245, 234, 208, 0.64);
+
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+
+        .overview-value {
+            display: block;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            color: #fff7e5;
+
+            font-size: 1.05rem;
+            font-weight: 850;
+        }
+
+
+        .overview-subline {
+            display: block;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            margin-top: 2px;
+
+            color:
+                rgba(245, 234, 208, 0.67);
+
+            font-size: 0.72rem;
+        }
+
+
         .dashboard-card-grid {
             display: grid;
 
@@ -527,90 +669,223 @@
             .dashboard-wrapper {
                 width:
                     min(
-                        100% - 20px,
+                        100% - 14px,
                         1390px
                     );
 
-                padding-top: 12px;
-                padding-bottom: 45px;
+                padding-top: 8px;
+                padding-bottom: 28px;
             }
 
 
             .dashboard-topbar {
-                margin-bottom: 20px;
+                min-height: 50px;
+
+                margin-bottom: 12px;
 
                 padding:
-                    8px
                     4px
-                    18px;
+                    2px
+                    12px;
+            }
+
+
+            .dashboard-brand {
+                gap: 4px;
+
+                font-size: 0.88rem;
+            }
+
+
+            .dashboard-brand-user {
+                display: none;
             }
 
 
             .dashboard-top-actions {
-                gap: 7px;
+                gap: 6px;
             }
 
 
             .dashboard-top-button {
-                min-height: 39px;
+                min-height: 36px;
 
                 padding:
                     0
-                    12px;
+                    10px;
 
-                font-size: 0.85rem;
+                border-radius: 10px;
+
+                font-size: 0.78rem;
+            }
+
+
+            .notification-top-button {
+                width: 36px;
+                min-width: 36px;
+
+                padding: 0;
             }
 
 
             .dashboard-welcome {
-                min-height: 205px;
+                min-height: 138px;
 
                 padding:
-                    28px
-                    78px
-                    28px
-                    24px;
+                    18px
+                    68px
+                    18px
+                    18px;
 
-                margin-bottom: 22px;
+                margin-bottom: 14px;
 
-                border-radius: 22px;
+                border-radius: 18px;
+            }
+
+
+            .welcome-small {
+                margin-bottom: 7px;
+
+                font-size: 0.76rem;
             }
 
 
             .welcome-hand {
-                right: 17px;
-                top: 28px;
+                right: 14px;
+                top: 20px;
 
                 transform:
                     rotate(-6deg);
 
-                font-size: 3.7rem;
+                font-size: 3rem;
             }
 
 
             .dashboard-welcome h1 {
-                font-size: 1.9rem;
+                margin-bottom: 7px;
+
+                font-size: 1.45rem;
             }
 
 
             .dashboard-welcome p {
-                font-size: 0.92rem;
+                display: none;
+            }
+
+
+            .dashboard-overview {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+
+                gap: 8px;
+
+                margin:
+                    0
+                    0
+                    14px;
+            }
+
+
+            .overview-card {
+                gap: 8px;
+
+                min-height: 76px;
+
+                padding:
+                    10px;
+
+                border-radius: 14px;
+            }
+
+
+            .overview-icon {
+                width: 34px;
+                height: 34px;
+
+                border-radius: 10px;
+
+                font-size: 1rem;
+            }
+
+
+            .overview-label {
+                margin-bottom: 1px;
+
+                font-size: 0.66rem;
+            }
+
+
+            .overview-value {
+                font-size: 0.9rem;
+            }
+
+
+            .overview-subline {
+                margin-top: 1px;
+
+                font-size: 0.62rem;
             }
 
 
             .dashboard-card-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
 
-                gap: 20px;
+                gap: 9px;
             }
 
 
             .dashboard-home-card {
-                min-height: 280px;
+                min-height: 164px;
 
-                padding: 23px;
+                padding: 13px;
 
-                border-radius: 21px;
+                border-radius: 16px;
+            }
+
+
+            .home-card-icon {
+                width: 38px;
+                height: 38px;
+
+                margin-bottom: 10px;
+
+                border-radius: 11px;
+
+                font-size: 1.05rem;
+            }
+
+
+            .dashboard-home-card h2 {
+                margin-bottom: 8px;
+
+                font-size: 1rem;
+            }
+
+
+            .dashboard-home-card p {
+                display: none;
+            }
+
+
+            .home-card-button {
+                min-height: 38px;
+
+                padding:
+                    7px
+                    8px;
+
+                border-radius: 10px;
+
+                font-size: 0.72rem;
+
+                line-height: 1.15;
             }
 
         }
@@ -710,6 +985,132 @@
             <div class="welcome-hand">
                 👋
             </div>
+
+
+        </section>
+
+
+
+
+        <section
+            class="dashboard-overview"
+            aria-label="Übersicht"
+        >
+
+
+            <a
+                href="/kalender"
+                class="overview-card"
+            >
+
+                <div class="overview-icon">
+                    📅
+                </div>
+
+                <div class="overview-content">
+
+                    <span class="overview-label">
+                        Nächster Termin
+                    </span>
+
+                    <strong class="overview-value">
+                        {{ termin_titel }}
+                    </strong>
+
+                    <span class="overview-subline">
+                        {{ termin_datum }}
+                        {% if termin_zeit %}
+                            · {{ termin_zeit }}
+                        {% endif %}
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="/aufgaben"
+                class="overview-card"
+            >
+
+                <div class="overview-icon">
+                    ✅
+                </div>
+
+                <div class="overview-content">
+
+                    <span class="overview-label">
+                        Offene Aufgaben
+                    </span>
+
+                    <strong class="overview-value">
+                        {{ offene_aufgaben }}
+                    </strong>
+
+                    <span class="overview-subline">
+                        noch zu erledigen
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="/einkaufsliste"
+                class="overview-card"
+            >
+
+                <div class="overview-icon">
+                    🛒
+                </div>
+
+                <div class="overview-content">
+
+                    <span class="overview-label">
+                        Einkauf
+                    </span>
+
+                    <strong class="overview-value">
+                        {{ offene_einkaeufe }}
+                    </strong>
+
+                    <span class="overview-subline">
+                        offene Artikel
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="/finanzen"
+                class="overview-card"
+            >
+
+                <div class="overview-icon">
+                    💶
+                </div>
+
+                <div class="overview-content">
+
+                    <span class="overview-label">
+                        Verfügbar
+                    </span>
+
+                    <strong class="overview-value">
+                        {{ verfuegbar_text }}
+                    </strong>
+
+                    <span class="overview-subline">
+                        aktuelles Budget
+                    </span>
+
+                </div>
+
+            </a>
 
 
         </section>
