@@ -2055,6 +2055,368 @@
 
         }
 
+    
+        /* =========================================================
+           MONATSANSICHT
+        ========================================================= */
+
+        .month-panel {
+            margin-bottom: 16px;
+
+            padding:
+                18px
+                18px
+                16px;
+
+            border-radius: 22px;
+
+            background:
+                radial-gradient(
+                    circle at 90% 6%,
+                    rgba(238, 220, 176, 0.08),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    148deg,
+                    rgba(44, 76, 58, 0.96),
+                    rgba(83, 99, 72, 0.90)
+                );
+
+            border:
+                1px solid
+                rgba(238, 221, 179, 0.14);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.07),
+                0 18px 40px rgba(0,0,0,0.12);
+        }
+
+        .month-head {
+            display: grid;
+
+            grid-template-columns:
+                42px
+                1fr
+                42px;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 14px;
+        }
+
+        .month-title-wrap {
+            text-align: center;
+        }
+
+        .month-kicker {
+            display: block;
+
+            margin-bottom: 2px;
+
+            color:
+                rgba(244, 226, 188, 0.56);
+
+            font-size: 0.58rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+        }
+
+        .month-title-wrap h2 {
+            margin: 0;
+
+            color: #fff5df;
+
+            font-size: 1.15rem;
+        }
+
+        .month-nav-button {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                rgba(240, 220, 178, 0.13);
+
+            color: #f1dfb7;
+
+            background:
+                rgba(255,255,255,0.055);
+
+            font-size: 1.55rem;
+            line-height: 1;
+
+            cursor: pointer;
+        }
+
+        .month-weekdays,
+        .month-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    7,
+                    minmax(0, 1fr)
+                );
+
+            gap: 6px;
+        }
+
+        .month-weekdays {
+            margin-bottom: 6px;
+        }
+
+        .month-weekdays span {
+            text-align: center;
+
+            color:
+                rgba(244, 232, 203, 0.52);
+
+            font-size: 0.62rem;
+            font-weight: 850;
+        }
+
+        .month-day {
+            position: relative;
+
+            min-height: 58px;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+
+            padding:
+                8px
+                8px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                rgba(240, 220, 178, 0.075);
+
+            color:
+                rgba(255, 247, 226, 0.84);
+
+            background:
+                rgba(255,255,255,0.035);
+
+            font: inherit;
+            font-size: 0.76rem;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        .month-day:hover {
+            background:
+                rgba(255,255,255,0.065);
+        }
+
+        .month-day.other {
+            opacity: 0.30;
+        }
+
+        .month-day.today {
+            border-color:
+                rgba(238, 211, 153, 0.46);
+
+            background:
+                rgba(235, 205, 143, 0.08);
+        }
+
+        .month-day.selected {
+            border-color:
+                rgba(239, 216, 166, 0.56);
+
+            box-shadow:
+                0 0 0 2px
+                rgba(239, 216, 166, 0.08);
+        }
+
+        .month-day.has-event::after {
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            bottom: 7px;
+
+            width: 5px;
+            height: 5px;
+
+            transform:
+                translateX(-50%);
+
+            border-radius: 50%;
+
+            background:
+                #e8cf96;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(232, 207, 150, 0.08);
+        }
+
+        .month-day-events {
+            margin-top: 12px;
+
+            display: grid;
+            gap: 7px;
+        }
+
+        .month-day-empty {
+            padding:
+                11px
+                12px;
+
+            border-radius: 11px;
+
+            color:
+                rgba(248, 237, 210, 0.58);
+
+            background:
+                rgba(255,255,255,0.035);
+
+            font-size: 0.74rem;
+            text-align: center;
+        }
+
+        .month-mini-event {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            padding:
+                10px
+                11px;
+
+            border-radius: 11px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid
+                rgba(240, 220, 178, 0.075);
+        }
+
+        .month-mini-event strong {
+            min-width: 0;
+
+            overflow: hidden;
+
+            color: #fff5df;
+
+            font-size: 0.78rem;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .month-mini-event span {
+            flex: 0 0 auto;
+
+            color:
+                rgba(246, 233, 199, 0.58);
+
+            font-size: 0.66rem;
+        }
+
+        @media (max-width: 620px) {
+
+            .month-panel {
+                margin-bottom: 10px;
+
+                padding:
+                    12px
+                    10px
+                    10px;
+
+                border-radius: 17px;
+            }
+
+            .month-head {
+                grid-template-columns:
+                    36px
+                    1fr
+                    36px;
+
+                margin-bottom: 10px;
+            }
+
+            .month-nav-button {
+                width: 36px;
+                height: 36px;
+
+                border-radius: 10px;
+
+                font-size: 1.35rem;
+            }
+
+            .month-title-wrap h2 {
+                font-size: 0.97rem;
+            }
+
+            .month-kicker {
+                font-size: 0.49rem;
+            }
+
+            .month-weekdays,
+            .month-grid {
+                gap: 4px;
+            }
+
+            .month-day {
+                min-height: 44px;
+
+                padding:
+                    6px
+                    6px;
+
+                border-radius: 9px;
+
+                font-size: 0.67rem;
+            }
+
+            .month-day.has-event::after {
+                bottom: 5px;
+
+                width: 4px;
+                height: 4px;
+            }
+
+            .month-day-events {
+                margin-top: 8px;
+            }
+
+            .month-mini-event {
+                padding:
+                    8px
+                    9px;
+
+                border-radius: 10px;
+            }
+
+            .month-mini-event strong {
+                font-size: 0.71rem;
+            }
+
+            .month-mini-event span {
+                font-size: 0.59rem;
+            }
+
+        }
+
     </style>
 
 </head>
@@ -2111,6 +2473,77 @@
                 Gemeinsame Termine erscheinen automatisch
                 bei allen Beteiligten.
             </p>
+
+        </section>
+
+
+
+        <section class="month-panel">
+
+            <div class="month-head">
+
+                <button
+                    type="button"
+                    class="month-nav-button"
+                    id="monthPrev"
+                    aria-label="Vorheriger Monat"
+                >
+                    ‹
+                </button>
+
+                <div class="month-title-wrap">
+
+                    <span class="month-kicker">
+                        MONATSÜBERSICHT
+                    </span>
+
+                    <h2 id="monthTitle">
+                        Monat
+                    </h2>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="month-nav-button"
+                    id="monthNext"
+                    aria-label="Nächster Monat"
+                >
+                    ›
+                </button>
+
+            </div>
+
+
+            <div class="month-weekdays">
+
+                <span>Mo</span>
+                <span>Di</span>
+                <span>Mi</span>
+                <span>Do</span>
+                <span>Fr</span>
+                <span>Sa</span>
+                <span>So</span>
+
+            </div>
+
+
+            <div
+                class="month-grid"
+                id="monthGrid"
+            ></div>
+
+
+            <div
+                class="month-day-events"
+                id="monthDayEvents"
+            >
+
+                <div class="month-day-empty">
+                    Tippe auf einen Tag mit Punkt, um die Termine zu sehen.
+                </div>
+
+            </div>
 
         </section>
 
@@ -2912,6 +3345,480 @@
 
 
     <script>
+
+
+        const kalenderTermine = [
+
+            {% for termin in kommende_termine %}
+
+                {
+                    datum: "{{ termin['start_datum'] }}",
+                    titel: {{ termin["titel"]|tojson }},
+                    zeit: {{ (termin["start_zeit"] or "")|tojson }}
+                },
+
+            {% endfor %}
+
+            {% for termin in vergangene_termine %}
+
+                {
+                    datum: "{{ termin['start_datum'] }}",
+                    titel: {{ termin["titel"]|tojson }},
+                    zeit: {{ (termin["start_zeit"] or "")|tojson }}
+                },
+
+            {% endfor %}
+
+        ];
+
+
+        const monthGrid =
+            document.getElementById(
+                "monthGrid"
+            );
+
+        const monthTitle =
+            document.getElementById(
+                "monthTitle"
+            );
+
+        const monthDayEvents =
+            document.getElementById(
+                "monthDayEvents"
+            );
+
+        const monthPrev =
+            document.getElementById(
+                "monthPrev"
+            );
+
+        const monthNext =
+            document.getElementById(
+                "monthNext"
+            );
+
+
+        const monthNames = [
+            "Januar",
+            "Februar",
+            "März",
+            "April",
+            "Mai",
+            "Juni",
+            "Juli",
+            "August",
+            "September",
+            "Oktober",
+            "November",
+            "Dezember"
+        ];
+
+
+        let sichtbarerMonat =
+            new Date();
+
+
+        function isoDate(
+            year,
+            month,
+            day
+        ) {
+
+            const m =
+                String(
+                    month + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+            const d =
+                String(
+                    day
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+            return (
+                year
+                + "-"
+                + m
+                + "-"
+                + d
+            );
+        }
+
+
+        function termineAmTag(
+            iso
+        ) {
+
+            return kalenderTermine.filter(
+                function(
+                    termin
+                ) {
+
+                    return (
+                        termin.datum
+                        === iso
+                    );
+
+                }
+            );
+        }
+
+
+        function tagesTermineAnzeigen(
+            iso,
+            button
+        ) {
+
+            document
+                .querySelectorAll(
+                    ".month-day.selected"
+                )
+                .forEach(
+                    function(
+                        element
+                    ) {
+
+                        element.classList.remove(
+                            "selected"
+                        );
+
+                    }
+                );
+
+            if (button) {
+
+                button.classList.add(
+                    "selected"
+                );
+
+            }
+
+            const termine =
+                termineAmTag(
+                    iso
+                );
+
+            monthDayEvents.innerHTML =
+                "";
+
+            if (
+                termine.length
+                === 0
+            ) {
+
+                monthDayEvents.innerHTML =
+                    '<div class="month-day-empty">'
+                    + 'Keine Termine an diesem Tag.'
+                    + '</div>';
+
+                return;
+            }
+
+            termine.forEach(
+                function(
+                    termin
+                ) {
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+                    row.className =
+                        "month-mini-event";
+
+                    const title =
+                        document.createElement(
+                            "strong"
+                        );
+
+                    title.textContent =
+                        termin.titel;
+
+                    const time =
+                        document.createElement(
+                            "span"
+                        );
+
+                    time.textContent =
+                        termin.zeit
+                        ? termin.zeit + " Uhr"
+                        : "Ganztägig";
+
+                    row.appendChild(
+                        title
+                    );
+
+                    row.appendChild(
+                        time
+                    );
+
+                    monthDayEvents.appendChild(
+                        row
+                    );
+
+                }
+            );
+        }
+
+
+        function monatRendern() {
+
+            const year =
+                sichtbarerMonat.getFullYear();
+
+            const month =
+                sichtbarerMonat.getMonth();
+
+            monthTitle.textContent =
+                monthNames[month]
+                + " "
+                + year;
+
+            monthGrid.innerHTML =
+                "";
+
+            const ersterTag =
+                new Date(
+                    year,
+                    month,
+                    1
+                );
+
+            let startOffset =
+                ersterTag.getDay()
+                - 1;
+
+            if (
+                startOffset
+                < 0
+            ) {
+
+                startOffset = 6;
+
+            }
+
+            const tageImMonat =
+                new Date(
+                    year,
+                    month + 1,
+                    0
+                ).getDate();
+
+            const tageVorher =
+                new Date(
+                    year,
+                    month,
+                    0
+                ).getDate();
+
+            const today =
+                new Date();
+
+            for (
+                let index = 0;
+                index < 42;
+                index += 1
+            ) {
+
+                let day;
+                let cellMonth =
+                    month;
+                let cellYear =
+                    year;
+                let other =
+                    false;
+
+                if (
+                    index
+                    < startOffset
+                ) {
+
+                    day =
+                        tageVorher
+                        - startOffset
+                        + index
+                        + 1;
+
+                    cellMonth =
+                        month - 1;
+
+                    other = true;
+
+                }
+                else if (
+                    index
+                    >= startOffset
+                    + tageImMonat
+                ) {
+
+                    day =
+                        index
+                        - (
+                            startOffset
+                            + tageImMonat
+                        )
+                        + 1;
+
+                    cellMonth =
+                        month + 1;
+
+                    other = true;
+
+                }
+                else {
+
+                    day =
+                        index
+                        - startOffset
+                        + 1;
+
+                }
+
+                if (
+                    cellMonth
+                    < 0
+                ) {
+
+                    cellMonth = 11;
+                    cellYear -= 1;
+
+                }
+
+                if (
+                    cellMonth
+                    > 11
+                ) {
+
+                    cellMonth = 0;
+                    cellYear += 1;
+
+                }
+
+                const iso =
+                    isoDate(
+                        cellYear,
+                        cellMonth,
+                        day
+                    );
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type =
+                    "button";
+
+                button.className =
+                    "month-day";
+
+                button.textContent =
+                    day;
+
+                if (other) {
+
+                    button.classList.add(
+                        "other"
+                    );
+
+                }
+
+                if (
+                    cellYear
+                    === today.getFullYear()
+                    &&
+                    cellMonth
+                    === today.getMonth()
+                    &&
+                    day
+                    === today.getDate()
+                ) {
+
+                    button.classList.add(
+                        "today"
+                    );
+
+                }
+
+                const termine =
+                    termineAmTag(
+                        iso
+                    );
+
+                if (
+                    termine.length
+                    > 0
+                ) {
+
+                    button.classList.add(
+                        "has-event"
+                    );
+
+                }
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        tagesTermineAnzeigen(
+                            iso,
+                            button
+                        );
+
+                    }
+                );
+
+                monthGrid.appendChild(
+                    button
+                );
+
+            }
+
+        }
+
+
+        monthPrev.addEventListener(
+            "click",
+            function() {
+
+                sichtbarerMonat =
+                    new Date(
+                        sichtbarerMonat.getFullYear(),
+                        sichtbarerMonat.getMonth() - 1,
+                        1
+                    );
+
+                monatRendern();
+
+            }
+        );
+
+
+        monthNext.addEventListener(
+            "click",
+            function() {
+
+                sichtbarerMonat =
+                    new Date(
+                        sichtbarerMonat.getFullYear(),
+                        sichtbarerMonat.getMonth() + 1,
+                        1
+                    );
+
+                monatRendern();
+
+            }
+        );
+
+
+        monatRendern();
+
 
         if ("serviceWorker" in navigator) {
 
