@@ -2964,6 +2964,917 @@
 
         }
 
+    
+        /* =========================================================
+           CINEMATIC PREMIUM HOME
+        ========================================================= */
+
+        .cinema-home {
+            display: grid;
+            gap: 12px;
+        }
+
+        .cinema-hero {
+            position: relative;
+            isolation: isolate;
+
+            overflow: hidden;
+
+            min-height: 500px;
+
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.1fr)
+                minmax(320px, .9fr);
+
+            align-items: center;
+
+            gap: 36px;
+
+            padding:
+                54px
+                52px;
+
+            border-radius: 36px;
+
+            border:
+                1px solid
+                rgba(244, 224, 180, 0.25);
+
+            background:
+                linear-gradient(
+                    128deg,
+                    rgba(18, 48, 35, .99) 0%,
+                    rgba(31, 70, 51, .99) 36%,
+                    rgba(66, 92, 67, .98) 66%,
+                    rgba(147, 131, 90, .93) 100%
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.15),
+                inset 0 -1px 0 rgba(255,255,255,.025),
+                0 40px 100px rgba(0,0,0,.30);
+        }
+
+        .cinema-hero::before {
+            content: "";
+
+            position: absolute;
+            inset: 12px;
+
+            z-index: -1;
+
+            border-radius: 26px;
+
+            border:
+                1px solid
+                rgba(255,247,226,.075);
+        }
+
+        .cinema-hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 700px;
+            height: 700px;
+
+            right: -250px;
+            top: -330px;
+
+            z-index: -3;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(250,229,181,.28) 0%,
+                    rgba(250,229,181,.09) 30%,
+                    rgba(250,229,181,.02) 50%,
+                    transparent 70%
+                );
+
+            filter: blur(3px);
+
+            animation:
+                cinemaGlow
+                7s
+                ease-in-out
+                infinite alternate;
+        }
+
+        @keyframes cinemaGlow {
+            from {
+                transform: translate3d(0,0,0) scale(1);
+            }
+
+            to {
+                transform: translate3d(-38px,30px,0) scale(1.08);
+            }
+        }
+
+        .cinema-grid {
+            position: absolute;
+            inset: 0;
+
+            z-index: -4;
+
+            opacity: .23;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                58px
+                58px;
+
+            mask-image:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    black 20%,
+                    black 80%,
+                    transparent
+                );
+
+            -webkit-mask-image:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    black 20%,
+                    black 80%,
+                    transparent
+                );
+        }
+
+        .cinema-sheen {
+            position: absolute;
+
+            width: 440px;
+            height: 1100px;
+
+            left: 49%;
+            top: -420px;
+
+            z-index: -2;
+
+            transform:
+                rotate(26deg);
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 239, 202, .08),
+                    transparent
+                );
+
+            filter: blur(10px);
+
+            animation:
+                cinematicSheen
+                8s
+                ease-in-out
+                infinite alternate;
+        }
+
+        @keyframes cinematicSheen {
+            from {
+                transform:
+                    translateX(-80px)
+                    rotate(26deg);
+            }
+
+            to {
+                transform:
+                    translateX(90px)
+                    rotate(26deg);
+            }
+        }
+
+        .cinema-copy {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cinema-label {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 18px;
+
+            padding:
+                7px
+                11px;
+
+            border-radius: 999px;
+
+            color:
+                rgba(255,244,218,.76);
+
+            background:
+                rgba(255,255,255,.055);
+
+            border:
+                1px solid
+                rgba(244,224,180,.13);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.05);
+
+            font-size: .60rem;
+            font-weight: 900;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .cinema-label::before {
+            content: "";
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #edd59d;
+
+            box-shadow:
+                0 0 0 5px rgba(237,213,157,.08),
+                0 0 24px rgba(237,213,157,.50);
+        }
+
+        .cinema-title {
+            max-width: 730px;
+
+            margin:
+                0
+                0
+                14px;
+
+            color: #fffaf0;
+
+            font-size:
+                clamp(
+                    3rem,
+                    6vw,
+                    5.8rem
+                );
+
+            line-height: .90;
+            letter-spacing: -.065em;
+        }
+
+        .cinema-title .gold {
+            display: inline-block;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff0c4 0%,
+                    #d3b36e 45%,
+                    #f7e4b0 80%,
+                    #bf9c5f 100%
+                );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+
+            filter:
+                drop-shadow(
+                    0 12px 22px rgba(0,0,0,.13)
+                );
+        }
+
+        .cinema-sub {
+            max-width: 610px;
+
+            margin:
+                0
+                0
+                26px;
+
+            color:
+                rgba(255,247,225,.70);
+
+            font-size: 1.02rem;
+            line-height: 1.62;
+        }
+
+        .cinema-actions {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 9px;
+        }
+
+        .cinema-primary,
+        .cinema-secondary {
+            min-height: 50px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding:
+                10px
+                18px;
+
+            border-radius: 14px;
+
+            text-decoration: none;
+
+            font-size: .78rem;
+            font-weight: 900;
+
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease,
+                background .18s ease;
+        }
+
+        .cinema-primary {
+            color: #163528;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f7e4b4,
+                    #c7a565
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.48),
+                0 18px 36px rgba(0,0,0,.20);
+        }
+
+        .cinema-secondary {
+            color: #f9e9c8;
+
+            background:
+                rgba(255,255,255,.055);
+
+            border:
+                1px solid
+                rgba(245,224,180,.13);
+
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .cinema-primary:hover,
+        .cinema-secondary:hover {
+            transform: translateY(-3px);
+        }
+
+        .cinema-profile {
+            position: absolute;
+
+            left: 52px;
+            bottom: 30px;
+
+            display: inline-flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding:
+                8px
+                10px;
+
+            border-radius: 14px;
+
+            color: inherit;
+            text-decoration: none;
+
+            background:
+                rgba(11, 35, 25, .38);
+
+            border:
+                1px solid
+                rgba(244,224,180,.11);
+
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .cinema-avatar {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 11px;
+
+            color: #173629;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #f4e0b0,
+                    #c3a265
+                );
+
+            font-weight: 900;
+        }
+
+        .cinema-profile-copy {
+            display: grid;
+            gap: 1px;
+        }
+
+        .cinema-profile-copy strong {
+            color: #fff3d7;
+            font-size: .70rem;
+        }
+
+        .cinema-profile-copy span {
+            color: rgba(247,234,202,.47);
+            font-size: .54rem;
+        }
+
+        .cinema-visual {
+            position: relative;
+
+            min-height: 360px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cinema-core-wrap {
+            position: relative;
+
+            width: 320px;
+            height: 320px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cinema-ring {
+            position: absolute;
+
+            inset: 0;
+
+            border-radius: 50%;
+
+            border:
+                1px solid
+                rgba(247,225,178,.18);
+
+            box-shadow:
+                inset 0 0 70px rgba(239,215,164,.04);
+
+            animation:
+                spinSlow
+                18s
+                linear
+                infinite;
+        }
+
+        .cinema-ring::before {
+            content: "";
+
+            position: absolute;
+
+            width: 12px;
+            height: 12px;
+
+            left: 50%;
+            top: -6px;
+
+            transform:
+                translateX(-50%);
+
+            border-radius: 50%;
+
+            background: #ecd294;
+
+            box-shadow:
+                0 0 30px rgba(236,210,148,.72);
+        }
+
+        .cinema-ring.two {
+            inset: 38px;
+
+            animation-duration: 28s;
+            animation-direction: reverse;
+        }
+
+        .cinema-ring.three {
+            inset: 82px;
+
+            animation-duration: 34s;
+        }
+
+        .cinema-center {
+            position: relative;
+            z-index: 3;
+
+            width: 118px;
+            height: 118px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 34px;
+
+            color: #173629;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #f7e6b8,
+                    #bf9e60
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.52),
+                0 26px 60px rgba(0,0,0,.25);
+
+            font-size: 2.4rem;
+        }
+
+        .cinema-stat {
+            position: absolute;
+
+            min-width: 132px;
+
+            padding:
+                10px
+                11px;
+
+            border-radius: 15px;
+
+            border:
+                1px solid
+                rgba(244,223,178,.12);
+
+            background:
+                rgba(13,41,30,.74);
+
+            box-shadow:
+                0 16px 34px rgba(0,0,0,.16),
+                inset 0 1px 0 rgba(255,255,255,.04);
+
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .cinema-stat span {
+            display: block;
+
+            margin-bottom: 2px;
+
+            color:
+                rgba(248,233,201,.48);
+
+            font-size: .52rem;
+            font-weight: 900;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .cinema-stat strong {
+            color: #fff5dd;
+            font-size: .84rem;
+        }
+
+        .cinema-stat.one {
+            left: -18px;
+            top: 52px;
+        }
+
+        .cinema-stat.two {
+            right: -14px;
+            top: 105px;
+        }
+
+        .cinema-stat.three {
+            left: 66px;
+            bottom: 8px;
+        }
+
+        .cinema-overview {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0,1fr));
+
+            gap: 9px;
+        }
+
+        .cinema-card {
+            position: relative;
+
+            overflow: hidden;
+
+            min-height: 124px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            padding: 16px;
+
+            border-radius: 19px;
+
+            color: inherit;
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.065),
+                    rgba(255,255,255,.025)
+                );
+
+            border:
+                1px solid
+                rgba(239,220,177,.10);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.045);
+
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+
+            transition:
+                transform .18s ease,
+                border-color .18s ease,
+                background .18s ease;
+        }
+
+        .cinema-card:hover {
+            transform: translateY(-4px);
+
+            border-color:
+                rgba(239,220,177,.20);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.082),
+                    rgba(255,255,255,.032)
+                );
+        }
+
+        .cinema-card-icon {
+            width: 44px;
+            height: 44px;
+
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background:
+                rgba(239,216,166,.10);
+
+            border:
+                1px solid
+                rgba(239,216,166,.10);
+
+            font-size: 1.05rem;
+        }
+
+        .cinema-card-copy {
+            min-width: 0;
+
+            display: grid;
+            gap: 3px;
+        }
+
+        .cinema-card-copy span {
+            color:
+                rgba(246,233,201,.47);
+
+            font-size: .52rem;
+            font-weight: 900;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+        }
+
+        .cinema-card-copy strong {
+            overflow: hidden;
+
+            color: #fff5df;
+
+            font-size: .82rem;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cinema-card-copy small {
+            overflow: hidden;
+
+            color:
+                rgba(246,233,201,.42);
+
+            font-size: .57rem;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 980px) {
+
+            .cinema-hero {
+                grid-template-columns: 1fr;
+
+                min-height: 0;
+
+                padding:
+                    38px
+                    34px
+                    84px;
+            }
+
+            .cinema-visual {
+                display: none;
+            }
+
+            .cinema-profile {
+                left: 34px;
+                bottom: 24px;
+            }
+
+            .cinema-overview {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .cinema-home {
+                gap: 8px;
+            }
+
+            .cinema-hero {
+                min-height: 330px;
+
+                padding:
+                    24px
+                    17px
+                    78px;
+
+                border-radius: 22px;
+            }
+
+            .cinema-hero::before {
+                inset: 7px;
+
+                border-radius: 15px;
+            }
+
+            .cinema-label {
+                margin-bottom: 12px;
+
+                padding:
+                    5px
+                    8px;
+
+                font-size: .48rem;
+            }
+
+            .cinema-title {
+                max-width: 345px;
+
+                margin-bottom: 10px;
+
+                font-size:
+                    clamp(
+                        2rem,
+                        11vw,
+                        3.0rem
+                    );
+
+                line-height: .93;
+            }
+
+            .cinema-sub {
+                max-width: 330px;
+
+                margin-bottom: 16px;
+
+                font-size: .70rem;
+                line-height: 1.46;
+            }
+
+            .cinema-primary,
+            .cinema-secondary {
+                min-height: 39px;
+
+                padding:
+                    7px
+                    10px;
+
+                border-radius: 10px;
+
+                font-size: .62rem;
+            }
+
+            .cinema-profile {
+                left: 17px;
+                bottom: 14px;
+
+                padding:
+                    7px
+                    8px;
+
+                border-radius: 12px;
+            }
+
+            .cinema-avatar {
+                width: 30px;
+                height: 30px;
+
+                border-radius: 9px;
+            }
+
+            .cinema-profile-copy strong {
+                font-size: .64rem;
+            }
+
+            .cinema-profile-copy span {
+                font-size: .50rem;
+            }
+
+            .cinema-overview {
+                gap: 6px;
+            }
+
+            .cinema-card {
+                min-height: 76px;
+
+                gap: 8px;
+
+                padding: 9px;
+
+                border-radius: 12px;
+            }
+
+            .cinema-card-icon {
+                width: 32px;
+                height: 32px;
+
+                border-radius: 9px;
+
+                font-size: .82rem;
+            }
+
+            .cinema-card-copy span {
+                font-size: .43rem;
+            }
+
+            .cinema-card-copy strong {
+                font-size: .66rem;
+            }
+
+            .cinema-card-copy small {
+                font-size: .49rem;
+            }
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .cinema-hero::after,
+            .cinema-sheen,
+            .cinema-ring {
+                animation: none !important;
+            }
+
+        }
+
     </style>
 
 </head>
@@ -3077,47 +3988,45 @@
             data-panel="home"
         >
 
-            <div class="premium-home-wrap">
+            <div class="cinema-home">
+
+                <section class="cinema-hero">
+
+                    <div class="cinema-grid"></div>
+                    <div class="cinema-sheen"></div>
 
 
-                <section class="premium-home-hero">
+                    <div class="cinema-copy">
 
-                    <div class="premium-home-copy">
-
-                        <div class="premium-badge">
-
-                            <span class="premium-badge-dot"></span>
-
-                            FAMILIENPLANER PREMIUM
-
+                        <div class="cinema-label">
+                            Familienplaner · Premium
                         </div>
 
 
-                        <h1 class="premium-home-title">
+                        <h1 class="cinema-title">
 
-                            Alles, was eure Familie bewegt.
-
-                            <span>
-                                An einem Ort.
+                            Willkommen
+                            <span class="gold">
+                                {{ benutzer }}
                             </span>
 
                         </h1>
 
 
-                        <p class="premium-home-subtitle">
+                        <p class="cinema-sub">
 
-                            Willkommen zurück, {{ benutzer }}.
-                            Termine, Aufgaben, Einkäufe und Finanzen
-                            bleiben übersichtlich, ruhig und jederzeit griffbereit.
+                            Euer Familienalltag – organisiert wie eine echte Premium-App.
+                            Termine, Aufgaben, Einkäufe und Finanzen bleiben klar,
+                            hochwertig und sofort griffbereit.
 
                         </p>
 
 
-                        <div class="premium-home-actions">
+                        <div class="cinema-actions">
 
                             <button
                                 type="button"
-                                class="premium-main-action js-open-tab"
+                                class="cinema-primary js-open-tab"
                                 data-tab-target="planer"
                             >
                                 Planer öffnen
@@ -3127,9 +4036,9 @@
 
                             <a
                                 href="/pinnwand"
-                                class="premium-ghost-action"
+                                class="cinema-secondary"
                             >
-                                Familien-Pinnwand
+                                Familie öffnen
                             </a>
 
                         </div>
@@ -3137,23 +4046,47 @@
                     </div>
 
 
+                    <a
+                        href="/benutzername"
+                        class="cinema-profile"
+                    >
+
+                        <div class="cinema-avatar">
+                            {{ benutzer[0]|upper }}
+                        </div>
+
+                        <div class="cinema-profile-copy">
+
+                            <strong>
+                                Mein Profil
+                            </strong>
+
+                            <span>
+                                {{ benutzer }} · bearbeiten
+                            </span>
+
+                        </div>
+
+                    </a>
+
+
                     <div
-                        class="premium-home-right"
+                        class="cinema-visual"
                         aria-hidden="true"
                     >
 
-                        <div class="premium-orbital">
+                        <div class="cinema-core-wrap">
 
-                            <div class="premium-orbital-ring"></div>
+                            <div class="cinema-ring"></div>
+                            <div class="cinema-ring two"></div>
+                            <div class="cinema-ring three"></div>
 
-                            <div class="premium-orbital-ring second"></div>
-
-                            <div class="premium-orbital-core">
+                            <div class="cinema-center">
                                 ⌂
                             </div>
 
 
-                            <div class="premium-stat-float one">
+                            <div class="cinema-stat one">
 
                                 <span>
                                     Aufgaben
@@ -3166,7 +4099,7 @@
                             </div>
 
 
-                            <div class="premium-stat-float two">
+                            <div class="cinema-stat two">
 
                                 <span>
                                     Einkauf
@@ -3179,7 +4112,7 @@
                             </div>
 
 
-                            <div class="premium-stat-float three">
+                            <div class="cinema-stat three">
 
                                 <span>
                                     Verfügbar
@@ -3199,19 +4132,18 @@
 
 
 
-                <section class="premium-home-overview">
-
+                <section class="cinema-overview">
 
                     <a
                         href="/kalender"
-                        class="premium-overview-card"
+                        class="cinema-card"
                     >
 
-                        <div class="premium-overview-icon">
+                        <div class="cinema-card-icon">
                             📅
                         </div>
 
-                        <div class="premium-overview-copy">
+                        <div class="cinema-card-copy">
 
                             <span>
                                 Nächster Termin
@@ -3233,17 +4165,16 @@
                     </a>
 
 
-
                     <a
                         href="/aufgaben"
-                        class="premium-overview-card"
+                        class="cinema-card"
                     >
 
-                        <div class="premium-overview-icon">
+                        <div class="cinema-card-icon">
                             ✅
                         </div>
 
-                        <div class="premium-overview-copy">
+                        <div class="cinema-card-copy">
 
                             <span>
                                 Aufgaben
@@ -3262,17 +4193,16 @@
                     </a>
 
 
-
                     <a
                         href="/einkaufsliste"
-                        class="premium-overview-card"
+                        class="cinema-card"
                     >
 
-                        <div class="premium-overview-icon">
+                        <div class="cinema-card-icon">
                             🛒
                         </div>
 
-                        <div class="premium-overview-copy">
+                        <div class="cinema-card-copy">
 
                             <span>
                                 Einkauf
@@ -3291,17 +4221,16 @@
                     </a>
 
 
-
                     <a
                         href="/finanzen"
-                        class="premium-overview-card"
+                        class="cinema-card"
                     >
 
-                        <div class="premium-overview-icon">
+                        <div class="cinema-card-icon">
                             💶
                         </div>
 
-                        <div class="premium-overview-copy">
+                        <div class="cinema-card-copy">
 
                             <span>
                                 Verfügbar
@@ -3319,23 +4248,7 @@
 
                     </a>
 
-
                 </section>
-
-
-
-                <div class="premium-home-footer-note">
-
-                    <span>
-                        Dein Familienalltag, klar organisiert.
-                    </span>
-
-                    <strong>
-                        Premium Home
-                    </strong>
-
-                </div>
-
 
             </div>
 
