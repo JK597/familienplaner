@@ -3595,7 +3595,7 @@ def profil():
             id,
             benutzername,
             rolle,
-            passwort_hash
+            passwort
 
         FROM benutzer
 
@@ -3606,7 +3606,7 @@ def profil():
             id,
             benutzername,
             rolle,
-            passwort_hash
+            passwort
 
         FROM benutzer
 
@@ -3712,7 +3712,7 @@ def profil():
             )
 
             if not check_password_hash(
-                benutzer["passwort_hash"],
+                benutzer["passwort"],
                 aktuelles_passwort
             ):
 
@@ -3751,7 +3751,7 @@ def profil():
                     """
                     UPDATE benutzer
 
-                    SET passwort_hash = %s,
+                    SET passwort = %s,
                         passwort_muss_geaendert = FALSE
 
                     WHERE id = %s
@@ -3759,7 +3759,7 @@ def profil():
                     """
                     UPDATE benutzer
 
-                    SET passwort_hash = ?,
+                    SET passwort = ?,
                         passwort_muss_geaendert = 0
 
                     WHERE id = ?
@@ -3785,7 +3785,7 @@ def profil():
                 id,
                 benutzername,
                 rolle,
-                passwort_hash
+                passwort
 
             FROM benutzer
 
@@ -3796,7 +3796,7 @@ def profil():
                 id,
                 benutzername,
                 rolle,
-                passwort_hash
+                passwort
 
             FROM benutzer
 
