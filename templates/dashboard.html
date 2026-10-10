@@ -2951,6 +2951,161 @@
 
         }
 
+    
+        /* LETZTE FAMILIENAKTIVITÄTEN */
+
+        .activity-panel {
+            margin-top: 16px;
+            padding: 18px 18px 16px;
+            border-radius: 21px;
+            background:
+                radial-gradient(circle at 92% 8%, rgba(234,218,177,.08), transparent 28%),
+                linear-gradient(148deg, rgba(44,76,58,.96), rgba(83,99,72,.90));
+            border: 1px solid rgba(238,221,179,.14);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 18px 40px rgba(0,0,0,.12);
+        }
+
+        .activity-head {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom:11px;
+        }
+
+        .activity-kicker {
+            display:block;
+            margin-bottom:2px;
+            color:rgba(244,226,188,.55);
+            font-size:.56rem;
+            font-weight:900;
+            letter-spacing:.12em;
+        }
+
+        .activity-head h2 {
+            margin:0;
+            color:#fff5df;
+            font-size:1.10rem;
+        }
+
+        .activity-live {
+            padding:5px 8px;
+            border-radius:999px;
+            color:#dce8cf;
+            background:rgba(117,153,103,.12);
+            border:1px solid rgba(164,195,143,.14);
+            font-size:.56rem;
+            font-weight:900;
+            letter-spacing:.08em;
+        }
+
+        .activity-list {
+            display:grid;
+            gap:7px;
+        }
+
+        .activity-row {
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:10px 11px;
+            border-radius:12px;
+            background:rgba(255,255,255,.038);
+            border:1px solid rgba(240,220,178,.07);
+        }
+
+        .activity-icon {
+            width:34px;
+            height:34px;
+            flex:0 0 auto;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:10px;
+            background:rgba(239,216,166,.10);
+            border:1px solid rgba(239,216,166,.10);
+            font-size:.94rem;
+        }
+
+        .activity-copy {
+            min-width:0;
+        }
+
+        .activity-text {
+            color:rgba(255,247,226,.83);
+            font-size:.78rem;
+            line-height:1.35;
+        }
+
+        .activity-text strong {
+            color:#fff3d7;
+        }
+
+        .activity-time {
+            margin-top:2px;
+            color:rgba(246,233,199,.47);
+            font-size:.61rem;
+        }
+
+        .activity-empty {
+            padding:15px 12px;
+            border-radius:12px;
+            text-align:center;
+            color:rgba(248,237,210,.60);
+            background:rgba(255,255,255,.035);
+            font-size:.74rem;
+        }
+
+        @media (max-width:700px) {
+            .activity-panel {
+                margin-top:10px;
+                padding:13px 11px;
+                border-radius:17px;
+            }
+
+            .activity-head {
+                margin-bottom:8px;
+            }
+
+            .activity-head h2 {
+                font-size:.97rem;
+            }
+
+            .activity-kicker {
+                font-size:.48rem;
+            }
+
+            .activity-live {
+                padding:4px 6px;
+                font-size:.49rem;
+            }
+
+            .activity-list {
+                gap:6px;
+            }
+
+            .activity-row {
+                gap:8px;
+                padding:8px 9px;
+                border-radius:10px;
+            }
+
+            .activity-icon {
+                width:30px;
+                height:30px;
+                border-radius:9px;
+                font-size:.82rem;
+            }
+
+            .activity-text {
+                font-size:.70rem;
+            }
+
+            .activity-time {
+                font-size:.55rem;
+            }
+        }
+
     </style>
 
 </head>
@@ -3713,7 +3868,60 @@
         </section>
 
 
-    </main>
+    
+        <section class="activity-panel">
+
+            <div class="activity-head">
+                <div>
+                    <span class="activity-kicker">FAMILIE</span>
+                    <h2>Letzte Aktivitäten</h2>
+                </div>
+
+                <div class="activity-live">● LIVE</div>
+            </div>
+
+            {% if aktivitaeten %}
+
+                <div class="activity-list">
+
+                    {% for aktivitaet in aktivitaeten %}
+
+                        <article class="activity-row">
+
+                            <div class="activity-icon">
+                                {{ aktivitaet["symbol"] }}
+                            </div>
+
+                            <div class="activity-copy">
+
+                                <div class="activity-text">
+                                    <strong>{{ aktivitaet["benutzername"] }}</strong>
+                                    {{ aktivitaet["text"] }}
+                                </div>
+
+                                <div class="activity-time">
+                                    {{ aktivitaet["erstellt_am"] }}
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="activity-empty">
+                    Hier erscheinen die letzten Familienaktivitäten.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+</main>
 
 
 

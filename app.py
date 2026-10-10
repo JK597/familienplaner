@@ -657,6 +657,27 @@ def datenbank_erstellen():
                 )
             """)
 
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS familienaktivitaeten
+                (
+                    id SERIAL PRIMARY KEY,
+
+                    benutzer_id INTEGER NOT NULL
+                        REFERENCES benutzer(id)
+                        ON DELETE CASCADE,
+
+                    ziel_benutzer_id INTEGER
+                        REFERENCES benutzer(id)
+                        ON DELETE CASCADE,
+
+                    symbol VARCHAR(20) NOT NULL DEFAULT '•',
+                    text TEXT NOT NULL,
+
+                    erstellt_am TIMESTAMP
+                        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
             cursor.close()
 
         else:
@@ -1018,6 +1039,28 @@ def datenbank_erstellen():
                     ),
 
                     FOREIGN KEY (benutzer_id)
+                    REFERENCES benutzer(id)
+                    ON DELETE CASCADE
+                )
+            """)
+
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS familienaktivitaeten
+                (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    benutzer_id INTEGER NOT NULL,
+                    ziel_benutzer_id INTEGER,
+
+                    symbol TEXT NOT NULL DEFAULT '•',
+                    text TEXT NOT NULL,
+                    erstellt_am TEXT NOT NULL,
+
+                    FOREIGN KEY (benutzer_id)
+                    REFERENCES benutzer(id)
+                    ON DELETE CASCADE,
+
+                    FOREIGN KEY (ziel_benutzer_id)
                     REFERENCES benutzer(id)
                     ON DELETE CASCADE
                 )
@@ -3364,6 +3407,163 @@ def erstes_passwort():
 
 
 # ============================================================
+# FAMILIENAKTIVITÄTEN
+# ============================================================
+
+def familienaktivitaet_speichern(
+    benutzer_id,
+    symbol,
+    text,
+    ziel_benutzer_id=None
+):
+
+    erstellt_am = jetzt().replace(
+        tzinfo=None
+    )
+
+    execute_query(
+        """
+        INSERT INTO familienaktivitaeten
+        (
+            benutzer_id,
+            ziel_benutzer_id,
+            symbol,
+            text,
+            erstellt_am
+        )
+
+        VALUES (
+            %s,
+            %s,
+            %s,
+            %s,
+            %s
+        )
+        """,
+        """
+        INSERT INTO familienaktivitaeten
+        (
+            benutzer_id,
+            ziel_benutzer_id,
+            symbol,
+            text,
+            erstellt_am
+        )
+
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        """,
+        (
+            benutzer_id,
+            ziel_benutzer_id,
+            symbol,
+            text,
+            erstellt_am
+            if postgres_verwenden()
+            else erstellt_am.strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        )
+    )
+
+
+def letzte_familienaktivitaeten(
+    benutzer_id,
+    limit=5
+):
+
+    if postgres_verwenden():
+
+        db = datenbank()
+
+        try:
+
+            cursor = db.cursor(
+                cursor_factory=
+                psycopg2.extras.RealDictCursor
+            )
+
+            cursor.execute(
+                """
+                SELECT
+                    f.id,
+                    f.symbol,
+                    f.text,
+                    TO_CHAR(
+                        f.erstellt_am,
+                        'DD.MM.YYYY HH24:MI'
+                    ) AS erstellt_am,
+                    b.benutzername
+
+                FROM familienaktivitaeten f
+
+                JOIN benutzer b
+                    ON b.id = f.benutzer_id
+
+                WHERE
+                    f.ziel_benutzer_id IS NULL
+                    OR f.ziel_benutzer_id = %s
+
+                ORDER BY
+                    f.erstellt_am DESC,
+                    f.id DESC
+
+                LIMIT %s
+                """,
+                (
+                    benutzer_id,
+                    limit
+                )
+            )
+
+            ergebnis = cursor.fetchall()
+            cursor.close()
+            return ergebnis
+
+        finally:
+            db.close()
+
+    return query_alle(
+        "",
+        """
+        SELECT
+            f.id,
+            f.symbol,
+            f.text,
+            strftime(
+                '%d.%m.%Y %H:%M',
+                f.erstellt_am
+            ) AS erstellt_am,
+            b.benutzername
+
+        FROM familienaktivitaeten f
+
+        JOIN benutzer b
+            ON b.id = f.benutzer_id
+
+        WHERE
+            f.ziel_benutzer_id IS NULL
+            OR f.ziel_benutzer_id = ?
+
+        ORDER BY
+            f.erstellt_am DESC,
+            f.id DESC
+
+        LIMIT ?
+        """,
+        (
+            benutzer_id,
+            limit
+        )
+    )
+
+
+# ============================================================
 # DASHBOARD
 # ============================================================
 
@@ -3571,6 +3771,11 @@ def dashboard():
         + " €"
     )
 
+    aktivitaeten = letzte_familienaktivitaeten(
+        benutzer_id,
+        5
+    )
+
     return render_template(
         "dashboard.html",
 
@@ -3598,7 +3803,10 @@ def dashboard():
             termin_zeit,
 
         verfuegbar_text=
-            verfuegbar_text
+            verfuegbar_text,
+
+        aktivitaeten=
+            aktivitaeten
     )
 
 
@@ -3893,6 +4101,23 @@ def aufgabe_hinzufuegen():
             "Aufgaben",
             "✅ Eine Aufgabe wurde hinzugefügt.",
             "/aufgaben"
+        )
+
+    familienaktivitaet_speichern(
+        session["benutzer_id"],
+        "✅",
+        "hat eine Aufgabe erstellt.",
+        session["benutzer_id"]
+    )
+
+    for ziel_id in set(
+        ausgewaehlt
+    ):
+        familienaktivitaet_speichern(
+            session["benutzer_id"],
+            "🤝",
+            "hat eine Aufgabe mit dir geteilt.",
+            ziel_id
         )
 
     return redirect(
@@ -4731,6 +4956,23 @@ def termin_hinzufuegen():
             "Kalender",
             "📅 Ein Termin wurde hinzugefügt.",
             "/kalender"
+        )
+
+    familienaktivitaet_speichern(
+        session["benutzer_id"],
+        "📅",
+        "hat einen Termin erstellt.",
+        session["benutzer_id"]
+    )
+
+    for ziel_id in set(
+        ausgewaehlt
+    ):
+        familienaktivitaet_speichern(
+            session["benutzer_id"],
+            "🤝",
+            "hat einen Termin mit dir geteilt.",
+            ziel_id
         )
 
     return redirect(
@@ -7929,6 +8171,12 @@ def pinnwand_hinzufuegen():
         "Familien-Pinnwand",
         "📌 Deine Nachricht wurde angepinnt.",
         "/pinnwand"
+    )
+
+    familienaktivitaet_speichern(
+        session["benutzer_id"],
+        "📌",
+        "hat etwas an die Pinnwand geschrieben."
     )
 
     return redirect(
