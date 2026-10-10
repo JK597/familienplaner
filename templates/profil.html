@@ -970,6 +970,196 @@
 
         }
 
+    
+        .avatar {
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+        }
+
+        .photo-upload {
+            display: grid;
+            gap: 10px;
+        }
+
+        .photo-preview-row {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding:
+                10px
+                11px;
+
+            border-radius: 13px;
+
+            background:
+                rgba(255,255,255,.032);
+
+            border:
+                1px solid
+                rgba(239,220,177,.07);
+        }
+
+        .photo-preview {
+            width: 56px;
+            height: 56px;
+
+            flex: 0 0 auto;
+
+            overflow: hidden;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 17px;
+
+            color: #173629;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #f4e0b0,
+                    #c3a265
+                );
+
+            font-size: 1.25rem;
+            font-weight: 900;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+        }
+
+        .photo-help {
+            min-width: 0;
+        }
+
+        .photo-help strong {
+            display: block;
+
+            margin-bottom: 3px;
+
+            color: #fff3d8;
+
+            font-size: .72rem;
+        }
+
+        .photo-help span {
+            color:
+                rgba(246,233,199,.45);
+
+            font-size: .57rem;
+            line-height: 1.4;
+        }
+
+        .file-input {
+            width: 100%;
+
+            padding:
+                9px;
+
+            border-radius: 12px;
+
+            color:
+                rgba(249,237,207,.70);
+
+            background:
+                rgba(12,38,28,.42);
+
+            border:
+                1px solid
+                rgba(239,220,177,.10);
+
+            font-size: .66rem;
+        }
+
+        .photo-actions {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+        .remove-photo {
+            min-height: 43px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                9px
+                14px;
+
+            border-radius: 12px;
+
+            color: #f6dfd5;
+
+            background:
+                rgba(170,82,64,.11);
+
+            border:
+                1px solid
+                rgba(211,125,104,.15);
+
+            font-size: .68rem;
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+        @media (max-width: 700px) {
+
+            .photo-preview {
+                width: 48px;
+                height: 48px;
+
+                border-radius: 14px;
+
+                font-size: 1rem;
+            }
+
+            .photo-help strong {
+                font-size: .65rem;
+            }
+
+            .photo-help span {
+                font-size: .52rem;
+            }
+
+            .file-input {
+                font-size: .59rem;
+            }
+
+            .remove-photo {
+                min-height: 38px;
+
+                padding:
+                    7px
+                    10px;
+
+                border-radius: 10px;
+
+                font-size: .61rem;
+            }
+
+        }
+
     </style>
 
 </head>
@@ -1000,7 +1190,20 @@
         <section class="profile-hero">
 
             <div class="avatar">
-                {{ benutzer["benutzername"][0]|upper }}
+
+                {% if benutzer["profilbild"] %}
+
+                    <img
+                        src="/profilbild/{{ benutzer['id'] }}"
+                        alt="Profilbild von {{ benutzer['benutzername'] }}"
+                    >
+
+                {% else %}
+
+                    {{ benutzer["benutzername"][0]|upper }}
+
+                {% endif %}
+
             </div>
 
             <div class="identity">
@@ -1038,6 +1241,139 @@
 
 
         <section class="grid">
+
+
+            <section class="card full">
+
+                <div class="card-head">
+
+                    <div class="card-icon">
+                        📷
+                    </div>
+
+                    <div class="card-head-copy">
+
+                        <h2>
+                            Profilbild
+                        </h2>
+
+                        <p>
+                            Dein persönliches Bild im Familienplaner.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="photo-upload">
+
+                    <div class="photo-preview-row">
+
+                        <div class="photo-preview">
+
+                            {% if benutzer["profilbild"] %}
+
+                                <img
+                                    src="/profilbild/{{ benutzer['id'] }}"
+                                    alt="Aktuelles Profilbild"
+                                >
+
+                            {% else %}
+
+                                {{ benutzer["benutzername"][0]|upper }}
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="photo-help">
+
+                            <strong>
+                                Dein Profilbild
+                            </strong>
+
+                            <span>
+                                JPG, PNG, WEBP oder iPhone-Foto · maximal 5 MB
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        method="post"
+                        action="/profil"
+                        enctype="multipart/form-data"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="aktion"
+                            value="profilbild"
+                        >
+
+                        <div class="field">
+
+                            <label for="profilbild">
+                                Neues Bild auswählen
+                            </label>
+
+                            <input
+                                class="file-input"
+                                id="profilbild"
+                                name="profilbild"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/*"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="photo-actions">
+
+                            <button
+                                type="submit"
+                                class="save"
+                            >
+                                Profilbild speichern
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                    {% if benutzer["profilbild"] %}
+
+                        <form
+                            method="post"
+                            action="/profil"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="aktion"
+                                value="profilbild_loeschen"
+                            >
+
+                            <button
+                                type="submit"
+                                class="remove-photo"
+                            >
+                                Profilbild entfernen
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
 
 
             <section class="card">

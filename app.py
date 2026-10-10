@@ -349,6 +349,18 @@ def datenbank_erstellen():
             """)
 
             cursor.execute("""
+                ALTER TABLE benutzer
+                ADD COLUMN IF NOT EXISTS
+                profilbild BYTEA
+            """)
+
+            cursor.execute("""
+                ALTER TABLE benutzer
+                ADD COLUMN IF NOT EXISTS
+                profilbild_mimetype VARCHAR(100)
+            """)
+
+            cursor.execute("""
                 CREATE TABLE IF NOT EXISTS finanz_einstellungen
                 (
                     id SERIAL PRIMARY KEY,
@@ -712,6 +724,28 @@ def datenbank_erstellen():
                     ADD COLUMN
                     passwort_muss_geaendert
                     INTEGER NOT NULL DEFAULT 0
+                """)
+
+            if (
+                "profilbild"
+                not in namen
+            ):
+
+                db.execute("""
+                    ALTER TABLE benutzer
+                    ADD COLUMN
+                    profilbild BLOB
+                """)
+
+            if (
+                "profilbild_mimetype"
+                not in namen
+            ):
+
+                db.execute("""
+                    ALTER TABLE benutzer
+                    ADD COLUMN
+                    profilbild_mimetype TEXT
                 """)
 
             db.execute("""
@@ -3595,7 +3629,9 @@ def profil():
             id,
             benutzername,
             rolle,
-            passwort
+            passwort,
+            profilbild,
+            profilbild_mimetype
 
         FROM benutzer
 
@@ -3606,7 +3642,9 @@ def profil():
             id,
             benutzername,
             rolle,
-            passwort
+            passwort,
+            profilbild,
+            profilbild_mimetype
 
         FROM benutzer
 
@@ -3692,6 +3730,135 @@ def profil():
                     )
 
                     meldung_typ = "fehler"
+
+
+        elif aktion == "profilbild":
+
+            datei = request.files.get(
+                "profilbild"
+            )
+
+            if (
+                datei is None
+                or not datei.filename
+            ):
+
+                meldung = (
+                    "Bitte wähle zuerst ein Bild aus."
+                )
+
+                meldung_typ = "fehler"
+
+            else:
+
+                erlaubte_typen = {
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/heic",
+                    "image/heif"
+                }
+
+                mimetype = (
+                    datei.mimetype
+                    or ""
+                ).lower()
+
+                bilddaten = datei.read()
+
+                if (
+                    mimetype
+                    not in erlaubte_typen
+                ):
+
+                    meldung = (
+                        "Bitte verwende JPG, PNG, WEBP oder ein iPhone-Foto."
+                    )
+
+                    meldung_typ = "fehler"
+
+                elif len(
+                    bilddaten
+                ) > 5 * 1024 * 1024:
+
+                    meldung = (
+                        "Das Profilbild darf höchstens 5 MB groß sein."
+                    )
+
+                    meldung_typ = "fehler"
+
+                elif len(
+                    bilddaten
+                ) == 0:
+
+                    meldung = (
+                        "Die ausgewählte Bilddatei ist leer."
+                    )
+
+                    meldung_typ = "fehler"
+
+                else:
+
+                    execute_query(
+                        """
+                        UPDATE benutzer
+
+                        SET profilbild = %s,
+                            profilbild_mimetype = %s
+
+                        WHERE id = %s
+                        """,
+                        """
+                        UPDATE benutzer
+
+                        SET profilbild = ?,
+                            profilbild_mimetype = ?
+
+                        WHERE id = ?
+                        """,
+                        (
+                            bilddaten,
+                            mimetype,
+                            benutzer_id
+                        )
+                    )
+
+                    meldung = (
+                        "Dein Profilbild wurde gespeichert."
+                    )
+
+                    meldung_typ = "erfolg"
+
+
+        elif aktion == "profilbild_loeschen":
+
+            execute_query(
+                """
+                UPDATE benutzer
+
+                SET profilbild = NULL,
+                    profilbild_mimetype = NULL
+
+                WHERE id = %s
+                """,
+                """
+                UPDATE benutzer
+
+                SET profilbild = NULL,
+                    profilbild_mimetype = NULL
+
+                WHERE id = ?
+                """,
+                (
+                    benutzer_id,
+                )
+            )
+
+            meldung = (
+                "Dein Profilbild wurde entfernt."
+            )
+
+            meldung_typ = "erfolg"
 
 
         elif aktion == "passwort":
@@ -3816,6 +3983,82 @@ def profil():
         meldung_typ=
             meldung_typ
     )
+
+
+@app.route(
+    "/profilbild/<int:benutzer_id>"
+)
+def profilbild_anzeigen(
+    benutzer_id
+):
+
+    if "benutzer_id" not in session:
+
+        return (
+            "",
+            403
+        )
+
+    benutzer = query_einen(
+        """
+        SELECT
+            profilbild,
+            profilbild_mimetype
+
+        FROM benutzer
+
+        WHERE id = %s
+        """,
+        """
+        SELECT
+            profilbild,
+            profilbild_mimetype
+
+        FROM benutzer
+
+        WHERE id = ?
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    if (
+        benutzer is None
+        or not benutzer["profilbild"]
+    ):
+
+        return (
+            "",
+            404
+        )
+
+    bilddaten = benutzer[
+        "profilbild"
+    ]
+
+    if isinstance(
+        bilddaten,
+        memoryview
+    ):
+
+        bilddaten = bilddaten.tobytes()
+
+    antwort = app.response_class(
+        bilddaten,
+        mimetype=(
+            benutzer[
+                "profilbild_mimetype"
+            ]
+            or "image/jpeg"
+        )
+    )
+
+    antwort.headers[
+        "Cache-Control"
+    ] = "private, no-cache, no-store, must-revalidate"
+
+    return antwort
 
 
 # ============================================================
@@ -4031,6 +4274,41 @@ def dashboard():
         5
     )
 
+    profil_status = query_einen(
+        """
+        SELECT
+            CASE
+                WHEN profilbild IS NULL
+                THEN FALSE
+                ELSE TRUE
+            END AS vorhanden
+
+        FROM benutzer
+
+        WHERE id = %s
+        """,
+        """
+        SELECT
+            CASE
+                WHEN profilbild IS NULL
+                THEN 0
+                ELSE 1
+            END AS vorhanden
+
+        FROM benutzer
+
+        WHERE id = ?
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    profilbild_vorhanden = bool(
+        profil_status
+        and profil_status["vorhanden"]
+    )
+
     return render_template(
         "dashboard.html",
 
@@ -4061,7 +4339,10 @@ def dashboard():
             verfuegbar_text,
 
         aktivitaeten=
-            aktivitaeten
+            aktivitaeten,
+
+        profilbild_vorhanden=
+            profilbild_vorhanden
     )
 
 

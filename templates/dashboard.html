@@ -3875,6 +3875,20 @@
 
         }
 
+    
+        .cinema-avatar {
+            overflow: hidden;
+        }
+
+        .cinema-avatar img {
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+        }
+
     </style>
 
 </head>
@@ -4052,7 +4066,20 @@
                     >
 
                         <div class="cinema-avatar">
-                            {{ benutzer[0]|upper }}
+
+                            {% if profilbild_vorhanden %}
+
+                                <img
+                                    src="/profilbild/{{ session['benutzer_id'] }}"
+                                    alt="Profilbild von {{ benutzer }}"
+                                >
+
+                            {% else %}
+
+                                {{ benutzer[0]|upper }}
+
+                            {% endif %}
+
                         </div>
 
                         <div class="cinema-profile-copy">
