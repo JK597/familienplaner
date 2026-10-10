@@ -3564,6 +3564,261 @@ def letzte_familienaktivitaeten(
 
 
 # ============================================================
+# PROFIL
+# ============================================================
+
+@app.route(
+    "/profil",
+    methods=[
+        "GET",
+        "POST"
+    ]
+)
+def profil():
+
+    if "benutzer_id" not in session:
+
+        return redirect(
+            "/"
+        )
+
+    benutzer_id = session[
+        "benutzer_id"
+    ]
+
+    meldung = ""
+    meldung_typ = ""
+
+    benutzer = query_einen(
+        """
+        SELECT
+            id,
+            benutzername,
+            rolle,
+            passwort_hash
+
+        FROM benutzer
+
+        WHERE id = %s
+        """,
+        """
+        SELECT
+            id,
+            benutzername,
+            rolle,
+            passwort_hash
+
+        FROM benutzer
+
+        WHERE id = ?
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    if benutzer is None:
+
+        session.clear()
+
+        return redirect(
+            "/"
+        )
+
+    if request.method == "POST":
+
+        aktion = request.form.get(
+            "aktion",
+            ""
+        ).strip()
+
+        if aktion == "benutzername":
+
+            neuer_name = request.form.get(
+                "benutzername",
+                ""
+            ).strip()
+
+            if len(
+                neuer_name
+            ) < 2:
+
+                meldung = (
+                    "Der Benutzername muss mindestens "
+                    "2 Zeichen lang sein."
+                )
+
+                meldung_typ = "fehler"
+
+            else:
+
+                try:
+
+                    execute_query(
+                        """
+                        UPDATE benutzer
+
+                        SET benutzername = %s
+
+                        WHERE id = %s
+                        """,
+                        """
+                        UPDATE benutzer
+
+                        SET benutzername = ?
+
+                        WHERE id = ?
+                        """,
+                        (
+                            neuer_name,
+                            benutzer_id
+                        )
+                    )
+
+                    session[
+                        "benutzer"
+                    ] = neuer_name
+
+                    meldung = (
+                        "Dein Benutzername wurde geändert."
+                    )
+
+                    meldung_typ = "erfolg"
+
+                except Exception:
+
+                    meldung = (
+                        "Dieser Benutzername ist bereits vergeben."
+                    )
+
+                    meldung_typ = "fehler"
+
+
+        elif aktion == "passwort":
+
+            aktuelles_passwort = request.form.get(
+                "aktuelles_passwort",
+                ""
+            )
+
+            neues_passwort = request.form.get(
+                "neues_passwort",
+                ""
+            )
+
+            neues_passwort_wiederholen = request.form.get(
+                "neues_passwort_wiederholen",
+                ""
+            )
+
+            if not check_password_hash(
+                benutzer["passwort_hash"],
+                aktuelles_passwort
+            ):
+
+                meldung = (
+                    "Das aktuelle Passwort ist nicht korrekt."
+                )
+
+                meldung_typ = "fehler"
+
+            elif len(
+                neues_passwort
+            ) < 4:
+
+                meldung = (
+                    "Das neue Passwort muss mindestens "
+                    "4 Zeichen lang sein."
+                )
+
+                meldung_typ = "fehler"
+
+            elif (
+                neues_passwort
+                != neues_passwort_wiederholen
+            ):
+
+                meldung = (
+                    "Die neuen Passwörter stimmen "
+                    "nicht überein."
+                )
+
+                meldung_typ = "fehler"
+
+            else:
+
+                execute_query(
+                    """
+                    UPDATE benutzer
+
+                    SET passwort_hash = %s,
+                        passwort_muss_geaendert = FALSE
+
+                    WHERE id = %s
+                    """,
+                    """
+                    UPDATE benutzer
+
+                    SET passwort_hash = ?,
+                        passwort_muss_geaendert = 0
+
+                    WHERE id = ?
+                    """,
+                    (
+                        generate_password_hash(
+                            neues_passwort
+                        ),
+                        benutzer_id
+                    )
+                )
+
+                meldung = (
+                    "Dein Passwort wurde erfolgreich geändert."
+                )
+
+                meldung_typ = "erfolg"
+
+
+        benutzer = query_einen(
+            """
+            SELECT
+                id,
+                benutzername,
+                rolle,
+                passwort_hash
+
+            FROM benutzer
+
+            WHERE id = %s
+            """,
+            """
+            SELECT
+                id,
+                benutzername,
+                rolle,
+                passwort_hash
+
+            FROM benutzer
+
+            WHERE id = ?
+            """,
+            (
+                benutzer_id,
+            )
+        )
+
+    return render_template(
+        "profil.html",
+        benutzer=
+            benutzer,
+        meldung=
+            meldung,
+        meldung_typ=
+            meldung_typ
+    )
+
+
+# ============================================================
 # DASHBOARD
 # ============================================================
 
