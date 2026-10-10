@@ -3889,6 +3889,53 @@
             object-fit: cover;
         }
 
+    
+        /* Größeres, sichtbareres Profilbild auf der Startseite */
+        .cinema-profile {
+            gap: 14px;
+            padding: 12px 14px;
+        }
+
+        .cinema-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            font-size: 1.35rem;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.46),
+                0 14px 28px rgba(0,0,0,.20);
+        }
+
+        .cinema-profile-copy strong {
+            font-size: .82rem;
+        }
+
+        .cinema-profile-copy span {
+            font-size: .60rem;
+        }
+
+        @media (max-width: 700px) {
+            .cinema-profile {
+                gap: 11px;
+                padding: 9px 10px;
+            }
+
+            .cinema-avatar {
+                width: 50px;
+                height: 50px;
+                border-radius: 15px;
+                font-size: 1.15rem;
+            }
+
+            .cinema-profile-copy strong {
+                font-size: .72rem;
+            }
+
+            .cinema-profile-copy span {
+                font-size: .54rem;
+            }
+        }
+
     </style>
 
 </head>
