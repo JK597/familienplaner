@@ -604,6 +604,29 @@ def datenbank_erstellen():
                 )
             """)
 
+            # ==================================================
+            # FAMILIEN-PINNWAND
+            # ==================================================
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS pinnwand
+                (
+                    id SERIAL PRIMARY KEY,
+
+                    benutzer_id INTEGER NOT NULL
+                        REFERENCES benutzer(id)
+                        ON DELETE CASCADE,
+
+                    inhalt TEXT NOT NULL,
+
+                    wichtig BOOLEAN
+                        NOT NULL DEFAULT FALSE,
+
+                    erstellt_am TIMESTAMP
+                        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
             cursor.close()
 
         else:
@@ -912,6 +935,30 @@ def datenbank_erstellen():
                     endpoint TEXT UNIQUE NOT NULL,
                     p256dh TEXT NOT NULL,
                     auth TEXT NOT NULL,
+
+                    erstellt_am TEXT NOT NULL,
+
+                    FOREIGN KEY (benutzer_id)
+                    REFERENCES benutzer(id)
+                    ON DELETE CASCADE
+                )
+            """)
+
+            # ==================================================
+            # FAMILIEN-PINNWAND
+            # ==================================================
+
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS pinnwand
+                (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    benutzer_id INTEGER NOT NULL,
+
+                    inhalt TEXT NOT NULL,
+
+                    wichtig INTEGER
+                        NOT NULL DEFAULT 0,
 
                     erstellt_am TEXT NOT NULL,
 
@@ -6996,6 +7043,355 @@ def benutzer_loeschen(
 
     return redirect(
         "/admin"
+    )
+
+
+# ============================================================
+# FAMILIEN-PINNWAND
+# ============================================================
+
+@app.route(
+    "/pinnwand"
+)
+def pinnwand():
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    beitraege = query_alle(
+
+        """
+        SELECT
+            p.id,
+            p.benutzer_id,
+            p.inhalt,
+            p.wichtig,
+
+            TO_CHAR(
+                p.erstellt_am,
+                'DD.MM.YYYY HH24:MI'
+            ) AS erstellt_am,
+
+            b.benutzername
+
+        FROM pinnwand p
+
+        JOIN benutzer b
+            ON b.id = p.benutzer_id
+
+        ORDER BY
+            p.wichtig DESC,
+            p.erstellt_am DESC,
+            p.id DESC
+        """,
+
+        """
+        SELECT
+            p.id,
+            p.benutzer_id,
+            p.inhalt,
+            p.wichtig,
+
+            strftime(
+                '%d.%m.%Y %H:%M',
+                p.erstellt_am
+            ) AS erstellt_am,
+
+            b.benutzername
+
+        FROM pinnwand p
+
+        JOIN benutzer b
+            ON b.id = p.benutzer_id
+
+        ORDER BY
+            p.wichtig DESC,
+            p.erstellt_am DESC,
+            p.id DESC
+        """
+    )
+
+    eigene_id = int(
+        session["benutzer_id"]
+    )
+
+    ergebnis = []
+
+    for beitrag in beitraege:
+
+        daten = dict(
+            beitrag
+        )
+
+        daten["ist_eigener"] = (
+            int(
+                beitrag["benutzer_id"]
+            )
+            == eigene_id
+        )
+
+        daten["wichtig"] = bool(
+            beitrag["wichtig"]
+        )
+
+        ergebnis.append(
+            daten
+        )
+
+    return render_template(
+        "pinnwand.html",
+
+        benutzer=session[
+            "benutzer"
+        ],
+
+        beitraege=ergebnis,
+
+        anzahl=len(
+            ergebnis
+        ),
+
+        wichtige_anzahl=sum(
+            1
+            for beitrag in ergebnis
+            if beitrag["wichtig"]
+        )
+    )
+
+
+@app.route(
+    "/pinnwand-hinzufuegen",
+    methods=["POST"]
+)
+def pinnwand_hinzufuegen():
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    inhalt = request.form.get(
+        "inhalt",
+        ""
+    ).strip()
+
+    if not inhalt:
+        return redirect(
+            "/pinnwand"
+        )
+
+    inhalt = inhalt[:1200]
+
+    wichtig = (
+        request.form.get(
+            "wichtig"
+        )
+        == "1"
+    )
+
+    erstellt_am = jetzt().replace(
+        tzinfo=None
+    )
+
+    execute_query(
+
+        """
+        INSERT INTO pinnwand
+        (
+            benutzer_id,
+            inhalt,
+            wichtig,
+            erstellt_am
+        )
+
+        VALUES (
+            %s,
+            %s,
+            %s,
+            %s
+        )
+        """,
+
+        """
+        INSERT INTO pinnwand
+        (
+            benutzer_id,
+            inhalt,
+            wichtig,
+            erstellt_am
+        )
+
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        """,
+
+        (
+            session[
+                "benutzer_id"
+            ],
+
+            inhalt,
+
+            wichtig
+            if postgres_verwenden()
+            else (
+                1
+                if wichtig
+                else 0
+            ),
+
+            erstellt_am
+            if postgres_verwenden()
+            else erstellt_am.strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        )
+    )
+
+    return redirect(
+        "/pinnwand"
+    )
+
+
+@app.route(
+    "/pinnwand-wichtig/<int:beitrag_id>",
+    methods=["POST"]
+)
+def pinnwand_wichtig(
+    beitrag_id
+):
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    beitrag = query_einen(
+
+        """
+        SELECT
+            id,
+            wichtig
+
+        FROM pinnwand
+
+        WHERE
+            id = %s
+            AND benutzer_id = %s
+        """,
+
+        """
+        SELECT
+            id,
+            wichtig
+
+        FROM pinnwand
+
+        WHERE
+            id = ?
+            AND benutzer_id = ?
+        """,
+
+        (
+            beitrag_id,
+            session[
+                "benutzer_id"
+            ]
+        )
+    )
+
+    if beitrag is None:
+        return redirect(
+            "/pinnwand"
+        )
+
+    neuer_wert = not bool(
+        beitrag["wichtig"]
+    )
+
+    execute_query(
+
+        """
+        UPDATE pinnwand
+
+        SET wichtig = %s
+
+        WHERE
+            id = %s
+            AND benutzer_id = %s
+        """,
+
+        """
+        UPDATE pinnwand
+
+        SET wichtig = ?
+
+        WHERE
+            id = ?
+            AND benutzer_id = ?
+        """,
+
+        (
+            neuer_wert
+            if postgres_verwenden()
+            else (
+                1
+                if neuer_wert
+                else 0
+            ),
+
+            beitrag_id,
+
+            session[
+                "benutzer_id"
+            ]
+        )
+    )
+
+    return redirect(
+        "/pinnwand"
+    )
+
+
+@app.route(
+    "/pinnwand-loeschen/<int:beitrag_id>",
+    methods=["POST"]
+)
+def pinnwand_loeschen(
+    beitrag_id
+):
+
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    execute_query(
+
+        """
+        DELETE FROM pinnwand
+
+        WHERE
+            id = %s
+            AND benutzer_id = %s
+        """,
+
+        """
+        DELETE FROM pinnwand
+
+        WHERE
+            id = ?
+            AND benutzer_id = ?
+        """,
+
+        (
+            beitrag_id,
+            session[
+                "benutzer_id"
+            ]
+        )
+    )
+
+    return redirect(
+        "/pinnwand"
     )
 
 
