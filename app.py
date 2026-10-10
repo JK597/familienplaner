@@ -3414,22 +3414,37 @@ def aufgabe_hinzufuegen():
     finally:
         db.close()
 
-    for ziel_id in set(
+
+    geteilte_ids = set(
         ausgewaehlt
-    ):
+    )
+
+    if geteilte_ids:
+
+        for ziel_id in geteilte_ids:
+
+            push_an_benutzer(
+                ziel_id,
+                "Geteilte Aufgabe",
+                (
+                    "📋 "
+                    + session.get(
+                        "benutzer",
+                        "Ein Familienmitglied"
+                    )
+                    + " hat die Aufgabe „"
+                    + titel
+                    + "“ mit dir geteilt."
+                ),
+                "/aufgaben"
+            )
+
+    else:
 
         push_an_benutzer(
-            ziel_id,
-            "Neue Aufgabe",
-            (
-                session.get(
-                    "benutzer",
-                    "Jemand"
-                )
-                + " hat dir die Aufgabe „"
-                + titel
-                + "“ geteilt."
-            ),
+            session["benutzer_id"],
+            "Aufgaben",
+            "✅ Eine Aufgabe wurde hinzugefügt.",
             "/aufgaben"
         )
 
@@ -3542,6 +3557,13 @@ def aufgabe_status(
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Aufgaben",
+        "✅ Der Status einer Aufgabe wurde geändert.",
+        "/aufgaben"
+    )
+
     return redirect(
         "/aufgaben"
     )
@@ -3620,6 +3642,30 @@ def aufgabe_bearbeiten(
             neue_freigaben.append(
                 ziel_id
             )
+
+    alte_freigaben = query_alle(
+
+        """
+        SELECT benutzer_id
+        FROM aufgaben_geteilt
+        WHERE aufgabe_id = %s
+        """,
+
+        """
+        SELECT benutzer_id
+        FROM aufgaben_geteilt
+        WHERE aufgabe_id = ?
+        """,
+
+        (
+            aufgabe_id,
+        )
+    )
+
+    alte_freigabe_ids = {
+        int(eintrag["benutzer_id"])
+        for eintrag in alte_freigaben
+    }
 
     db = datenbank()
 
@@ -3758,6 +3804,42 @@ def aufgabe_bearbeiten(
     finally:
         db.close()
 
+    neue_geteilte_ids = (
+        set(
+            neue_freigaben
+        )
+        - alte_freigabe_ids
+    )
+
+    if neue_geteilte_ids:
+
+        for ziel_id in neue_geteilte_ids:
+
+            push_an_benutzer(
+                ziel_id,
+                "Geteilte Aufgabe",
+                (
+                    "📋 "
+                    + session.get(
+                        "benutzer",
+                        "Ein Familienmitglied"
+                    )
+                    + " hat die Aufgabe „"
+                    + titel
+                    + "“ mit dir geteilt."
+                ),
+                "/aufgaben"
+            )
+
+    else:
+
+        push_an_benutzer(
+            session["benutzer_id"],
+            "Aufgaben",
+            "✏️ Eine Aufgabe wurde bearbeitet.",
+            "/aufgaben"
+        )
+
     return redirect(
         "/aufgaben"
     )
@@ -3806,6 +3888,13 @@ def aufgabe_loeschen(
             aufgabe_id,
             benutzer_id
         )
+    )
+
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Aufgaben",
+        "🗑️ Eine Aufgabe wurde gelöscht.",
+        "/aufgaben"
     )
 
     return redirect(
@@ -4163,36 +4252,37 @@ def termin_hinzufuegen():
     finally:
         db.close()
 
-    for ziel_id in set(
+
+    geteilte_ids = set(
         ausgewaehlt
-    ):
+    )
 
-        datum_text = start_datum.strftime(
-            "%d.%m.%Y"
-        )
+    if geteilte_ids:
 
-        if start_zeit:
+        for ziel_id in geteilte_ids:
 
-            datum_text += (
-                " um "
-                + start_zeit
-                + " Uhr"
+            push_an_benutzer(
+                ziel_id,
+                "Geteilter Termin",
+                (
+                    "📅 "
+                    + session.get(
+                        "benutzer",
+                        "Ein Familienmitglied"
+                    )
+                    + " hat den Termin „"
+                    + titel
+                    + "“ mit dir geteilt."
+                ),
+                "/kalender"
             )
 
+    else:
+
         push_an_benutzer(
-            ziel_id,
-            "Neuer gemeinsamer Termin",
-            (
-                session.get(
-                    "benutzer",
-                    "Jemand"
-                )
-                + " hat „"
-                + titel
-                + "“ am "
-                + datum_text
-                + " mit dir geteilt."
-            ),
+            session["benutzer_id"],
+            "Kalender",
+            "📅 Ein Termin wurde hinzugefügt.",
             "/kalender"
         )
 
@@ -4319,6 +4409,30 @@ def termin_bearbeiten(
             neue_freigaben.append(
                 ziel_id
             )
+
+    alte_freigaben = query_alle(
+
+        """
+        SELECT benutzer_id
+        FROM termine_geteilt
+        WHERE termin_id = %s
+        """,
+
+        """
+        SELECT benutzer_id
+        FROM termine_geteilt
+        WHERE termin_id = ?
+        """,
+
+        (
+            termin_id,
+        )
+    )
+
+    alte_freigabe_ids = {
+        int(eintrag["benutzer_id"])
+        for eintrag in alte_freigaben
+    }
 
     db = datenbank()
 
@@ -4477,6 +4591,42 @@ def termin_bearbeiten(
     finally:
         db.close()
 
+    neue_geteilte_ids = (
+        set(
+            neue_freigaben
+        )
+        - alte_freigabe_ids
+    )
+
+    if neue_geteilte_ids:
+
+        for ziel_id in neue_geteilte_ids:
+
+            push_an_benutzer(
+                ziel_id,
+                "Geteilter Termin",
+                (
+                    "📅 "
+                    + session.get(
+                        "benutzer",
+                        "Ein Familienmitglied"
+                    )
+                    + " hat den Termin „"
+                    + titel
+                    + "“ mit dir geteilt."
+                ),
+                "/kalender"
+            )
+
+    else:
+
+        push_an_benutzer(
+            session["benutzer_id"],
+            "Kalender",
+            "✏️ Ein Termin wurde bearbeitet.",
+            "/kalender"
+        )
+
     return redirect(
         "/kalender"
     )
@@ -4525,6 +4675,13 @@ def termin_loeschen(
             termin_id,
             benutzer_id
         )
+    )
+
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Kalender",
+        "🗑️ Ein Termin wurde gelöscht.",
+        "/kalender"
     )
 
     return redirect(
@@ -5194,6 +5351,13 @@ def einkauf_hinzufuegen():
             )
         )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Einkaufsliste",
+        "🛒 Ein Artikel wurde hinzugefügt.",
+        "/einkaufsliste"
+    )
+
     return redirect(
         "/einkaufsliste"
     )
@@ -5286,6 +5450,13 @@ def einkauf_status(
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Einkaufsliste",
+        "✅ Der Status eines Artikels wurde geändert.",
+        "/einkaufsliste"
+    )
+
     return redirect(
         "/einkaufsliste"
     )
@@ -5364,6 +5535,13 @@ def einkauf_bearbeiten(
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Einkaufsliste",
+        "✏️ Ein Artikel wurde bearbeitet.",
+        "/einkaufsliste"
+    )
+
     return redirect(
         "/einkaufsliste"
     )
@@ -5406,6 +5584,13 @@ def einkauf_loeschen(
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Einkaufsliste",
+        "🗑️ Ein Artikel wurde gelöscht.",
+        "/einkaufsliste"
+    )
+
     return redirect(
         "/einkaufsliste"
     )
@@ -5443,6 +5628,13 @@ def einkauf_erledigte_loeschen():
                 "benutzer_id"
             ],
         )
+    )
+
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Einkaufsliste",
+        "🧹 Erledigte Artikel wurden gelöscht.",
+        "/einkaufsliste"
     )
 
     return redirect(
@@ -5741,6 +5933,13 @@ def finanz_einstellungen_speichern():
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Finanzen",
+        "💶 Deine Budget-Einstellungen wurden geändert.",
+        "/finanzen"
+    )
+
     return redirect(
         "/finanzen"
     )
@@ -5804,6 +6003,13 @@ def budget_speichern():
                 "benutzer_id"
             ]
         )
+    )
+
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Finanzen",
+        "💶 Dein Budget wurde aktualisiert.",
+        "/finanzen"
     )
 
     return redirect(
@@ -5962,6 +6168,13 @@ def ausgabe_hinzufuegen():
             )
         )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Finanzen",
+        "💶 Eine Ausgabe wurde hinzugefügt.",
+        "/finanzen"
+    )
+
     return redirect(
         "/finanzen"
     )
@@ -6072,6 +6285,13 @@ def ausgabe_bearbeiten(
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Finanzen",
+        "✏️ Eine Ausgabe wurde bearbeitet.",
+        "/finanzen"
+    )
+
     return redirect(
         "/finanzen"
     )
@@ -6113,6 +6333,13 @@ def ausgabe_loeschen(
                 "benutzer_id"
             ]
         )
+    )
+
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Finanzen",
+        "🗑️ Eine Ausgabe wurde gelöscht.",
+        "/finanzen"
     )
 
     return redirect(
@@ -7250,6 +7477,13 @@ def pinnwand_hinzufuegen():
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Familien-Pinnwand",
+        "📌 Deine Nachricht wurde angepinnt.",
+        "/pinnwand"
+    )
+
     return redirect(
         "/pinnwand"
     )
@@ -7348,6 +7582,13 @@ def pinnwand_wichtig(
         )
     )
 
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Familien-Pinnwand",
+        "⭐ Der Wichtig-Status wurde geändert.",
+        "/pinnwand"
+    )
+
     return redirect(
         "/pinnwand"
     )
@@ -7388,6 +7629,13 @@ def pinnwand_loeschen(
                 "benutzer_id"
             ]
         )
+    )
+
+    push_an_benutzer(
+        session["benutzer_id"],
+        "Familien-Pinnwand",
+        "🗑️ Deine Nachricht wurde gelöscht.",
+        "/pinnwand"
     )
 
     return redirect(
