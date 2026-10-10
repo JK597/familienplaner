@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+    <meta name="theme-color" content="#10271e">
+    <title>{{ benutzer["benutzername"] }} · Admin</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: #fff5df;
+            font-family:
+                Inter,
+                ui-sans-serif,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background:
+                radial-gradient(circle at 8% 0%, rgba(220,196,138,.14), transparent 27%),
+                radial-gradient(circle at 95% 15%, rgba(115,151,110,.13), transparent 29%),
+                linear-gradient(150deg, #0d2119, #18382a 52%, #10291f);
+            background-attachment: fixed;
+            padding-bottom: 35px;
+        }
+
+        button { font: inherit; }
+
+        .shell {
+            width: min(1120px, calc(100% - 20px));
+            margin: 0 auto;
+            padding: max(14px, env(safe-area-inset-top)) 0 30px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 9px;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            min-height: 40px;
+            padding: 8px 11px;
+            border-radius: 12px;
+            color: #f5e6c4;
+            text-decoration: none;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(240,220,178,.11);
+        }
+
+        .secure {
+            color: rgba(247,235,204,.52);
+            font-size: .60rem;
+            font-weight: 900;
+            letter-spacing: .10em;
+            text-transform: uppercase;
+        }
+
+        .profile {
+            display: grid;
+            grid-template-columns: auto minmax(0,1fr);
+            align-items: center;
+            gap: 14px;
+            padding: 18px;
+            margin-bottom: 9px;
+            border-radius: 21px;
+            border: 1px solid rgba(242,221,175,.17);
+            background:
+                linear-gradient(130deg, rgba(31,70,52,.99), rgba(67,94,69,.97) 60%, rgba(144,130,92,.91));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.10),
+                0 22px 52px rgba(0,0,0,.18);
+        }
+
+        .avatar {
+            width: 78px;
+            height: 78px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 23px;
+            color: #173629;
+            background: linear-gradient(145deg, #f4e0b0, #c3a265);
+            font-size: 1.7rem;
+            font-weight: 900;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile span {
+            display: block;
+            margin-bottom: 3px;
+            color: rgba(250,238,208,.49);
+            font-size: .51rem;
+            font-weight: 900;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+        }
+
+        .profile h1 {
+            margin: 0 0 3px;
+            color: #fff8e9;
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            letter-spacing: -.04em;
+        }
+
+        .profile small {
+            color: rgba(249,237,207,.56);
+            font-size: .63rem;
+        }
+
+        .tabs {
+            position: sticky;
+            top: 6px;
+            z-index: 20;
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px;
+            margin-bottom: 9px;
+            border-radius: 15px;
+            background: rgba(15,39,29,.91);
+            border: 1px solid rgba(239,220,177,.11);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab {
+            flex: 0 0 auto;
+            min-height: 38px;
+            padding: 7px 10px;
+            border: none;
+            border-radius: 10px;
+            color: rgba(245,232,201,.55);
+            background: transparent;
+            font-size: .60rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            color: #173629;
+            background: linear-gradient(145deg, #f0ddb1, #cbb078);
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 7px;
+            margin-bottom: 8px;
+        }
+
+        .summary {
+            padding: 12px;
+            border-radius: 14px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,.057), rgba(255,255,255,.023));
+            border: 1px solid rgba(239,220,177,.09);
+        }
+
+        .summary span {
+            display: block;
+            margin-bottom: 3px;
+            color: rgba(246,233,201,.43);
+            font-size: .48rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .summary strong {
+            color: #fff3db;
+            font-size: .82rem;
+        }
+
+        .section {
+            padding: 14px;
+            border-radius: 17px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,.052), rgba(255,255,255,.021));
+            border: 1px solid rgba(239,220,177,.09);
+        }
+
+        .section + .section {
+            margin-top: 7px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .section h2 {
+            margin: 0;
+            color: #fff4dc;
+            font-size: .92rem;
+        }
+
+        .section-head span {
+            color: rgba(246,233,201,.42);
+            font-size: .54rem;
+        }
+
+        .rows {
+            display: grid;
+            gap: 5px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: minmax(0,1fr) auto;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.031);
+            border: 1px solid rgba(239,220,177,.055);
+        }
+
+        .row-main {
+            min-width: 0;
+        }
+
+        .row-main strong {
+            display: block;
+            overflow-wrap: anywhere;
+            color: #fff2d6;
+            font-size: .70rem;
+        }
+
+        .row-main p {
+            margin: 3px 0 0;
+            overflow-wrap: anywhere;
+            color: rgba(246,233,201,.48);
+            font-size: .56rem;
+            line-height: 1.4;
+        }
+
+        .row-side {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .row-side strong {
+            display: block;
+            color: #ebd195;
+            font-size: .68rem;
+        }
+
+        .row-side span {
+            color: rgba(246,233,201,.40);
+            font-size: .50rem;
+        }
+
+        .empty {
+            padding: 18px 10px;
+            text-align: center;
+            color: rgba(246,233,201,.45);
+            font-size: .63rem;
+        }
+
+        .privacy {
+            margin-top: 10px;
+            padding: 9px 10px;
+            border-radius: 11px;
+            color: rgba(246,233,201,.51);
+            background: rgba(255,255,255,.025);
+            border: 1px solid rgba(239,220,177,.06);
+            font-size: .56rem;
+            line-height: 1.45;
+        }
+
+        @media (max-width: 700px) {
+            .shell { width: calc(100% - 8px); padding-top: 7px; }
+            .profile { padding: 13px 11px; border-radius: 17px; gap: 10px; }
+            .avatar { width: 62px; height: 62px; border-radius: 18px; }
+            .profile h1 { font-size: 1.25rem; }
+            .tabs { top: 4px; margin-bottom: 6px; }
+            .tab { min-height: 35px; padding: 6px 8px; font-size: .54rem; }
+            .summary-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; }
+            .summary { padding: 9px; border-radius: 11px; }
+            .section { padding: 10px 8px; border-radius: 14px; }
+            .row { padding: 8px; }
+            .row-main strong { font-size: .64rem; }
+            .row-main p { font-size: .52rem; }
+            .row-side strong { font-size: .61rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="shell">
+
+        <div class="topbar">
+            <a href="/admin/benutzerkontrolle" class="back">← Benutzer</a>
+            <div class="secure">🔒 Admin-Ansicht</div>
+        </div>
+
+        <section class="profile">
+
+            <div class="avatar">
+
+                {% if benutzer["profilbild_vorhanden"] %}
+                    <img
+                        src="/profilbild/{{ benutzer['id'] }}"
+                        alt="Profilbild"
+                    >
+                {% else %}
+                    {{ benutzer["benutzername"][0]|upper }}
+                {% endif %}
+
+            </div>
+
+            <div>
+                <span>Private Benutzeransicht</span>
+                <h1>{{ benutzer["benutzername"] }}</h1>
+                <small>
+                    Rolle: {{ benutzer["rolle"] }}
+                </small>
+            </div>
+
+        </section>
+
+        <nav class="tabs">
+
+            <button class="tab active" data-tab="finanzen">Finanzen</button>
+            <button class="tab" data-tab="einkauf">Einkauf</button>
+            <button class="tab" data-tab="aufgaben">Aufgaben</button>
+            <button class="tab" data-tab="termine">Termine</button>
+            <button class="tab" data-tab="pinnwand">Pinnwand</button>
+
+        </nav>
+
+
+        <section class="panel active" data-panel="finanzen">
+
+            <div class="summary-grid">
+
+                <div class="summary">
+                    <span>Budget</span>
+                    <strong>
+                        {{ "%.2f"|format(finanz_uebersicht["budget"]) }} €
+                    </strong>
+                </div>
+
+                <div class="summary">
+                    <span>Übertrag</span>
+                    <strong>
+                        {{ "%.2f"|format(finanz_uebersicht["uebertrag"]) }} €
+                    </strong>
+                </div>
+
+                <div class="summary">
+                    <span>Ausgaben gesamt</span>
+                    <strong>
+                        {{ "%.2f"|format(finanz_uebersicht["ausgaben_gesamt"]) }} €
+                    </strong>
+                </div>
+
+                <div class="summary">
+                    <span>Verfügbar</span>
+                    <strong>
+                        {{ "%.2f"|format(finanz_uebersicht["verfuegbar"]) }} €
+                    </strong>
+                </div>
+
+            </div>
+
+            <section class="section">
+
+                <div class="section-head">
+                    <h2>Finanzeinstellungen</h2>
+
+                    {% if finanz %}
+                        <span>
+                            Reset am {{ finanz["reset_tag"] }}. des Monats
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if finanz %}
+
+                    <div class="rows">
+
+                        <div class="row">
+                            <div class="row-main">
+                                <strong>Standardbudget</strong>
+                                <p>Vom Benutzer eingestelltes Budget</p>
+                            </div>
+                            <div class="row-side">
+                                <strong>
+                                    {{ "%.2f"|format(finanz["standard_budget"]|float) }} €
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="row-main">
+                                <strong>Übertrag</strong>
+                                <p>Mitgenommener positiver Restbetrag</p>
+                            </div>
+                            <div class="row-side">
+                                <strong>
+                                    {{ "%.2f"|format(finanz["uebertrag"]|float) }} €
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="row-main">
+                                <strong>Periodenstart</strong>
+                                <p>Aktuelle Finanzperiode</p>
+                            </div>
+                            <div class="row-side">
+                                <strong>
+                                    {{ finanz["periodenstart"] }}
+                                </strong>
+                            </div>
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty">
+                        Noch keine Finanzeinstellungen vorhanden.
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <section class="section">
+
+                <div class="section-head">
+                    <h2>Alle eingetragenen Ausgaben</h2>
+                    <span>{{ ausgaben|length }} Einträge</span>
+                </div>
+
+                {% if ausgaben %}
+
+                    <div class="rows">
+
+                        {% for eintrag in ausgaben %}
+
+                            <div class="row">
+
+                                <div class="row-main">
+
+                                    <strong>
+                                        {{ eintrag["beschreibung"] }}
+                                    </strong>
+
+                                    <p>
+                                        {{ eintrag["kategorie"] }}
+                                        {% if eintrag["ist_fix"] %}
+                                            · Fixkosten
+                                        {% endif %}
+                                        · Periode {{ eintrag["periodenstart"] }}
+                                    </p>
+
+                                </div>
+
+                                <div class="row-side">
+
+                                    <strong>
+                                        {{ "%.2f"|format(eintrag["betrag"]|float) }} €
+                                    </strong>
+
+                                    <span>
+                                        {{ eintrag["datum"] }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty">
+                        Keine Ausgaben eingetragen.
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        </section>
+
+
+        <section class="panel" data-panel="einkauf">
+
+            <section class="section">
+
+                <div class="section-head">
+                    <h2>Einkaufsliste</h2>
+                    <span>{{ einkaeufe|length }} Einträge</span>
+                </div>
+
+                {% if einkaeufe %}
+
+                    <div class="rows">
+
+                        {% for eintrag in einkaeufe %}
+
+                            <div class="row">
+
+                                <div class="row-main">
+
+                                    <strong>
+                                        {{ eintrag["artikel"] }}
+                                    </strong>
+
+                                    <p>
+                                        Menge: {{ eintrag["menge"] or "—" }}
+                                        {% if eintrag["notiz"] %}
+                                            · {{ eintrag["notiz"] }}
+                                        {% endif %}
+                                    </p>
+
+                                </div>
+
+                                <div class="row-side">
+
+                                    <strong>
+                                        {% if eintrag["erledigt"] %}
+                                            Erledigt
+                                        {% else %}
+                                            Offen
+                                        {% endif %}
+                                    </strong>
+
+                                    <span>
+                                        {{ eintrag["erstellt_am"] }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+                    <div class="empty">Keine Einkaufseinträge vorhanden.</div>
+                {% endif %}
+
+            </section>
+
+        </section>
+
+
+        <section class="panel" data-panel="aufgaben">
+
+            <section class="section">
+
+                <div class="section-head">
+                    <h2>Selbst erstellte Aufgaben</h2>
+                    <span>{{ aufgaben|length }} Einträge</span>
+                </div>
+
+                {% if aufgaben %}
+
+                    <div class="rows">
+
+                        {% for eintrag in aufgaben %}
+
+                            <div class="row">
+
+                                <div class="row-main">
+
+                                    <strong>
+                                        {{ eintrag["titel"] }}
+                                    </strong>
+
+                                    <p>
+                                        {{ eintrag["beschreibung"] or "Keine Beschreibung" }}
+                                        {% if eintrag["geteilt_mit"] %}
+                                            · Geteilt mit: {{ eintrag["geteilt_mit"] }}
+                                        {% endif %}
+                                    </p>
+
+                                </div>
+
+                                <div class="row-side">
+
+                                    <strong>
+                                        {% if eintrag["erledigt"] %}
+                                            Erledigt
+                                        {% else %}
+                                            Offen
+                                        {% endif %}
+                                    </strong>
+
+                                    <span>
+                                        {{ eintrag["erstellt_am"] }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+                    <div class="empty">Keine Aufgaben erstellt.</div>
+                {% endif %}
+
+            </section>
+
+        </section>
+
+
+        <section class="panel" data-panel="termine">
+
+            <section class="section">
+
+                <div class="section-head">
+                    <h2>Selbst erstellte Termine</h2>
+                    <span>{{ termine|length }} Einträge</span>
+                </div>
+
+                {% if termine %}
+
+                    <div class="rows">
+
+                        {% for eintrag in termine %}
+
+                            <div class="row">
+
+                                <div class="row-main">
+
+                                    <strong>
+                                        {{ eintrag["titel"] }}
+                                    </strong>
+
+                                    <p>
+                                        {{ eintrag["beschreibung"] or "Keine Beschreibung" }}
+                                        {% if eintrag["geteilt_mit"] %}
+                                            · Geteilt mit: {{ eintrag["geteilt_mit"] }}
+                                        {% endif %}
+                                    </p>
+
+                                </div>
+
+                                <div class="row-side">
+
+                                    <strong>
+                                        {{ eintrag["start_datum"] }}
+                                    </strong>
+
+                                    <span>
+                                        {{ eintrag["start_zeit"] or "Ganztägig" }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+                    <div class="empty">Keine Termine erstellt.</div>
+                {% endif %}
+
+            </section>
+
+        </section>
+
+
+        <section class="panel" data-panel="pinnwand">
+
+            <section class="section">
+
+                <div class="section-head">
+                    <h2>Pinnwand-Beiträge</h2>
+                    <span>{{ pinnwand|length }} Einträge</span>
+                </div>
+
+                {% if pinnwand %}
+
+                    <div class="rows">
+
+                        {% for eintrag in pinnwand %}
+
+                            <div class="row">
+
+                                <div class="row-main">
+
+                                    <strong>
+                                        {% if eintrag["wichtig"] %}
+                                            ⭐ Wichtiger Beitrag
+                                        {% else %}
+                                            Pinnwand
+                                        {% endif %}
+                                    </strong>
+
+                                    <p>
+                                        {{ eintrag["inhalt"] }}
+                                    </p>
+
+                                </div>
+
+                                <div class="row-side">
+                                    <span>
+                                        {{ eintrag["erstellt_am"] }}
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+                    <div class="empty">Keine Pinnwand-Beiträge vorhanden.</div>
+                {% endif %}
+
+            </section>
+
+        </section>
+
+
+        <div class="privacy">
+            🔒 Diese Seite ist serverseitig auf die Rolle <strong>admin</strong>
+            beschränkt. Ein normaler Benutzer kann sie auch mit der direkten URL
+            nicht öffnen.
+        </div>
+
+    </main>
+
+
+    <script>
+
+        const tabs =
+            document.querySelectorAll(
+                "[data-tab]"
+            );
+
+        const panels =
+            document.querySelectorAll(
+                "[data-panel]"
+            );
+
+        tabs.forEach(
+            function(
+                button
+            ) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        const name =
+                            button.dataset.tab;
+
+                        tabs.forEach(
+                            function(
+                                tab
+                            ) {
+                                tab.classList.toggle(
+                                    "active",
+                                    tab === button
+                                );
+                            }
+                        );
+
+                        panels.forEach(
+                            function(
+                                panel
+                            ) {
+                                panel.classList.toggle(
+                                    "active",
+                                    panel.dataset.panel === name
+                                );
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

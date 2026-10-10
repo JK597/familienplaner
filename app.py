@@ -5914,6 +5914,595 @@ def termin_loeschen(
     )
 
 
+
+# ============================================================
+# ADMIN - BENUTZERKONTROLLE / VOLLER LESEZUGRIFF
+# ============================================================
+
+@app.route(
+    "/admin/benutzerkontrolle"
+)
+def admin_benutzerkontrolle():
+
+    if session.get(
+        "rolle"
+    ) != "admin":
+
+        return redirect(
+            "/dashboard"
+        )
+
+    benutzer_liste = query_alle(
+        """
+        SELECT
+            b.id,
+            b.benutzername,
+            b.rolle,
+
+            CASE
+                WHEN b.profilbild IS NULL
+                THEN FALSE
+                ELSE TRUE
+            END AS profilbild_vorhanden,
+
+            COALESCE(
+                f.standard_budget,
+                0
+            ) AS standard_budget,
+
+            COALESCE(
+                f.uebertrag,
+                0
+            ) AS uebertrag,
+
+            COALESCE(
+                (
+                    SELECT SUM(a.betrag)
+                    FROM ausgaben a
+                    WHERE a.benutzer_id = b.id
+                ),
+                0
+            ) AS ausgaben_gesamt,
+
+            (
+                SELECT COUNT(*)
+                FROM einkaufsliste e
+                WHERE
+                    e.benutzer_id = b.id
+                    AND e.erledigt = FALSE
+            ) AS offene_einkaeufe,
+
+            (
+                SELECT COUNT(*)
+                FROM aufgaben a
+                WHERE
+                    a.ersteller_id = b.id
+                    AND a.erledigt = FALSE
+            ) AS offene_aufgaben,
+
+            (
+                SELECT COUNT(*)
+                FROM termine t
+                WHERE t.ersteller_id = b.id
+            ) AS termine_gesamt
+
+        FROM benutzer b
+
+        LEFT JOIN finanz_einstellungen f
+            ON f.benutzer_id = b.id
+
+        ORDER BY
+            CASE
+                WHEN b.rolle = 'admin'
+                THEN 0
+                ELSE 1
+            END,
+            LOWER(b.benutzername)
+        """,
+        """
+        SELECT
+            b.id,
+            b.benutzername,
+            b.rolle,
+
+            CASE
+                WHEN b.profilbild IS NULL
+                THEN 0
+                ELSE 1
+            END AS profilbild_vorhanden,
+
+            COALESCE(
+                f.standard_budget,
+                0
+            ) AS standard_budget,
+
+            COALESCE(
+                f.uebertrag,
+                0
+            ) AS uebertrag,
+
+            COALESCE(
+                (
+                    SELECT SUM(a.betrag)
+                    FROM ausgaben a
+                    WHERE a.benutzer_id = b.id
+                ),
+                0
+            ) AS ausgaben_gesamt,
+
+            (
+                SELECT COUNT(*)
+                FROM einkaufsliste e
+                WHERE
+                    e.benutzer_id = b.id
+                    AND e.erledigt = 0
+            ) AS offene_einkaeufe,
+
+            (
+                SELECT COUNT(*)
+                FROM aufgaben a
+                WHERE
+                    a.ersteller_id = b.id
+                    AND a.erledigt = 0
+            ) AS offene_aufgaben,
+
+            (
+                SELECT COUNT(*)
+                FROM termine t
+                WHERE t.ersteller_id = b.id
+            ) AS termine_gesamt
+
+        FROM benutzer b
+
+        LEFT JOIN finanz_einstellungen f
+            ON f.benutzer_id = b.id
+
+        ORDER BY
+            CASE
+                WHEN b.rolle = 'admin'
+                THEN 0
+                ELSE 1
+            END,
+            LOWER(b.benutzername)
+        """
+    )
+
+    return render_template(
+        "admin_benutzerkontrolle.html",
+        benutzer_liste=
+            benutzer_liste
+    )
+
+
+@app.route(
+    "/admin/benutzer/<int:benutzer_id>"
+)
+def admin_benutzer_detail(
+    benutzer_id
+):
+
+    if session.get(
+        "rolle"
+    ) != "admin":
+
+        return redirect(
+            "/dashboard"
+        )
+
+    benutzer = query_einen(
+        """
+        SELECT
+            id,
+            benutzername,
+            rolle,
+
+            CASE
+                WHEN profilbild IS NULL
+                THEN FALSE
+                ELSE TRUE
+            END AS profilbild_vorhanden
+
+        FROM benutzer
+
+        WHERE id = %s
+        """,
+        """
+        SELECT
+            id,
+            benutzername,
+            rolle,
+
+            CASE
+                WHEN profilbild IS NULL
+                THEN 0
+                ELSE 1
+            END AS profilbild_vorhanden
+
+        FROM benutzer
+
+        WHERE id = ?
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    if benutzer is None:
+
+        return redirect(
+            "/admin/benutzerkontrolle"
+        )
+
+    finanz = query_einen(
+        """
+        SELECT
+            standard_budget,
+            uebertrag,
+            reset_tag,
+            periodenstart
+
+        FROM finanz_einstellungen
+
+        WHERE benutzer_id = %s
+        """,
+        """
+        SELECT
+            standard_budget,
+            uebertrag,
+            reset_tag,
+            periodenstart
+
+        FROM finanz_einstellungen
+
+        WHERE benutzer_id = ?
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    ausgaben = query_alle(
+        """
+        SELECT
+            id,
+            beschreibung,
+            kategorie,
+            betrag,
+            datum,
+            ist_fix,
+            periodenstart
+
+        FROM ausgaben
+
+        WHERE benutzer_id = %s
+
+        ORDER BY
+            datum DESC,
+            id DESC
+        """,
+        """
+        SELECT
+            id,
+            beschreibung,
+            kategorie,
+            betrag,
+            datum,
+            ist_fix,
+            periodenstart
+
+        FROM ausgaben
+
+        WHERE benutzer_id = ?
+
+        ORDER BY
+            datum DESC,
+            id DESC
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    einkaeufe = query_alle(
+        """
+        SELECT
+            id,
+            artikel,
+            menge,
+            notiz,
+            erledigt,
+            erstellt_am
+
+        FROM einkaufsliste
+
+        WHERE benutzer_id = %s
+
+        ORDER BY
+            erledigt ASC,
+            erstellt_am DESC,
+            id DESC
+        """,
+        """
+        SELECT
+            id,
+            artikel,
+            menge,
+            notiz,
+            erledigt,
+            erstellt_am
+
+        FROM einkaufsliste
+
+        WHERE benutzer_id = ?
+
+        ORDER BY
+            erledigt ASC,
+            erstellt_am DESC,
+            id DESC
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    aufgaben = query_alle(
+        """
+        SELECT
+            a.id,
+            a.titel,
+            a.beschreibung,
+            a.erledigt,
+            a.erstellt_am,
+
+            (
+                SELECT STRING_AGG(
+                    b2.benutzername,
+                    ', '
+                    ORDER BY b2.benutzername
+                )
+
+                FROM aufgaben_geteilt ag
+
+                JOIN benutzer b2
+                    ON b2.id = ag.benutzer_id
+
+                WHERE ag.aufgabe_id = a.id
+            ) AS geteilt_mit
+
+        FROM aufgaben a
+
+        WHERE a.ersteller_id = %s
+
+        ORDER BY
+            a.erledigt ASC,
+            a.erstellt_am DESC,
+            a.id DESC
+        """,
+        """
+        SELECT
+            a.id,
+            a.titel,
+            a.beschreibung,
+            a.erledigt,
+            a.erstellt_am,
+
+            (
+                SELECT GROUP_CONCAT(
+                    b2.benutzername,
+                    ', '
+                )
+
+                FROM aufgaben_geteilt ag
+
+                JOIN benutzer b2
+                    ON b2.id = ag.benutzer_id
+
+                WHERE ag.aufgabe_id = a.id
+            ) AS geteilt_mit
+
+        FROM aufgaben a
+
+        WHERE a.ersteller_id = ?
+
+        ORDER BY
+            a.erledigt ASC,
+            a.erstellt_am DESC,
+            a.id DESC
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    termine = query_alle(
+        """
+        SELECT
+            t.id,
+            t.titel,
+            t.beschreibung,
+            t.start_datum,
+            t.start_zeit,
+            t.end_datum,
+            t.end_zeit,
+            t.erstellt_am,
+
+            (
+                SELECT STRING_AGG(
+                    b2.benutzername,
+                    ', '
+                    ORDER BY b2.benutzername
+                )
+
+                FROM termine_geteilt tg
+
+                JOIN benutzer b2
+                    ON b2.id = tg.benutzer_id
+
+                WHERE tg.termin_id = t.id
+            ) AS geteilt_mit
+
+        FROM termine t
+
+        WHERE t.ersteller_id = %s
+
+        ORDER BY
+            t.start_datum DESC,
+            t.start_zeit DESC NULLS LAST,
+            t.id DESC
+        """,
+        """
+        SELECT
+            t.id,
+            t.titel,
+            t.beschreibung,
+            t.start_datum,
+            t.start_zeit,
+            t.end_datum,
+            t.end_zeit,
+            t.erstellt_am,
+
+            (
+                SELECT GROUP_CONCAT(
+                    b2.benutzername,
+                    ', '
+                )
+
+                FROM termine_geteilt tg
+
+                JOIN benutzer b2
+                    ON b2.id = tg.benutzer_id
+
+                WHERE tg.termin_id = t.id
+            ) AS geteilt_mit
+
+        FROM termine t
+
+        WHERE t.ersteller_id = ?
+
+        ORDER BY
+            t.start_datum DESC,
+            t.start_zeit DESC,
+            t.id DESC
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    pinnwand = query_alle(
+        """
+        SELECT
+            id,
+            inhalt,
+            wichtig,
+            erstellt_am
+
+        FROM pinnwand
+
+        WHERE benutzer_id = %s
+
+        ORDER BY
+            erstellt_am DESC,
+            id DESC
+        """,
+        """
+        SELECT
+            id,
+            inhalt,
+            wichtig,
+            erstellt_am
+
+        FROM pinnwand
+
+        WHERE benutzer_id = ?
+
+        ORDER BY
+            erstellt_am DESC,
+            id DESC
+        """,
+        (
+            benutzer_id,
+        )
+    )
+
+    budget = 0.0
+    uebertrag = 0.0
+
+    if finanz is not None:
+
+        budget = float(
+            finanz[
+                "standard_budget"
+            ]
+            or 0
+        )
+
+        uebertrag = float(
+            finanz[
+                "uebertrag"
+            ]
+            or 0
+        )
+
+    ausgaben_gesamt = sum(
+        float(
+            eintrag[
+                "betrag"
+            ]
+            or 0
+        )
+        for eintrag in ausgaben
+    )
+
+    verfuegbar = (
+        budget
+        + uebertrag
+        - ausgaben_gesamt
+    )
+
+    finanz_uebersicht = {
+        "budget":
+            budget,
+
+        "uebertrag":
+            uebertrag,
+
+        "ausgaben_gesamt":
+            ausgaben_gesamt,
+
+        "verfuegbar":
+            verfuegbar
+    }
+
+    return render_template(
+        "admin_benutzer_detail.html",
+
+        benutzer=
+            benutzer,
+
+        finanz=
+            finanz,
+
+        finanz_uebersicht=
+            finanz_uebersicht,
+
+        ausgaben=
+            ausgaben,
+
+        einkaeufe=
+            einkaeufe,
+
+        aufgaben=
+            aufgaben,
+
+        termine=
+            termine,
+
+        pinnwand=
+            pinnwand
+    )
+
+
 # ============================================================
 # ADMIN AUFGABEN-FREIGABEN
 # ============================================================

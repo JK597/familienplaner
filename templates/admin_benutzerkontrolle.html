@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+    <meta name="theme-color" content="#10271e">
+    <title>Benutzerkontrolle · Familienplaner</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: #fff5df;
+            font-family:
+                Inter,
+                ui-sans-serif,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background:
+                radial-gradient(circle at 8% 0%, rgba(220,196,138,.14), transparent 28%),
+                radial-gradient(circle at 94% 12%, rgba(112,148,108,.13), transparent 29%),
+                linear-gradient(150deg, #0d2119, #18382a 52%, #10291f);
+            background-attachment: fixed;
+            padding-bottom: 32px;
+        }
+
+        .shell {
+            width: min(1040px, calc(100% - 20px));
+            margin: 0 auto;
+            padding: max(14px, env(safe-area-inset-top)) 0 30px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            min-height: 40px;
+            padding: 8px 11px;
+            border-radius: 12px;
+            color: #f5e6c4;
+            text-decoration: none;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(240,220,178,.11);
+        }
+
+        .secure {
+            color: rgba(247,235,204,.52);
+            font-size: .60rem;
+            font-weight: 900;
+            letter-spacing: .10em;
+            text-transform: uppercase;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 25px;
+            margin-bottom: 10px;
+            border-radius: 24px;
+            border: 1px solid rgba(242,221,175,.18);
+            background:
+                linear-gradient(130deg, rgba(31,70,52,.99), rgba(69,95,70,.97) 58%, rgba(142,129,91,.91));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.11),
+                0 24px 58px rgba(0,0,0,.18);
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            right: -120px;
+            top: -180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(247,225,177,.22), transparent 68%);
+        }
+
+        .hero span {
+            display: block;
+            margin-bottom: 5px;
+            color: rgba(250,238,208,.51);
+            font-size: .56rem;
+            font-weight: 900;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 6px;
+            color: #fff8e9;
+            font-size: clamp(1.6rem, 4vw, 2.7rem);
+            letter-spacing: -.045em;
+        }
+
+        .hero p {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0;
+            color: rgba(249,237,207,.64);
+            font-size: .74rem;
+            line-height: 1.5;
+        }
+
+        .users {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .user-card {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: auto minmax(0,1fr);
+            gap: 12px;
+            padding: 15px;
+            border-radius: 18px;
+            color: inherit;
+            text-decoration: none;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,.058), rgba(255,255,255,.024));
+            border: 1px solid rgba(239,220,177,.10);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+        }
+
+        .avatar {
+            width: 58px;
+            height: 58px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            color: #173629;
+            background: linear-gradient(145deg, #f4e0b0, #c3a265);
+            font-size: 1.25rem;
+            font-weight: 900;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info {
+            min-width: 0;
+        }
+
+        .name-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 7px;
+        }
+
+        .name {
+            color: #fff4dc;
+            font-size: .90rem;
+            font-weight: 900;
+        }
+
+        .badge {
+            padding: 4px 6px;
+            border-radius: 999px;
+            color: #173629;
+            background: linear-gradient(145deg, #f0ddb1, #c8a96b);
+            font-size: .45rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 5px;
+        }
+
+        .stat {
+            padding: 7px 8px;
+            border-radius: 9px;
+            background: rgba(255,255,255,.034);
+            border: 1px solid rgba(239,220,177,.06);
+        }
+
+        .stat span {
+            display: block;
+            color: rgba(246,233,201,.43);
+            font-size: .47rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .stat strong {
+            color: #fff3da;
+            font-size: .66rem;
+        }
+
+        .open {
+            grid-column: 1 / -1;
+            margin-top: 4px;
+            color: #e9ce92;
+            font-size: .59rem;
+            font-weight: 900;
+        }
+
+        @media (max-width: 700px) {
+            .shell { width: calc(100% - 8px); padding-top: 7px; }
+            .hero { padding: 17px 14px; border-radius: 18px; }
+            .hero h1 { font-size: 1.45rem; }
+            .hero p { font-size: .64rem; }
+            .users { grid-template-columns: 1fr; gap: 6px; }
+            .user-card { padding: 10px; border-radius: 14px; gap: 9px; }
+            .avatar { width: 49px; height: 49px; border-radius: 14px; }
+            .name { font-size: .78rem; }
+            .stat { padding: 6px 7px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="shell">
+
+        <div class="topbar">
+            <a href="/dashboard?tab=mehr" class="back">← Zurück</a>
+            <div class="secure">🔒 Nur Admin</div>
+        </div>
+
+        <section class="hero">
+            <span>Admin · Privatbereich</span>
+            <h1>Benutzerkontrolle</h1>
+            <p>
+                Hier kannst du jeden Benutzer einzeln öffnen und dessen private
+                Finanzen, Ausgaben, Einkäufe, selbst erstellte Aufgaben, Termine
+                und Pinnwand-Einträge einsehen. Normale Benutzer haben auf diese
+                Seiten keinen Zugriff.
+            </p>
+        </section>
+
+        <section class="users">
+
+            {% for person in benutzer_liste %}
+
+                <a
+                    href="/admin/benutzer/{{ person['id'] }}"
+                    class="user-card"
+                >
+
+                    <div class="avatar">
+
+                        {% if person["profilbild_vorhanden"] %}
+
+                            <img
+                                src="/profilbild/{{ person['id'] }}"
+                                alt="Profilbild"
+                            >
+
+                        {% else %}
+
+                            {{ person["benutzername"][0]|upper }}
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="info">
+
+                        <div class="name-row">
+                            <div class="name">
+                                {{ person["benutzername"] }}
+                            </div>
+
+                            <div class="badge">
+                                {{ person["rolle"] }}
+                            </div>
+                        </div>
+
+                        <div class="stats">
+
+                            <div class="stat">
+                                <span>Budget</span>
+                                <strong>
+                                    {{ "%.2f"|format(person["standard_budget"]|float) }} €
+                                </strong>
+                            </div>
+
+                            <div class="stat">
+                                <span>Ausgaben gesamt</span>
+                                <strong>
+                                    {{ "%.2f"|format(person["ausgaben_gesamt"]|float) }} €
+                                </strong>
+                            </div>
+
+                            <div class="stat">
+                                <span>Aufgaben</span>
+                                <strong>
+                                    {{ person["offene_aufgaben"] }} offen
+                                </strong>
+                            </div>
+
+                            <div class="stat">
+                                <span>Einkauf</span>
+                                <strong>
+                                    {{ person["offene_einkaeufe"] }} offen
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <div class="open">
+                            Vollständige Übersicht öffnen →
+                        </div>
+
+                    </div>
+
+                </a>
+
+            {% endfor %}
+
+        </section>
+
+    </main>
+
+</body>
+</html>
