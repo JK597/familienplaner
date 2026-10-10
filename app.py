@@ -3,7 +3,7 @@ import sqlite3
 import json
 import base64
 import tempfile
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from flask import (
@@ -67,6 +67,12 @@ VAPID_PRIVATE_KEY_B64 = os.environ.get(
 VAPID_SUBJECT = os.environ.get(
     "VAPID_SUBJECT",
     "https://familienplaner-zbwi.onrender.com"
+).strip()
+
+
+REMINDER_SECRET = os.environ.get(
+    "REMINDER_SECRET",
+    ""
 ).strip()
 
 
@@ -627,6 +633,30 @@ def datenbank_erstellen():
                 )
             """)
 
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS erinnerungen_gesendet
+                (
+                    id SERIAL PRIMARY KEY,
+
+                    benutzer_id INTEGER NOT NULL
+                        REFERENCES benutzer(id)
+                        ON DELETE CASCADE,
+
+                    typ VARCHAR(50) NOT NULL,
+                    referenz_id INTEGER,
+                    schluessel VARCHAR(120) NOT NULL,
+
+                    gesendet_am TIMESTAMP
+                        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                    UNIQUE (
+                        benutzer_id,
+                        typ,
+                        schluessel
+                    )
+                )
+            """)
+
             cursor.close()
 
         else:
@@ -961,6 +991,31 @@ def datenbank_erstellen():
                         NOT NULL DEFAULT 0,
 
                     erstellt_am TEXT NOT NULL,
+
+                    FOREIGN KEY (benutzer_id)
+                    REFERENCES benutzer(id)
+                    ON DELETE CASCADE
+                )
+            """)
+
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS erinnerungen_gesendet
+                (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    benutzer_id INTEGER NOT NULL,
+
+                    typ TEXT NOT NULL,
+                    referenz_id INTEGER,
+                    schluessel TEXT NOT NULL,
+
+                    gesendet_am TEXT NOT NULL,
+
+                    UNIQUE (
+                        benutzer_id,
+                        typ,
+                        schluessel
+                    ),
 
                     FOREIGN KEY (benutzer_id)
                     REFERENCES benutzer(id)
@@ -2681,6 +2736,398 @@ def push_test():
     return jsonify(
         {
             "ok": True
+        }
+    )
+
+
+# ============================================================
+# AUTOMATISCHE ERINNERUNGEN
+# ============================================================
+
+def erinnerung_wurde_gesendet(
+    benutzer_id,
+    typ,
+    schluessel
+):
+
+    eintrag = query_einen(
+
+        """
+        SELECT id
+        FROM erinnerungen_gesendet
+
+        WHERE
+            benutzer_id = %s
+            AND typ = %s
+            AND schluessel = %s
+        """,
+
+        """
+        SELECT id
+        FROM erinnerungen_gesendet
+
+        WHERE
+            benutzer_id = ?
+            AND typ = ?
+            AND schluessel = ?
+        """,
+
+        (
+            benutzer_id,
+            typ,
+            schluessel
+        )
+    )
+
+    return eintrag is not None
+
+
+def erinnerung_markieren(
+    benutzer_id,
+    typ,
+    referenz_id,
+    schluessel
+):
+
+    if postgres_verwenden():
+
+        execute_query(
+
+            """
+            INSERT INTO erinnerungen_gesendet
+            (
+                benutzer_id,
+                typ,
+                referenz_id,
+                schluessel
+            )
+
+            VALUES (
+                %s,
+                %s,
+                %s,
+                %s
+            )
+
+            ON CONFLICT
+            (
+                benutzer_id,
+                typ,
+                schluessel
+            )
+
+            DO NOTHING
+            """,
+
+            "",
+
+            (
+                benutzer_id,
+                typ,
+                referenz_id,
+                schluessel
+            )
+        )
+
+    else:
+
+        execute_query(
+
+            "",
+
+            """
+            INSERT OR IGNORE
+            INTO erinnerungen_gesendet
+            (
+                benutzer_id,
+                typ,
+                referenz_id,
+                schluessel,
+                gesendet_am
+            )
+
+            VALUES (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+            """,
+
+            (
+                benutzer_id,
+                typ,
+                referenz_id,
+                schluessel,
+                jetzt().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+            )
+        )
+
+
+def aktive_benutzer():
+
+    return query_alle(
+
+        """
+        SELECT
+            id,
+            benutzername
+
+        FROM benutzer
+
+        ORDER BY id
+        """,
+
+        """
+        SELECT
+            id,
+            benutzername
+
+        FROM benutzer
+
+        ORDER BY id
+        """
+    )
+
+
+def termin_start_datetime(
+    termin
+):
+
+    start_datum = datum_lesen(
+        termin["start_datum"]
+    )
+
+    start_zeit_text = (
+        termin["start_zeit"]
+        or "09:00"
+    )
+
+    try:
+
+        start_zeit_obj = (
+            datetime.strptime(
+                start_zeit_text,
+                "%H:%M"
+            ).time()
+        )
+
+    except ValueError:
+
+        start_zeit_obj = (
+            datetime.strptime(
+                "09:00",
+                "%H:%M"
+            ).time()
+        )
+
+    return datetime.combine(
+        start_datum,
+        start_zeit_obj,
+        tzinfo=ZoneInfo(
+            "Europe/Berlin"
+        )
+    )
+
+
+@app.route(
+    "/interne-erinnerungen",
+    methods=[
+        "GET"
+    ]
+)
+def interne_erinnerungen():
+
+    secret = request.args.get(
+        "secret",
+        ""
+    )
+
+    if (
+        not REMINDER_SECRET
+        or
+        secret != REMINDER_SECRET
+    ):
+
+        return jsonify(
+            {
+                "ok": False,
+                "fehler":
+                    "Nicht erlaubt."
+            }
+        ), 403
+
+
+    jetzt_berlin = jetzt()
+
+    gesendet = 0
+
+
+    for benutzer in aktive_benutzer():
+
+        benutzer_id = int(
+            benutzer["id"]
+        )
+
+
+        # ----------------------------------------------------
+        # TERMINE:
+        # Erinnerung ungefähr 24 Stunden vorher.
+        # Da der externe Prüfer stündlich läuft,
+        # wird ein 23-25h Fenster verwendet.
+        # ----------------------------------------------------
+
+        termine = termine_fuer_benutzer(
+            benutzer_id
+        )
+
+        for termin in termine:
+
+            termin_start = (
+                termin_start_datetime(
+                    termin
+                )
+            )
+
+            differenz = (
+                termin_start
+                - jetzt_berlin
+            )
+
+            if (
+                timedelta(
+                    hours=23
+                )
+                <= differenz
+                <= timedelta(
+                    hours=25
+                )
+            ):
+
+                schluessel = (
+                    str(
+                        termin["id"]
+                    )
+                    + ":24h"
+                )
+
+                if not erinnerung_wurde_gesendet(
+                    benutzer_id,
+                    "termin_24h",
+                    schluessel
+                ):
+
+                    zeit_text = (
+                        termin["start_zeit"]
+                        or "ganztägig"
+                    )
+
+                    push_an_benutzer(
+                        benutzer_id,
+                        "Termin morgen",
+                        (
+                            "📅 "
+                            + termin["titel"]
+                            + " · "
+                            + termin[
+                                "start_datum_anzeige"
+                            ]
+                            + " · "
+                            + zeit_text
+                        ),
+                        "/kalender"
+                    )
+
+                    erinnerung_markieren(
+                        benutzer_id,
+                        "termin_24h",
+                        termin["id"],
+                        schluessel
+                    )
+
+                    gesendet += 1
+
+
+        # ----------------------------------------------------
+        # AUFGABEN:
+        # Einmal täglich morgens zwischen 08:00 und 09:59,
+        # falls offene Aufgaben vorhanden sind.
+        # ----------------------------------------------------
+
+        if (
+            jetzt_berlin.hour
+            in (
+                8,
+                9
+            )
+        ):
+
+            aufgaben = (
+                aufgaben_fuer_benutzer(
+                    benutzer_id
+                )
+            )
+
+            offene = sum(
+                1
+                for aufgabe in aufgaben
+                if not bool(
+                    aufgabe["erledigt"]
+                )
+            )
+
+            if offene > 0:
+
+                schluessel = (
+                    jetzt_berlin.date()
+                    .isoformat()
+                )
+
+                if not erinnerung_wurde_gesendet(
+                    benutzer_id,
+                    "aufgaben_morgens",
+                    schluessel
+                ):
+
+                    push_an_benutzer(
+                        benutzer_id,
+                        "Offene Aufgaben",
+                        (
+                            "✅ Du hast noch "
+                            + str(
+                                offene
+                            )
+                            + (
+                                " offene Aufgabe."
+                                if offene == 1
+                                else " offene Aufgaben."
+                            )
+                        ),
+                        "/aufgaben"
+                    )
+
+                    erinnerung_markieren(
+                        benutzer_id,
+                        "aufgaben_morgens",
+                        None,
+                        schluessel
+                    )
+
+                    gesendet += 1
+
+
+    return jsonify(
+        {
+            "ok": True,
+            "gesendet":
+                gesendet,
+            "zeit":
+                jetzt_berlin.strftime(
+                    "%d.%m.%Y %H:%M"
+                )
         }
     )
 

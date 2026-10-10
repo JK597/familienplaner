@@ -1,0 +1,17 @@
+name: Familienplaner Erinnerungen
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+
+  workflow_dispatch:
+
+jobs:
+  erinnerungen:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Erinnerungen prüfen
+        run: |
+          curl --fail --silent --show-error \
+          "https://familienplaner-zbwi.onrender.com/interne-erinnerungen?secret=${{ secrets.REMINDER_SECRET }}"
