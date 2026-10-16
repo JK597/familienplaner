@@ -1200,6 +1200,110 @@
             }
         }
 
+    
+        /* =========================================================
+           iPHONE / PWA NAVIGATION – PERFORMANCE FIX
+           Weniger teure Blur-Effekte, stabile GPU-Ebene,
+           sichere Safe-Area und direkte Touch-Reaktion.
+        ========================================================= */
+
+        .global-app-nav,
+        .mobile-tabbar {
+            -webkit-backface-visibility: hidden !important;
+            backface-visibility: hidden !important;
+
+            -webkit-transform: translate3d(-50%, 0, 0) !important;
+            transform: translate3d(-50%, 0, 0) !important;
+
+            will-change: transform;
+            contain: layout paint style;
+
+            isolation: isolate;
+
+            touch-action: manipulation;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17, 43, 32, 0.985),
+                    rgba(12, 34, 25, 0.985)
+                ) !important;
+
+            border:
+                1px solid
+                rgba(239, 220, 177, 0.16) !important;
+
+            box-shadow:
+                0 10px 28px rgba(0,0,0,0.24),
+                inset 0 1px 0 rgba(255,255,255,0.05) !important;
+
+            -webkit-backdrop-filter: blur(7px) !important;
+            backdrop-filter: blur(7px) !important;
+        }
+
+        .global-app-nav a,
+        .mobile-tab-button {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+
+            transition:
+                background 0.12s ease,
+                color 0.12s ease !important;
+        }
+
+        .global-app-nav a:active,
+        .mobile-tab-button:active {
+            transform: none !important;
+            opacity: 0.88;
+        }
+
+        /* iOS Safari / installierte PWA:
+           Blur komplett abschalten, weil genau dieser Effekt bei
+           fixed Elementen häufig das sichtbare Ruckeln verursacht. */
+        @supports (-webkit-touch-callout: none) {
+
+            .global-app-nav,
+            .mobile-tabbar {
+                -webkit-backdrop-filter: none !important;
+                backdrop-filter: none !important;
+
+                background:
+                    linear-gradient(
+                        145deg,
+                        rgba(18, 45, 33, 0.995),
+                        rgba(12, 34, 25, 0.995)
+                    ) !important;
+
+                box-shadow:
+                    0 8px 22px rgba(0,0,0,0.22),
+                    inset 0 1px 0 rgba(255,255,255,0.045) !important;
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .global-app-nav,
+            .mobile-tabbar {
+                bottom:
+                    calc(
+                        6px
+                        + env(safe-area-inset-bottom)
+                    ) !important;
+
+                max-width:
+                    calc(
+                        100vw
+                        - 12px
+                    );
+            }
+
+        }
+
     </style>
 
 </head>
