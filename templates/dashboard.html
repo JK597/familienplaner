@@ -4262,6 +4262,130 @@
         .premium-house-lines::after{content:"";position:absolute;left:3%;right:3%;bottom:1.5%;height:22%;opacity:.48;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='180' viewBox='0 0 1200 180'%3E%3Cg fill='none' stroke='%23d8c08a' stroke-opacity='.22' stroke-width='1.5'%3E%3Cpath d='M15 166 H1185'/%3E%3Cpath d='M55 166 V104 L102 70 L149 104 V166 M83 166 V127 H121 V166'/%3E%3Cpath d='M198 166 V116 L235 88 L274 116 V166 M218 132 H254'/%3E%3Cpath d='M345 166 V92 L399 50 L456 92 V166 M372 166 V121 H421 V166'/%3E%3Cpath d='M530 166 V112 L571 81 L613 112 V166 M551 131 H592'/%3E%3Cpath d='M682 166 V99 L728 62 L778 99 V166 M708 166 V124 H753 V166'/%3E%3Cpath d='M850 166 V116 L892 84 L936 116 V166 M870 134 H916'/%3E%3Cpath d='M1008 166 V100 L1057 64 L1108 100 V166 M1034 166 V126 H1082 V166'/%3E%3C/g%3E%3C/svg%3E");background-size:1200px 180px;background-position:center bottom;background-repeat:no-repeat;}
         @media(max-width:700px){.premium-house-lines{opacity:.24}.premium-house-lines::before{background-size:700px 405px;background-position:53% bottom}.premium-house-lines::after{left:-22%;right:-22%;bottom:3%;height:18%;opacity:.32;background-size:900px 135px}}
 
+    
+        /* =========================================================
+           RICH PREMIUM BACKGROUND – WEB + APP
+        ========================================================= */
+
+        body {
+            background:
+                linear-gradient(rgba(7,25,18,.18), rgba(7,25,18,.30)),
+                url('/static/premium-home-bg.svg') center center / cover fixed no-repeat,
+                #0b241a !important;
+        }
+
+        .premium-house-lines {
+            display: none !important;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 12% 12%, rgba(223,196,134,.10), transparent 30%),
+                radial-gradient(circle at 88% 18%, rgba(237,211,154,.12), transparent 27%),
+                linear-gradient(180deg, rgba(8,28,20,.08), rgba(8,28,20,.30));
+        }
+
+        .app-shell {
+            position: relative;
+            z-index: 2;
+        }
+
+        .app-topbar,
+        .desktop-tabs,
+        .module-card,
+        .settings-panel,
+        .family-panel,
+        .activity-card,
+        .cinema-hero {
+            -webkit-backdrop-filter: blur(14px) saturate(112%);
+            backdrop-filter: blur(14px) saturate(112%);
+        }
+
+        .app-topbar {
+            background: linear-gradient(135deg, rgba(13,48,34,.88), rgba(56,79,59,.68)) !important;
+            box-shadow: 0 18px 55px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.07) !important;
+        }
+
+        .cinema-hero {
+            background:
+                linear-gradient(90deg, rgba(19,54,39,.96) 0%, rgba(35,70,50,.88) 48%, rgba(98,102,69,.70) 100%),
+                url('/static/premium-home-bg.svg') 72% 58% / 110% auto no-repeat !important;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.14),
+                0 34px 90px rgba(0,0,0,.28) !important;
+        }
+
+        .module-card {
+            background:
+                linear-gradient(145deg, rgba(46,82,60,.84), rgba(22,58,42,.88)) !important;
+            border-color: rgba(238,216,166,.18) !important;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.07),
+                0 18px 45px rgba(0,0,0,.16) !important;
+        }
+
+        .module-card.accent,
+        .module-card-coming {
+            background:
+                linear-gradient(145deg, rgba(88,105,73,.82), rgba(54,82,59,.88)) !important;
+        }
+
+        @media (min-width: 900px) {
+            body {
+                background-position: center 38% !important;
+            }
+
+            .app-shell::after {
+                content: "";
+                position: fixed;
+                right: 3vw;
+                bottom: 2vh;
+                width: 330px;
+                height: 210px;
+                z-index: -1;
+                opacity: .20;
+                pointer-events: none;
+                background: url('/static/premium-home-bg.svg') 78% 78% / 760px auto no-repeat;
+                mask-image: linear-gradient(to top, black, transparent 92%);
+                -webkit-mask-image: linear-gradient(to top, black, transparent 92%);
+            }
+        }
+
+        @media (max-width: 899px) {
+            body {
+                background:
+                    linear-gradient(rgba(8,27,20,.34), rgba(8,27,20,.50)),
+                    url('/static/premium-home-bg.svg') 66% center / auto 100% fixed no-repeat,
+                    #0b241a !important;
+            }
+
+            .app-topbar,
+            .module-card,
+            .settings-panel,
+            .family-panel,
+            .activity-card,
+            .cinema-hero {
+                -webkit-backdrop-filter: none;
+                backdrop-filter: none;
+            }
+
+            .cinema-hero {
+                background:
+                    linear-gradient(145deg, rgba(24,61,43,.92), rgba(82,95,65,.82)),
+                    url('/static/premium-home-bg.svg') 69% 58% / auto 145% no-repeat !important;
+            }
+
+            .module-card {
+                background:
+                    linear-gradient(145deg, rgba(42,77,56,.93), rgba(23,58,43,.95)) !important;
+            }
+        }
+
     </style>
 
 </head>
