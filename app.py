@@ -3333,7 +3333,7 @@ def login():
                 )
 
             return redirect(
-                "/dashboard"
+                "/willkommen"
             )
 
         fehler = (
@@ -3428,7 +3428,7 @@ def erstes_passwort():
             ] = False
 
             return redirect(
-                "/dashboard"
+                "/willkommen"
             )
 
     return render_template(
@@ -4059,6 +4059,24 @@ def profilbild_anzeigen(
     ] = "private, no-cache, no-store, must-revalidate"
 
     return antwort
+
+
+# ============================================================
+# LOGIN-ÜBERGANG
+# ============================================================
+
+@app.route("/willkommen")
+def login_uebergang():
+    if "benutzer_id" not in session:
+        return redirect("/")
+
+    if session.get("passwort_muss_geaendert"):
+        return redirect("/erstes-passwort")
+
+    return render_template(
+        "login_uebergang.html",
+        benutzer=session.get("benutzer", "")
+    )
 
 
 # ============================================================
