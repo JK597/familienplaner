@@ -1712,6 +1712,94 @@
         }
 
 @media (min-width:900px){.finance-page{width:min(1360px,calc(100% - 315px))!important;margin:0 40px 0 auto!important;padding-top:28px!important}.finance-topbar{min-height:66px;padding:12px 16px!important;border-radius:20px!important}.finance-hero{padding:34px 36px!important;border-radius:28px!important}.finance-summary{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}.finance-summary-card{min-height:126px;padding:20px!important;border-radius:18px!important}.finance-grid{grid-template-columns:minmax(320px,.8fr) minmax(0,1.5fr)!important;gap:12px!important}.finance-panel{padding:24px!important;border-radius:22px!important}}
+    
+        /* =========================================================
+           iPHONE NAVIGATION – STABILITÄTS-FIX
+           Kein Blur, kein translate, kein contain/will-change.
+           Dadurch reagiert die Leiste in iOS/PWA zuverlässiger.
+        ========================================================= */
+
+        @media (max-width: 899px) {
+
+            body {
+                padding-bottom:
+                    calc(
+                        94px
+                        + env(safe-area-inset-bottom)
+                    ) !important;
+            }
+
+            .global-app-nav {
+                position: fixed !important;
+
+                left: 6px !important;
+                right: 6px !important;
+                bottom:
+                    calc(
+                        6px
+                        + env(safe-area-inset-bottom)
+                    ) !important;
+
+                width: auto !important;
+                max-width: none !important;
+
+                margin: 0 !important;
+
+                -webkit-transform: none !important;
+                transform: none !important;
+
+                will-change: auto !important;
+                contain: none !important;
+                isolation: auto !important;
+
+                -webkit-backface-visibility: visible !important;
+                backface-visibility: visible !important;
+
+                -webkit-backdrop-filter: none !important;
+                backdrop-filter: none !important;
+
+                background:
+                    #112d21 !important;
+
+                border:
+                    1px solid
+                    rgba(239, 220, 177, 0.18) !important;
+
+                box-shadow:
+                    0 7px 18px rgba(0,0,0,0.20),
+                    inset 0 1px 0 rgba(255,255,255,0.045) !important;
+
+                z-index: 99999 !important;
+
+                pointer-events: auto !important;
+            }
+
+            .global-app-nav a {
+                min-height: 54px !important;
+
+                pointer-events: auto !important;
+                touch-action: manipulation !important;
+
+                -webkit-user-select: none !important;
+                user-select: none !important;
+
+                -webkit-tap-highlight-color:
+                    rgba(240, 221, 177, 0.08);
+
+                transition:
+                    background 0.08s linear,
+                    color 0.08s linear !important;
+            }
+
+            .global-app-nav a:active {
+                -webkit-transform: none !important;
+                transform: none !important;
+
+                opacity: 0.90;
+            }
+
+        }
+
     </style>
 
 </head>
