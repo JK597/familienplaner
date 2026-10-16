@@ -4104,6 +4104,114 @@
             .section-card { padding:24px!important; border-radius:22px!important; }
         }
 
+    
+        /* =========================================================
+           DESKTOP FIX – KEIN ÜBERLAPPEN DER HERO-KARTEN
+           Gilt nur am Rechner. iPhone bleibt unverändert.
+        ========================================================= */
+
+        @media (min-width: 981px) {
+
+            .cinema-hero {
+                grid-template-columns:
+                    minmax(0, 1.12fr)
+                    minmax(500px, 0.88fr) !important;
+                gap: 46px !important;
+            }
+
+            .cinema-visual {
+                min-width: 500px !important;
+                min-height: 410px !important;
+                overflow: visible !important;
+            }
+
+            .cinema-core-wrap {
+                width: 340px !important;
+                height: 340px !important;
+                overflow: visible !important;
+            }
+
+            .cinema-stat {
+                min-width: 128px !important;
+                max-width: 145px !important;
+                padding: 10px 12px !important;
+                z-index: 8 !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: rgba(18, 54, 39, 0.97) !important;
+            }
+
+            .cinema-stat.one {
+                left: -105px !important;
+                top: 54px !important;
+            }
+
+            .cinema-stat.two {
+                right: -105px !important;
+                top: 118px !important;
+            }
+
+            .cinema-stat.three {
+                left: 94px !important;
+                bottom: -25px !important;
+            }
+
+            .cinema-center {
+                z-index: 10 !important;
+                width: 122px !important;
+                height: 122px !important;
+            }
+
+            .cinema-ring {
+                z-index: 1 !important;
+            }
+        }
+
+        @media (min-width: 981px) and (max-width: 1250px) {
+
+            .cinema-hero {
+                grid-template-columns:
+                    minmax(0, 1fr)
+                    minmax(410px, 0.9fr) !important;
+                gap: 26px !important;
+            }
+
+            .cinema-visual {
+                min-width: 410px !important;
+            }
+
+            .cinema-core-wrap {
+                width: 300px !important;
+                height: 300px !important;
+            }
+
+            .cinema-stat {
+                min-width: 112px !important;
+                max-width: 124px !important;
+                padding: 8px 9px !important;
+            }
+
+            .cinema-stat.one {
+                left: -72px !important;
+                top: 38px !important;
+            }
+
+            .cinema-stat.two {
+                right: -72px !important;
+                top: 102px !important;
+            }
+
+            .cinema-stat.three {
+                left: 84px !important;
+                bottom: -22px !important;
+            }
+
+            .cinema-center {
+                width: 108px !important;
+                height: 108px !important;
+            }
+        }
+
     </style>
 
 </head>
