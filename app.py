@@ -9490,10 +9490,16 @@ def pinnwand_loeschen(
 )
 def logout():
 
+    benutzer = session.get(
+        "benutzer",
+        ""
+    )
+
     session.clear()
 
-    return redirect(
-        "/"
+    return render_template(
+        "logout_uebergang.html",
+        benutzer=benutzer
     )
 
 
