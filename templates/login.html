@@ -21,6 +21,9 @@
 
         html {
             scroll-behavior: smooth;
+            min-height: 100%;
+            background: #0f251c;
+            color-scheme: dark;
         }
 
         :root {
@@ -37,6 +40,8 @@
         body {
             margin: 0;
             min-height: 100vh;
+            min-height: 100dvh;
+            background-color: #0f251c;
 
             font-family:
                 -apple-system,
@@ -367,8 +372,8 @@
             background:
                 linear-gradient(
                     145deg,
-                    rgba(255,255,255,0.085),
-                    rgba(255,255,255,0.035)
+                    rgba(21, 55, 41, 0.97),
+                    rgba(13, 37, 27, 0.96)
                 );
         }
 
@@ -944,17 +949,62 @@
 
         }
     
-        /* PREMIUM HAUS-LINIEN HINTERGRUND */
-        .premium-house-lines{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;opacity:.38}
-        .premium-house-lines::before{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='520' viewBox='0 0 900 520'%3E%3Cg fill='none' stroke='%23ead6a7' stroke-opacity='.26' stroke-width='1.4'%3E%3Cpath d='M38 388 C160 326 243 356 330 299 S532 217 645 267 S806 334 878 288'/%3E%3Cpath d='M16 430 C144 374 245 401 362 344 S585 291 707 337 S825 393 892 350' stroke-opacity='.13'/%3E%3Cpath d='M95 173 L151 121 L208 173 V267 H95 Z'/%3E%3Cpath d='M119 173 V267 M185 173 V267 M128 211 H175' stroke-opacity='.20'/%3E%3Cpath d='M690 140 L743 92 L798 140 V228 H690 Z'/%3E%3Cpath d='M717 140 V228 M774 140 V228 M724 178 H768' stroke-opacity='.18'/%3E%3Cpath d='M400 92 L444 54 L490 92 V168 H400 Z' stroke-opacity='.14'/%3E%3C/g%3E%3Cg fill='none' stroke='%235f866e' stroke-opacity='.28' stroke-width='1.2'%3E%3Cpath d='M0 74 C170 126 260 64 411 107 S672 150 900 73'/%3E%3Cpath d='M0 110 C172 160 286 104 444 145 S710 182 900 126' stroke-opacity='.13'/%3E%3C/g%3E%3C/svg%3E");background-size:900px 520px;background-position:center bottom;background-repeat:repeat-x;}
-        .premium-house-lines::after{content:"";position:absolute;left:3%;right:3%;bottom:1.5%;height:22%;opacity:.48;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='180' viewBox='0 0 1200 180'%3E%3Cg fill='none' stroke='%23d8c08a' stroke-opacity='.22' stroke-width='1.5'%3E%3Cpath d='M15 166 H1185'/%3E%3Cpath d='M55 166 V104 L102 70 L149 104 V166 M83 166 V127 H121 V166'/%3E%3Cpath d='M198 166 V116 L235 88 L274 116 V166 M218 132 H254'/%3E%3Cpath d='M345 166 V92 L399 50 L456 92 V166 M372 166 V121 H421 V166'/%3E%3Cpath d='M530 166 V112 L571 81 L613 112 V166 M551 131 H592'/%3E%3Cpath d='M682 166 V99 L728 62 L778 99 V166 M708 166 V124 H753 V166'/%3E%3Cpath d='M850 166 V116 L892 84 L936 116 V166 M870 134 H916'/%3E%3Cpath d='M1008 166 V100 L1057 64 L1108 100 V166 M1034 166 V126 H1082 V166'/%3E%3C/g%3E%3C/svg%3E");background-size:1200px 180px;background-position:center bottom;background-repeat:no-repeat;}
-        @media(max-width:700px){.premium-house-lines{opacity:.24}.premium-house-lines::before{background-size:700px 405px;background-position:53% bottom}.premium-house-lines::after{left:-22%;right:-22%;bottom:3%;height:18%;opacity:.32;background-size:900px 135px}}
+        /* IPHONE / PWA – DUNKLER LOGIN OHNE WEISSE FLÄCHEN */
+        html,
+        body {
+            background-color: #0f251c !important;
+        }
+
+        .login-wrapper {
+            min-height: 100vh;
+            min-height: 100dvh;
+            background:
+                radial-gradient(circle at 16% 8%, rgba(111,151,105,.18), transparent 31%),
+                radial-gradient(circle at 86% 88%, rgba(221,194,136,.14), transparent 31%),
+                linear-gradient(145deg, #0f251c 0%, #17362a 48%, #10271e 100%);
+        }
+
+        .login-shell {
+            background: rgba(17,45,33,.90) !important;
+        }
+
+        .login-card {
+            color: #fff5df;
+            background:
+                radial-gradient(circle at 88% 8%, rgba(218,190,130,.10), transparent 30%),
+                linear-gradient(145deg, rgba(28,66,49,.98), rgba(14,39,29,.98)) !important;
+        }
+
+        .login-heading h1,
+        .form-group label {
+            color: #fff5df !important;
+        }
+
+        .login-heading p,
+        .login-footer {
+            color: rgba(255,245,223,.70) !important;
+        }
+
+        .form-group input {
+            color: #fff8ec !important;
+            background:
+                linear-gradient(145deg, rgba(8,30,21,.80), rgba(22,54,40,.76)) !important;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255,245,223,.50) !important;
+        }
+
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .login-wrapper {
+                padding-top: max(12px, env(safe-area-inset-top));
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
+            }
+        }
 
     </style>
 </head>
 <body>
-    <div class="premium-house-lines" aria-hidden="true"></div>
-
 
     <div class="glow glow-1"></div>
     <div class="glow glow-2"></div>
