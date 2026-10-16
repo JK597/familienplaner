@@ -4511,6 +4511,70 @@
 
         }
 
+    
+        /* =========================================================
+           APP / IPHONE – TAP-HIGHLIGHT
+        ========================================================= */
+        @media (hover: none), (pointer: coarse) {
+            .module-card,
+            .cinema-card,
+            .today-tile,
+            .settings-row,
+            .top-icon-button,
+            .mobile-tab-button,
+            .tab-button {
+                -webkit-tap-highlight-color: transparent;
+                transition: transform .16s ease, filter .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+            }
+
+            .module-card:active,
+            .module-card.touch-pressed,
+            .cinema-card:active,
+            .cinema-card.touch-pressed,
+            .today-tile:active,
+            .today-tile.touch-pressed,
+            .settings-row:active,
+            .settings-row.touch-pressed {
+                transform: scale(.975);
+                filter: brightness(1.09) saturate(1.06);
+                border-color: rgba(240,216,166,.50) !important;
+                box-shadow: 0 0 0 1px rgba(240,216,166,.12), 0 12px 30px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.10), inset 0 0 34px rgba(235,207,145,.08) !important;
+            }
+
+            .mobile-tab-button:active,
+            .mobile-tab-button.touch-pressed,
+            .tab-button:active,
+            .tab-button.touch-pressed {
+                transform: scale(.94);
+                filter: brightness(1.10);
+                background: linear-gradient(145deg, rgba(240,221,177,.24), rgba(203,176,120,.12));
+            }
+
+            .top-icon-button:active,
+            .top-icon-button.touch-pressed {
+                transform: scale(.90);
+                filter: brightness(1.12);
+                box-shadow: 0 0 0 1px rgba(240,216,166,.20), 0 8px 20px rgba(0,0,0,.20);
+            }
+
+            .module-card-coming:active,
+            .module-card-coming.touch-pressed {
+                transform: scale(.985);
+                filter: brightness(1.04);
+                box-shadow: inset 0 0 32px rgba(235,207,145,.06);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .module-card,
+            .cinema-card,
+            .today-tile,
+            .settings-row,
+            .top-icon-button,
+            .mobile-tab-button,
+            .tab-button { transition: none !important; }
+        }
+
     </style>
 
 </head>
@@ -5667,6 +5731,38 @@
             );
 
         }
+
+    </script>
+
+    <script>
+
+        (function () {
+            const touchSelectors = [
+                ".module-card",
+                ".cinema-card",
+                ".today-tile",
+                ".settings-row",
+                ".top-icon-button",
+                ".mobile-tab-button",
+                ".tab-button"
+            ].join(",");
+
+            function clearPressed() {
+                document.querySelectorAll(".touch-pressed").forEach(function (element) {
+                    element.classList.remove("touch-pressed");
+                });
+            }
+
+            document.addEventListener("pointerdown", function (event) {
+                if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+                const target = event.target.closest(touchSelectors);
+                if (!target) return;
+                target.classList.add("touch-pressed");
+            }, { passive: true });
+
+            document.addEventListener("pointerup", clearPressed, { passive: true });
+            document.addEventListener("pointercancel", clearPressed, { passive: true });
+        })();
 
     </script>
 
