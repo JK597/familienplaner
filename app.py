@@ -9482,6 +9482,98 @@ def pinnwand_loeschen(
 
 
 # ============================================================
+# ADMIN - RUNDBENACHRICHTIGUNGEN
+# ============================================================
+
+@app.route(
+    "/admin/rundnachricht",
+    methods=["GET", "POST"]
+)
+def admin_rundnachricht():
+
+    if session.get("rolle") != "admin":
+        return redirect("/dashboard")
+
+    meldung = ""
+    fehler = ""
+    titel = ""
+    nachricht = ""
+    ziel_url = "/dashboard"
+
+    push_nutzer = query_einen(
+        """
+        SELECT COUNT(DISTINCT benutzer_id) AS anzahl
+        FROM push_abonnements
+        """,
+        """
+        SELECT COUNT(DISTINCT benutzer_id) AS anzahl
+        FROM push_abonnements
+        """
+    )
+
+    push_nutzer_anzahl = int(push_nutzer["anzahl"]) if push_nutzer else 0
+
+    if request.method == "POST":
+        titel = request.form.get("titel", "").strip()
+        nachricht = request.form.get("nachricht", "").strip()
+        ziel_url = request.form.get("ziel_url", "/dashboard").strip()
+
+        if not ziel_url.startswith("/"):
+            ziel_url = "/dashboard"
+
+        if not push_konfiguriert():
+            fehler = "Push-Benachrichtigungen sind auf dem Server noch nicht vollständig eingerichtet."
+        elif not titel:
+            fehler = "Bitte gib einen Titel ein."
+        elif not nachricht:
+            fehler = "Bitte gib eine Nachricht ein."
+        elif len(titel) > 80:
+            fehler = "Der Titel darf höchstens 80 Zeichen lang sein."
+        elif len(nachricht) > 220:
+            fehler = "Die Nachricht darf höchstens 220 Zeichen lang sein."
+        else:
+            benutzer = query_alle(
+                """
+                SELECT DISTINCT b.id
+                FROM benutzer b
+                INNER JOIN push_abonnements p ON p.benutzer_id = b.id
+                ORDER BY b.id
+                """,
+                """
+                SELECT DISTINCT b.id
+                FROM benutzer b
+                INNER JOIN push_abonnements p ON p.benutzer_id = b.id
+                ORDER BY b.id
+                """
+            )
+
+            gesendet_an = 0
+            for person in benutzer:
+                push_an_benutzer(person["id"], titel, nachricht, ziel_url)
+                gesendet_an += 1
+
+            if gesendet_an:
+                meldung = f"Rundbenachrichtigung wurde an {gesendet_an} Benutzer mit aktivierten Push-Benachrichtigungen gesendet."
+                titel = ""
+                nachricht = ""
+                ziel_url = "/dashboard"
+            else:
+                fehler = "Aktuell hat noch kein Benutzer Push-Benachrichtigungen aktiviert."
+
+    return render_template(
+        "admin_rundnachricht.html",
+        benutzer=session.get("benutzer", ""),
+        meldung=meldung,
+        fehler=fehler,
+        titel=titel,
+        nachricht=nachricht,
+        ziel_url=ziel_url,
+        push_bereit=push_konfiguriert(),
+        push_nutzer_anzahl=push_nutzer_anzahl
+    )
+
+
+# ============================================================
 # LOGOUT
 # ============================================================
 

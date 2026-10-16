@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#173629">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Rundbenachrichtigung | Familienplaner</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#10271e;color:#fff6df;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{min-height:100vh;min-height:100dvh;background:radial-gradient(circle at 15% 8%,rgba(101,143,105,.22),transparent 31%),radial-gradient(circle at 88% 90%,rgba(220,192,132,.16),transparent 32%),linear-gradient(145deg,#10271e,#17362a 52%,#10271e)}.page{width:min(760px,calc(100% - 28px));margin:0 auto;padding:28px 0 70px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand strong{display:block;color:#fff7e6;font-size:1.05rem}.brand span{display:block;margin-top:3px;color:rgba(255,245,222,.58);font-size:.78rem}.back{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border:1px solid rgba(238,217,169,.15);border-radius:13px;color:#f0ddb1;background:rgba(26,64,47,.72);text-decoration:none;font-size:.82rem;font-weight:850}.hero{position:relative;overflow:hidden;margin-bottom:18px;padding:30px 28px;border:1px solid rgba(239,217,169,.17);border-radius:25px;background:radial-gradient(circle at 88% 15%,rgba(239,214,158,.16),transparent 34%),linear-gradient(135deg,rgba(54,91,67,.98),rgba(87,105,76,.92));box-shadow:0 20px 50px rgba(0,0,0,.16)}.hero::after{content:"📣";position:absolute;right:26px;bottom:13px;opacity:.10;font-size:6.5rem;transform:rotate(-8deg)}.hero-label{display:block;margin-bottom:8px;color:rgba(244,222,172,.76);font-size:.64rem;font-weight:950;letter-spacing:.14em;text-transform:uppercase}.hero h1{margin:0 0 9px;color:#fff7e7;font-size:clamp(1.8rem,6vw,2.55rem);line-height:1;letter-spacing:-.045em}.hero p{max-width:520px;margin:0;color:rgba(255,245,220,.73);line-height:1.55}.status{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:14px 16px;border:1px solid rgba(238,216,169,.12);border-radius:16px;background:rgba(15,48,34,.70);color:rgba(255,245,221,.72);font-size:.83rem}.status-dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;background:#e4c983;box-shadow:0 0 16px rgba(228,201,131,.46)}.panel{padding:24px;border:1px solid rgba(239,218,174,.14);border-radius:23px;background:linear-gradient(145deg,rgba(29,67,50,.96),rgba(18,49,36,.96));box-shadow:0 18px 44px rgba(0,0,0,.16)}.message-box{margin-bottom:16px;padding:13px 15px;border-radius:14px;font-size:.83rem;font-weight:750;line-height:1.45}.success{color:#eaffdf;background:rgba(77,153,91,.18);border:1px solid rgba(132,205,143,.20)}.error{color:#ffe3df;background:rgba(172,70,67,.16);border:1px solid rgba(228,131,125,.17)}.preset{margin-bottom:22px;padding:17px;border-radius:17px;background:rgba(239,218,172,.07)}.preset-label{display:block;margin-bottom:10px;color:rgba(255,244,218,.65);font-size:.69rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.preset-button{width:100%;min-height:48px;border:1px solid rgba(241,219,169,.18);border-radius:14px;color:#173629;background:linear-gradient(145deg,#f0ddb1,#cbb078);font:inherit;font-weight:900;cursor:pointer}form{display:grid;gap:16px}.field{display:grid;gap:7px}.field label{color:#f5e6c4;font-size:.80rem;font-weight:850}.field input,.field textarea{width:100%;border:1px solid rgba(239,217,168,.15);border-radius:14px;outline:none;color:#fff7e7;background:rgba(8,31,22,.63);font:inherit;font-size:16px}.field input{min-height:49px;padding:0 14px}.field textarea{min-height:122px;padding:13px 14px;resize:vertical}.field input:focus,.field textarea:focus{border-color:rgba(239,213,156,.65);box-shadow:0 0 0 4px rgba(232,205,147,.08)}.hint{color:rgba(255,244,218,.47);font-size:.72rem;line-height:1.45}.send-button{min-height:53px;border:0;border-radius:15px;color:#173629;background:linear-gradient(145deg,#f2dfb2,#c7aa6d);box-shadow:0 12px 28px rgba(0,0,0,.17);font:inherit;font-weight:950;cursor:pointer}.send-button:active{transform:scale(.985)}.send-button:disabled{opacity:.45;cursor:not-allowed}@media(max-width:620px){.page{width:min(100% - 18px,760px);padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(40px,env(safe-area-inset-bottom))}.hero{padding:23px 18px}.hero::after{right:12px;font-size:5rem}.panel{padding:18px 15px}}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="topbar"><div class="brand"><strong>Familienplaner</strong><span>Admin · {{ benutzer }}</span></div><a href="/dashboard?tab=mehr" class="back">← Zurück</a></header>
+<section class="hero"><span class="hero-label">Admin · Push</span><h1>Rundbenachrichtigung</h1><p>Sende eine Push-Nachricht gleichzeitig an alle Benutzer, die Benachrichtigungen aktiviert haben.</p></section>
+<div class="status"><span class="status-dot"></span><span>{{ push_nutzer_anzahl }} Benutzer mit aktivierten Push-Benachrichtigungen</span></div>
+<section class="panel">
+{% if meldung %}<div class="message-box success">{{ meldung }}</div>{% endif %}
+{% if fehler %}<div class="message-box error">{{ fehler }}</div>{% endif %}
+<div class="preset"><span class="preset-label">Schnellvorlage</span><button type="button" class="preset-button" id="essensplanPreset">🍽️ Essensplan · Demnächst verfügbar</button></div>
+<form method="POST">
+<div class="field"><label for="titel">Titel</label><input type="text" id="titel" name="titel" maxlength="80" value="{{ titel }}" placeholder="z. B. Familienplaner" required></div>
+<div class="field"><label for="nachricht">Nachricht</label><textarea id="nachricht" name="nachricht" maxlength="220" placeholder="Nachricht an alle Benutzer..." required>{{ nachricht }}</textarea><span class="hint">Maximal 220 Zeichen.</span></div>
+<div class="field"><label for="ziel_url">Öffnen beim Antippen</label><input type="text" id="ziel_url" name="ziel_url" value="{{ ziel_url }}" placeholder="/dashboard"><span class="hint">Standardmäßig öffnet die Push-Nachricht den Familienplaner.</span></div>
+<button type="submit" class="send-button" {% if not push_bereit %}disabled{% endif %}>📣 An alle senden</button>
+</form>
+</section>
+</main>
+<script>
+const p=document.getElementById("essensplanPreset"),t=document.getElementById("titel"),m=document.getElementById("nachricht"),u=document.getElementById("ziel_url");p.addEventListener("click",function(){t.value="🍽️ Etwas Neues kommt";m.value="Der Essensplan kommt bald in den Familienplaner. Freut euch auf eine neue Möglichkeit, eure Woche noch einfacher zu organisieren.";u.value="/dashboard?tab=planer";m.focus();});
+</script>
+</body>
+</html>
